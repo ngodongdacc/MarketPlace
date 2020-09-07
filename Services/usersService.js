@@ -1,6 +1,6 @@
 
 var Users = require("../Model/users");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 
 // Tạo mới user 
 const createUser = async (user,cb) => {
