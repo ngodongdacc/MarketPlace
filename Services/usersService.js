@@ -4,12 +4,14 @@ const bcrypt = require("bcryptjs");
 
 // Tạo mới user 
 const createUser = async (user,cb) => {
-    try {         
+    try {
           bcrypt.genSalt(10, function(err, salt) {
             bcrypt.hash(user.Password, salt,async function(err, hash) {
-              if (err) throw err
-                  user.Password = hash;
-                  Users.create(user,cb);
+              if (err){
+                cb(err,null)
+              } 
+                user.Password = hash;
+                Users.create(user,cb);
             });
           });    
        } catch(e) {

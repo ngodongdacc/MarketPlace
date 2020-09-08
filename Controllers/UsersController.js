@@ -18,13 +18,11 @@ const postCreateUser = async (req, res, next) => {
     })
     usersService.createUser(newUser, (err, user) => {
       if (err) {
-        return res.send({
-          message: "create user fail",
-          data: null,
-          errors: err.errors,
-          code: 0,
-          status: false,
-        }).status(400)
+        res.status(400).json({
+          message: "There was an error processing",
+          errors: err
+
+        });
       }
       return res.send({
         message: "create user success",
@@ -72,8 +70,7 @@ const postLogin = async (req, res, next) => {
       usersService.comparePassword(userLogin.Password, user.Password, (err,isMath) => {
         if(err) throw err
         if(isMath){
-          console.log("process.env.secretKey: ",process.env.secretKey);
-          var token = jwt.sign(user.toJSON(),process.env.secretKey, { expiresIn : process.env.TimeToken});
+          var token = jwt.sign(user.toJSON(),process.env.secretKey|| "QTData-MarketPlace", { expiresIn : process.env.TimeToken || 6000000});
           return res.send({
             message: "login success",
             data: {
@@ -96,8 +93,7 @@ const postLogin = async (req, res, next) => {
             code: 0,
             status: false
           }).status(400)
-        }
-        
+        }       
       })
     
     });
