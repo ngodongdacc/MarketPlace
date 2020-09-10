@@ -13,7 +13,11 @@ findOneUser : async (username,cb) => {
 },
 
 // Tạo mới user 
+<<<<<<< HEAD
 createUser : async (user,cb) => {
+=======
+const createUser = async (user,cb) => {
+>>>>>>> c8c7de46a2caca481d2d87d9a7367a22432c8de8
     try {
           bcrypt.genSalt(10, function(err, salt) {
             bcrypt.hash(user.Password, salt,async function(err, hash) {
