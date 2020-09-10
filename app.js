@@ -35,11 +35,10 @@ app.use(expressSession({
     checkPeriod: 86400000 // prune expired entries every 24h
   }),
 }));
-
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use('/api/', require('./Routes/usersRouter'));
+app.use('/api/', require('./Routes/router'));
 app.use('/', (req,res)=>res.send("not found api"));
 app.use('/test', (req,res)=>res.send("not found api"));
 
