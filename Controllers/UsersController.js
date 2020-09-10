@@ -9,6 +9,10 @@ const { isEmail } = require("../validator/EmailValidator");
 
 const usersService = require("../Services/usersService");
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 04073edc34224f696fe88ad69b616a6f26685bd3
 module.exports = {
   // Tạo tài khoản mới
   postCreateUser : async (req, res, next) => {
@@ -67,8 +71,49 @@ module.exports = {
         Phone: req.body.Phone,
         Email: req.body.Email,
         Rule: req.body.Rule ? req.body.Rule : [1]
+<<<<<<< HEAD
       })
 
+=======
+=======
+// Tạo tài khoản mới
+const postCreateUser = async (req, res, next) => {
+  try {
+    var newUser = new Users({
+      Username: req.body.Username,
+      LastName: req.body.LastName,
+      FirstName: req.body.FirstName,
+      Password: req.body.Password,
+      Phone: req.body.Phone,
+      Email: req.body.Email,
+      Rule: req.body.Rule ? req.body.Rule : [1]
+    })
+    usersService.createUser(newUser, (err, user) => {
+      if (err) {
+        res.status(400).json({
+          message: "There was an error processing",
+          errors: err
+
+        });
+      }
+      return res.send({
+        message: "create user success",
+        data: {
+          user: {
+            Username: user.Username,
+            FirstName: user.FirstName,
+            LastName: user.LastName,
+            Email: user.Email,
+            Phone: user.Phone
+          }
+        },
+        code: 1,
+        status: true
+>>>>>>> c8c7de46a2caca481d2d87d9a7367a22432c8de8
+      })
+
+<<<<<<< HEAD
+>>>>>>> 04073edc34224f696fe88ad69b616a6f26685bd3
       async.parallel([
         (cb) => { 
           // kiểm tra Username
@@ -114,6 +159,43 @@ module.exports = {
                   LastName: user.LastName,
                   Email: user.Email,
                   Phone: user.Phone
+<<<<<<< HEAD
+=======
+=======
+// Đăng nhập
+const postLogin = async (req, res, next) => {
+  const userLogin = {
+    Username: req.body.Username,
+    Password: req.body.Password,
+  }
+  try {
+      usersService.getByOneUser(userLogin.Username, (err, user) => {
+      if (err) throw err
+      if(!user) {
+        return res.send({
+          message: "user not found and not password",
+          data: null,
+          code: 0,
+          status: false
+        }).status(400)
+      }
+      
+      // 
+      usersService.comparePassword(userLogin.Password, user.Password, (err,isMath) => {
+        if(err) throw err
+        if(isMath){
+          var token = jwt.sign(user.toJSON(),process.env.secretKey|| "QTData-MarketPlace", { expiresIn : process.env.TimeToken || 6000000});
+          return res.send({
+            message: "login success",
+            data: {
+              user: {
+                Username: user.Username,
+                FirstName: user.FirstName,
+                LastName: user.LastName,
+                Email: user.Email,
+                Phone: user.Phone
+>>>>>>> c8c7de46a2caca481d2d87d9a7367a22432c8de8
+>>>>>>> 04073edc34224f696fe88ad69b616a6f26685bd3
               },
               code: 1,
               status: true
@@ -166,6 +248,7 @@ module.exports = {
             code: 0,
             status: false
           }).status(400)
+<<<<<<< HEAD
         }
       
         // 
@@ -197,6 +280,7 @@ module.exports = {
             }).status(400)
           }
         })
+<<<<<<< HEAD
 
       });
     } catch (e) {
@@ -210,6 +294,37 @@ module.exports = {
     }
   },
 
+=======
+=======
+        }       
+      })
+    
+    });
+  } catch (e) {
+    res.send({
+      message: e.message,
+      errors: e.errors,
+      data: null,
+      code: 0,
+      status: false,
+    }).status(400) && next(e)
+  }
+}
+>>>>>>> c8c7de46a2caca481d2d87d9a7367a22432c8de8
+
+      });
+    } catch (e) {
+      res.send({
+        message: e.message,
+        errors: e.errors,
+        data: null,
+        code: 0,
+        status: false,
+      }).status(500) && next(e)
+    }
+  },
+
+>>>>>>> 04073edc34224f696fe88ad69b616a6f26685bd3
   // lấy thông tin user
   getProfile : async (req, res) => {
     res.send({
