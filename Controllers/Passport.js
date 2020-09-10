@@ -16,7 +16,7 @@ Passport.deserializeUser(function (user, done) {
 
 var opts = {}
 opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken()
-opts.secretOrKey = process.env.secretKey;
+opts.secretOrKey = process.env.secretKey || "QTData-MarketPlace";
 // opts.issuer = 'accounts.examplesoft.com';
 // opts.audience = 'yoursite.net';
 Passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
