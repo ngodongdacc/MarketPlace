@@ -92,6 +92,7 @@ module.exports = {
       (cb)=> {// kiểm tra Phone
           if(Phone)
             usersService.findPhone(Phone, (err, resPhone) => {
+              
                 if(err) cb(err)
                 else if(!resPhone) cb(null, true);
                 else cb(null, false);
