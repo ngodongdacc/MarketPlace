@@ -3,6 +3,10 @@ const mongoose = require('mongoose');
 
 
   var CategorySchema = new Schema({
+    icon: {
+      type: String,
+      require: true
+    },
       title: {
           type: String ,
             required: true

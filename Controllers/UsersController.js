@@ -216,7 +216,7 @@ module.exports = {
       code: 1,
       data: {
         user: {
-          Username: req.user.Username,
+          Usename: req.user.Username,
           LastName: req.user.LastName,
           Phone: req.user.Phone,
           Email: req.user.Email,
