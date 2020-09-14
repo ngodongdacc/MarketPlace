@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 
 //Thiết lập một kết nối mongoose mặc định
-var mongoDB =  process.env.MONGOURL || 'mongodb://127.0.0.1/marketplace';
+var mongoDB =  process.env.MONGOURL || 'mongodb://127.0.0.1:27017/marketplace';
 const options = {
   useNewUrlParser: true,
   useUnifiedTopology: true,

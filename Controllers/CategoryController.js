@@ -1,4 +1,4 @@
-const Categories = require("../Model/category");
+
 const CategoryService = require("../Services/categoryService");
 const { updateOne, count } = require("../Model/category");
 const async = require("async");
@@ -11,55 +11,37 @@ const category = require("../Model/category");
 module.exports = {
     createCategory : async(req, res , next) => {
         try { 
-            const {title, description} = req.body
-            if(!title)
-                return res.status(400)
-                .json({
-                    message: "Please enter your Title",
-                    status: false,
-                    code: 0
+            const {title} = req.body
+            if(!title){ return res.status(400).json({
+                            message: "Please enter your Title",
+                            status: false,
+                            code: 0
+                        })}
+                
+            const newCate = new category({
+                icon: req.body.icon,
+                title: req.body.title,
+                description: req.body.description
                 })
-                if(!description)
-                return res.status(400)
-                .json({
-                     message: "Please enter your Description",
-                    status: false,
-                    code: 0
-                })
-                const newCate = new Categories({
-                    icon: req.body.icon,
-                    title: req.body.title,
-                    description: req.body.description
-                })
-                async.parallel([
-                    (cb) => {
-                        if(title)
-                        CategoryService,findOneCategory(title,(err, resData) => {
-                            if(err) cb(err)
-                            else if(!resData) cb(null, true)
-                            else cb(null, true)
-                        })
-                        else cb(null, true)
-                    }
-                ], (err, reuslt) => {
-                    if(err) return res.status(400).json({message:  "There was an error processing", errors: err});
-                    CategoryService.createCategory(newCate, (err, category) => {
-                        if(err) res.status(400).json({message: "There was an error processing",errors: err, code: 0});
-                        return res.send({
-                            message: "create title succsess",
-                            data: {
-                                icon: category.icon,
-                                title: category.title,
-                                description: category.description
-                            },
-                            code: 1,
-                            status: true
-                        })
-                    });
-                });
+                
+                category.findOne({title: title }, function (err, resData) {
+                            if(err) return res.status(400).json({message:  "There was an error processing", errors: err, status: false}); 
+                            
+                            if(resData) return res.status(400).json({message:  "Tên danh mục đã tồn tại", errors: null, status: false}); 
+                            
+                            category.create(newCate, function(err,resData){
+                                if(err) res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err, status: false});
+                                res.json({
+                                    message: "Thêm danh mục thành công",
+                                    data: resData,
+                                    status: true
+                                })
+                            })
+                        })  
         }catch (e) {
+            console.log(e);
             res.send({
-                message: e.message,
+                message: "Có lỗi trong quá trình xử lý",
                 errors: e.errors,
                 code: 0
             }).status(500) && next(e)

@@ -20,7 +20,7 @@ const createSubCategory = async(req, res) => {
 
         res.send({
             message: "create succsess",
-            data: resData
+            data: resData26
         })
     });
 }
