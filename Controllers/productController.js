@@ -1,11 +1,11 @@
 const async = require("async");
 const Products = require("../Model/product");
-const Users = require("../Model/users");
-const userServic = require("../Services/usersService");
 
 module.exports = {
     create_product: (req, res)=> {
         const product = req.body
+        product.Image = req.file.path
+        console.log(req.file.path);
         if(!product.IdUser) return res.status(400).json({message: "Vui lòng nhập IdUser", status:false});
         if(!product.IdShop) return res.status(400).json({message: "Vui lòng nhập IdShop",status: false});
         if(!product.IdCategory) return res.status(400).json({message: "Vui lòng nhập IdCategory",status: false});

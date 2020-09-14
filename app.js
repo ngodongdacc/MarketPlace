@@ -1,4 +1,3 @@
-var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
@@ -45,9 +44,7 @@ app.use(function(req, res, next) {
 });
 
 app.use('/api/', require('./Routes/router'));
-app.use('/', (req,res)=>res.send("not found api"));
-app.use('/test', (req,res)=>res.send("not found api"));
-
+app.use('/', (req,res)=>res.status(404).send("not found api"));
 
 // error handler
 app.use(function(err, req, res, next) {

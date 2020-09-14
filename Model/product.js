@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
     IdCategory:   {type: mongoose.Types.ObjectId, required: true},
     IdCategorySub:   {type: mongoose.Types.ObjectId, required: true},
     Name:   {type: String, required: true },
-    Image: {type: Array},
+    Image: {type: String},
     OutstandingFeatures: {type: String },//Đặc điểm nổi bật (ít 3 đặc điểm)
     DetailedAttributes: {type: String}, // Chi tiết thuộc tính
     SearchAttributes: {type: String}, // thuộc tính tìm kiếm
