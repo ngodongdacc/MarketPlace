@@ -2,12 +2,16 @@ const mongoose = require('mongoose');
   var Schema = mongoose.Schema;
 
   var UserSchema = new Schema({
-    Username:  {type: String , required: true, unique: true}, 
     LastName: {type: String, default:""},
     FirstName:   {type: String , default:""},
+    FullName:   {type: String , default:""},
+    Address:   {type: Array , default:""}, // địa chỉ
+    Gender:   {type: Number }, // giới tính 
+    Birthday:   {type: Date }, // Ngày sinh 
     Email:   {type: String , required: true,unique: true},
     Password: {type: String , required: true, unique: true},
     Phone: {type: String , default:""},
+    Sale: {type: Boolean, default: false }, // nhận chương trình khuyến mãi
     Role: {
       type: String,
       default: 'basic',
@@ -26,7 +30,7 @@ const mongoose = require('mongoose');
       email: { type: String, trim: true },
     },
     Google: { uid: String, token: String, email: { type: String, trim: true } },
-    Verify: { type: Boolean, default: false },
+    // Verify: { type: Boolean, default: false },
   });
   UserSchema.index({'$**': 'text'});
   

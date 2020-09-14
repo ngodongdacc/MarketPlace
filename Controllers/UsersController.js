@@ -13,73 +13,64 @@ module.exports = {
   // Tạo tài khoản mới
   postCreateUser : async (req, res, next) => {
     try {
-      const { Username, Email, Password, Phone } = req.body
-      if (!Username)
+      const { FullName, Email, Password, Phone } = req.body
+      if (!FullName)
         return res.status(400) // kiểm tra Usename
           .json({
-            message: "Please enter your Username",
-            status: false,
-            code: 0
-          })
-      if (Password.length < 2)  // Kiểm tra password
-        return res.status(400)
-          .json({
-            message: "Username must be greater than 6 characters in length",
+            message: "Vui lòng nhập họ tên",
             status: false,
             code: 0
           })
       if (!Email)
-        return res.status(400) // Kiểm tra Email
+      return res.status(400) // Kiểm tra Email
+        .json({
+          message: "Vui lòng nhập Email",
+          status: false,
+          code: 0
+        })
+      if (!Password)  // Kiểm tra password
+      return res.status(400)
+        .json({
+          message: "Vui lòng nhập mật khẩu",
+          status: false,
+          code: 0
+        })
+      
+  
+      if (Password.length < 6)  // Kiểm tra password
+        return res.status(400)
           .json({
-            message: "Please enter your Email",
+            message: "Mật khẩu phải có ít nhất 6 ký tự",
             status: false,
             code: 0
           })
+     
       if (!isEmail(Email))
         return res.status(400) // Kiểm tra Email
           .json({
-            message: "Email not format",
+            message: "Email không đúng định dạng",
             status: false,
             code: 0
           })
-
-      if (!Password)  // Kiểm tra password
-        return res.status(400)
-          .json({
-            message: "Please enter your Password",
-            status: false,
-            code: 0
-          })
-      if (Password.length < 5)  // Kiểm tra password
-        return res.status(400)
-          .json({
-            message: "Password must be greater than 6 characters in length",
-            status: false,
-            code: 0
-          })
-
 
       const newUser = new Users({
-        Username: req.body.Username,
         LastName: req.body.LastName,
         FirstName: req.body.FirstName,
         Password: req.body.Password,
         Phone: req.body.Phone,
         Email: req.body.Email,
-        Rule: req.body.Rule ? req.body.Rule : [1]
+        Role: req.body.Role,
+        FullName: req.body.FullName,
+        Gender:   req.body.Gender,
+        Birthday: req.body.Birthday,
+        Sale: req.body.Sale,
+        Avatar: req.body.Avatar,
+        Facebook: req.body.Facebook,
+        Google: req.body.Google,
+        // Verify: req.body.Verify,
       })
 
       async.parallel([
-        (cb) => { 
-          // kiểm tra Username
-           if(Username)
-             usersService.findOneUser(Username, (err, resUser) => {
-               if(err) cb(err)
-               else if(!resUser) cb(null, true)
-               else cb(null, false)
-             })
-           else cb(null, true) 
-       },
       (cb)=> {// kiểm tra Email
             if(Email)
               usersService.findEmail(Email, (err, resEmailUser) => {
@@ -99,22 +90,16 @@ module.exports = {
           else cb(null, true);
         }
         ], (err, results) => {
-          if(err) return res.status(400).json({ message: "There was an error processing", errors: err});
-          if(!results[0]) return res.status(400).json({ message: "Username already exists", status: false, code:0 });
-          if(!results[1]) return res.status(400).json({ message: "Email already exists", status: false, code:0 });
-          if(!results[2]) return res.status(400).json({ message: "Phone already exists", status: false, code:0 });
+          if(err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err});
+          if(!results[0]) return res.status(400).json({ message: "Email đã được sử dụng", status: false, code:0 });
+          if(!results[1]) return res.status(400).json({ message: "Số điện thoại đã được sử dụng", status: false, code:0 });
 
           usersService.createUser(newUser, (err, user) => {
-            if (err) res.status(400).json({ message: "There was an error processing",errors: err, code: 0 });
-            return res.send({
-              message: "create user success",
-              data: {
-                  Username: user.Username,
-                  FirstName: user.FirstName,
-                  LastName: user.LastName,
-                  Email: user.Email,
-                  Phone: user.Phone
-              },
+            if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý",errors: err, code: 0 });
+            console.log("user",user);
+            return res.json({
+              message: "Tạo tài khoản thành công",
+              data: user,
               code: 1,
               status: true
             })
@@ -137,7 +122,7 @@ module.exports = {
     if (!Username) // kiểm tra Username
       return res.status(400)
         .json({
-          message: "Please enter your Username",
+          message: "Vui lòng nhập tên đăng nhập",
           status: false,
           code: 0
         })
@@ -145,7 +130,7 @@ module.exports = {
     if (!Password)  // Kiểm tra password
       return res.status(400)
         .json({
-          message: "Please enter your Password",
+          message: "Vui lòng nhập mật khẩu",
           status: false,
           code: 0
         })
@@ -154,60 +139,50 @@ module.exports = {
       Username: Username,
       Password: Password,
     }
-    
-    try {
-      usersService.findOneUser(userLogin.Username, (err, user) => {
-        console.log("user");
-        if (err) throw err
-        if (!user) {
-          return res.send({
-            message: "username or password false! ",
+    async.parallel([
+      (cb) => Users.findOne({ Email: userLogin.Username },(e, user)=> e ? cb(e) : cb(null, user)),
+      (cb) => Users.findOne({ Phone: userLogin.Username },(e, user)=> e ? cb(e) : cb(null, user))
+    ],(err,results) => {
+      if(err) 
+        return res.status(400).json({message: "Có lỗi trong quá trình xử lý", errors: err, status: false});
+      
+      if(!results[0] && !results[1] ) 
+        return res.status(400).json({message: "Tên đăng nhập hoặc mật khẩu không đúng", status: false});
+
+      var userTrue = results[0]
+      if(!userTrue) userTrue = results[1];
+
+      usersService.comparePassword(userLogin.Password, userTrue.Password, (err, isMath) => {
+        if (err) 
+          return res.status(400).json({message: "Tên đăng nhập hoặc mật khẩu không đúng", status: false, errors: "compare" });
+        if (isMath) {
+          var token = jwt.sign(userTrue.toJSON(), process.env.secretKey || "QTData-MarketPlace", { expiresIn: process.env.TimeToken || 60000000 });
+          return res.json({
+            message: "login success",
+            data: {
+              user: {
+                Username: userTrue.Username,
+                FirstName: userTrue.FirstName,
+                LastName: userTrue.LastName,
+                Email: userTrue.Email,
+                Phone: userTrue.Phone,
+                id: userTrue._id
+              },
+              token: "Bearer " + token
+            },
+            code: 1,
+            status: true
+          })
+        } else {
+          return res.json({
+            message: "Tên đăng nhập hoặc mật khẩu không đúng",
             data: null,
             code: 0,
             status: false
           }).status(400)
         }
-      
-        // 
-        usersService.comparePassword(userLogin.Password, user.Password, (err, isMath) => {
-          if (err) throw err
-          if (isMath) {
-            var token = jwt.sign(user.toJSON(), process.env.secretKey || "QTData-MarketPlace", { expiresIn: process.env.TimeToken || 6000000 });
-            return res.send({
-              message: "login success",
-              data: {
-                user: {
-                  Username: user.Username,
-                  FirstName: user.FirstName,
-                  LastName: user.LastName,
-                  Email: user.Email,
-                  Phone: user.Phone
-                },
-                token: "Bearer " + token
-              },
-              code: 1,
-              status: true
-            })
-          } else {
-            return res.send({
-              message: "user not found and not password",
-              data: null,
-              code: 0,
-              status: false
-            }).status(400)
-          }
-        })
-
-      });
-    } catch (e) {
-      res.send({
-        message: e.message,
-        errors: e.errors,
-        data: null,
-        code: 0,
-        status: false,
-      }).status(500) && next(e)
-    }
+      })
+    })
   },
 
   // lấy thông tin user
@@ -216,11 +191,13 @@ module.exports = {
       code: 1,
       data: {
         user: {
-          Username: req.user.Username,
+          FullName: req.user.FullName,
+          Avatar: req.user.Avatar,
           LastName: req.user.LastName,
+          FullName: req.user.FullName,
           Phone: req.user.Phone,
           Email: req.user.Email,
-          _id: req.user._id,
+          id: req.user._id,
         }
       },
       status: true,
@@ -228,38 +205,28 @@ module.exports = {
   },
 
   // Cập nhật thông tin
-  postUpdate : async (req, res, next) => {
-    var userUpdate = { };
-      if(req.body.Username)  userUpdate.Username =  req.body.Username;
-      if(req.body.LastName)  userUpdate.LastName = req.body.LastName;
-      if(req.body.FirstName)  userUpdate.FirstName = req.body.FirstName;
-      if(req.body.Email)  userUpdate.Email = req.body.Email;
-      if(req.body.Password)  userUpdate.Password = req.body.Password;
-      if(req.body.Phone)  userUpdate.Phone = req.body.Phone
-      if(req.body.Avatar)  userUpdate.Avatar = req.body.Avatar
+  postUpdate : async (req, res) => {
+    var userUpdate = req.body;
+      // if(req.body.Fullname)  userUpdate.Fullname =  req.body.Fullname;
+      // if(req.body.LastName)  userUpdate.LastName = req.body.LastName;
+      // if(req.body.FirstName)  userUpdate.FirstName = req.body.FirstName;
+      // if(req.body.Email)  userUpdate.Email = req.body.Email;
+      // if(req.body.Password)  userUpdate.Password = req.body.Password;
+      // if(req.body.Phone)  userUpdate.Phone = req.body.Phone
+      // if(req.body.Avatar)  userUpdate.Avatar = req.body.Avatar
       
     var id = req.params.id;
 
-    if (!id)return res.status(400).json({ message: "id is required", status: false, code: 0})
-    if(userUpdate.Username === "") return res.status(400).json({ message: "Username not null", status: false, code: 0});
-    if(userUpdate.Email === "") return res.status(400).json({ message: "Email not null",status: false, code: 0 });
-    if(userUpdate.Phone === "") return res.status(400).json({ message: "Phone not null", status: false, code: 0 });
+    if (!id)return res.status(400).json({ message: "Id không được rỗng", status: false, code: 0})
+    if(userUpdate.FullName === "") return res.status(400).json({ message: "Vui lòng nhập FullName", status: false, code: 0});
+    if(userUpdate.Email === "") return res.status(400).json({ message: "Vui lòng nhập Email",status: false, code: 0 });
+    if(userUpdate.Phone === "") return res.status(400).json({ message: "Vui lòng nhập Phone", status: false, code: 0 });
    
     usersService.findOneUserByID(id,(err,resFindUser)=>{
-      if(err) return res.status(400).json({ message: "There was an error processing", errors: err, status: false});
-      if(!resFindUser) return res.status(400).json({ message: "not find user", data: null,status: false});
+      if(err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false});
+      if(!resFindUser) return res.status(400).json({ message: "Không tìm thấy người dùng", data: null,status: false});
 
       async.parallel([
-        (cb) => { 
-          // kiểm tra Username
-           if(userUpdate.Username)
-             usersService.findOneUser(userUpdate.Username, (err, resUser) => {
-               if(err) cb(err)
-               else if(!resUser || (resUser && resUser._id.toString() === id)) cb(null, true)
-               else cb(null, false)
-             })
-           else cb(null, true) 
-       },
       (cb)=> {// kiểm tra Email
             if(userUpdate.Email)
               usersService.findEmail(userUpdate.Email, (err, resEmailUser) => {
@@ -279,15 +246,14 @@ module.exports = {
           else cb(null, true);
         }
         ], (err, results) => {
-          if(err) return res.status(400).json({ message: "There was an error processing", errors: err, status: false});
-          if(!results[0]) return res.status(400).json({ message: "Username already exists", status: false, code:0 });
-          if(!results[1]) return res.status(400).json({ message: "Email already exists", status: false, code:0 });
-          if(!results[2]) return res.status(400).json({ message: "Phone already exists", status: false, code:0 });
+          if(err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false});
+          if(!results[0]) return res.status(400).json({ message: "Email đã được sử dụng", status: false, code:0 });
+          if(!results[1]) return res.status(400).json({ message: "Phone đã được sử dụng", status: false, code:0 });
 
           usersService.updateUser(id, userUpdate,(err,resUser) => {
-            if(err) return res.status(400).json({ message: "There was an error processing", errors: err, status: false});
+            if(err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false});
             res.json({
-              message: "update user success",
+              message: "Cập nhật thành công",
               data: resUser,
               status: true,
               code: 1
@@ -302,16 +268,16 @@ module.exports = {
   // xóa user
   postDeleteUser: (req,res) => {
     const {id} = req.params
-    if(!id) return res.status(400).json({ message: "Id is required", status: false, code: 0 })
+    if(!id) return res.status(400).json({ message: "Vui lòng nhập Id", status: false, code: 0 })
 
     usersService.findOneUserByID(id,(err, resUser)=> {
-      if(err) return res.status(400).json({ message: "There was an error processing", errors: err, status: false});
-      if(!resUser) return res.status(400).json({ message: "Not find user", errors: err, status: false});
+      if(err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false});
+      if(!resUser) return res.status(400).json({ message: "Không tìm thấy người dùng", errors: err, status: false});
 
       usersService.removeUserById(resUser._id, (err,resRemoveUser)=> {
-        if(err) return res.status(400).json({ message: "There was an error processing", errors: err, status: false});
+        if(err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false});
         res.json({
-          message: "Delete user success",
+          message: "Xóa người dùng thành công",
           data: resRemoveUser,
           status: true,
           code: 1
@@ -341,9 +307,9 @@ module.exports = {
         })
       }
     ],(err,results) => {
-      if(err) return res.status(400).json({ message: "There was an error processing", errors: err, status: false});
+      if(err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false});
       res.json({
-        message: "search user success",
+        message: "Danh sách người dùng",
         data: {
           users: results[0],
           count: results[1]
@@ -352,6 +318,23 @@ module.exports = {
     })
    
    
+  },
+
+  remove_list_user: (req,res) => {
+    const listId = req.body.listId;
+    if(!listId || (Array.isArray(listId) && listId.length === 0) ) return res.status(400).json({ message: "Vui lòng nhập danh sách listId",status: false} );
+    if(!Array.isArray(listId)) return res.status(400).json({ message: "listId phải là array",status: false});
+
+    Users.deleteMany({_id: {$in: listId}}, (err,resData)=> {
+      console.log(err);
+      if(err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false});
+
+      res.json({
+        message: `Xóa thành công ${resData.deletedCount} người dùng`,
+        data: resData,
+        status: true 
+      })
+    })
   }
 
   // ------------------- end --------------------------
@@ -363,7 +346,7 @@ module.exports.grantAccess = function(action, resource) {
     const permission = roles.can(req.user.Role)[action](resource);
     if (!permission.granted) {
      return res.status(401).json({
-      message: "You don't have enough permission to perform this action",
+      message: "Bạn không có quyền",
       status: false,
       code: 401
      });
