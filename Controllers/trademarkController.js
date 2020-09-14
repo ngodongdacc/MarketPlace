@@ -38,7 +38,7 @@ module.exports = {
         TrademarkService.findOneTrademarkByID(id, (err, restrademark) => {
             if (err) return res.status(400).json({ message: "There was an error processing", errors: err, status: false });
 
-            Trademark.findByIdAndRemove(id,{nameTrademark:req.body.nameTrademark}, (err, resRemoveTrademark) => {
+            Trademark.findByIdAndRemove(id, {nameTrademark:req.body.nameTrademark}, (err, resRemoveTrademark) => {
                 if (err) return res.status(400).json({ message: "There was an error processing", errors: err, status: false });
                 res.json({
                     message: "Delete thuong hieu success",
