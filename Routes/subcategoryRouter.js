@@ -1,12 +1,11 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
-const CategoryCtr = require("../Controllers/CategoryController");
+const SubCAtegoryCtr = require("../Controllers/SubCategoryController");
 
-router.post('/create', CategoryCtr.createCategory);
-router.post('/update', CategoryCtr.updateCategory);
-router.post('/delete', CategoryCtr.deleteCategory);
-router.get('/get', CategoryCtr.getCategory);
-router.post('/search', CategoryCtr.searchCategory)
+router.post('/create', SubCAtegoryCtr.createSubCategory);
+router.post('/update', SubCAtegoryCtr.updateSubCategory);
+router.post('/delete', SubCAtegoryCtr.deleteSubCategory);
+router.get('/get', SubCAtegoryCtr.getSubCategory);
 
-module.exports = router
+module.exports = router;
