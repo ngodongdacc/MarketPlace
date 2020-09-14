@@ -189,15 +189,7 @@ module.exports = {
     res.send({
       code: 1,
       data: {
-        user: {
-          FullName: req.user.FullName,
-          Avatar: req.user.Avatar,
-          LastName: req.user.LastName,
-          FullName: req.user.FullName,
-          Phone: req.user.Phone,
-          Email: req.user.Email,
-          id: req.user._id,
-        }
+        user: req.user
       },
       status: true,
     });

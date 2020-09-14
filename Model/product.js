@@ -49,6 +49,10 @@ const mongoose = require('mongoose');
     Customs: {type: Array}, // mở rộng (size, màu),
     Number: {type: Number}, // số lượng
     NumberSell: {type: Number}, // số lượng bán được
+    View: {type: Number}, // số lượng lượt xem
+    ExpirationDateSale: {type: Date}, // ngày hết hạn sale
+    StatusSale: {type: Boolean, default: false}, // ngày hết hạn sale
+    Sale: {type: Number, default: 0, max:100, min:1}, // giảm giá (%)
   });
   
   ProductSchema.index({'$**': 'text'},{ unique : true });
