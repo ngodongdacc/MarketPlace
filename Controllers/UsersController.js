@@ -1,4 +1,3 @@
-
 const Users = require("../Model/users");
 const jwt = require("jsonwebtoken");
 const async = require("async");
@@ -92,7 +91,6 @@ module.exports = {
       (cb)=> {// kiểm tra Phone
           if(Phone)
             usersService.findPhone(Phone, (err, resPhone) => {
-              
                 if(err) cb(err)
                 else if(!resPhone) cb(null, true);
                 else cb(null, false);
@@ -217,7 +215,7 @@ module.exports = {
       code: 1,
       data: {
         user: {
-          Username: req.user.Username,
+          Usename: req.user.Username,
           LastName: req.user.LastName,
           Phone: req.user.Phone,
           Email: req.user.Email,

@@ -1,82 +1,170 @@
 const Categories = require("../Model/category");
 const CategoryService = require("../Services/categoryService");
-const { updateOne } = require("../Model/category");
+const { updateOne, count } = require("../Model/category");
+const async = require("async");
+const { findOneCategory } = require("../Services/categoryService");
+const category = require("../Model/category");
+// const category = require("../Model/category");
 
-const postCreateCategory = async (req, res) => {
-        var newCategory = new Categories({
-            title: req.body.title,
-            description: req.body.description,
-        });
-        CategoryService.createCategory(newCategory, function(err, resData){
-            if(err){
-                return res.send({
-                    message: "create user fail",
-                    data: null,
-                    errors: err.errors,
-                    code: 0,
-                    status: false,
-                  }).status(400)
-            }
-    
-            res.send({
-                message: "thêm danh mục thành công",
-                data: resData
-            })
-        });
-    }
-    const updateCategory = async(req, res) => {
-        var updateCate = {
-            id: req.body.id,
-            title: req.body.title,
-            description: req.body.description
-        };
-        CategoryService.updateCategory(updateCate, function(err, resData){
-            if(err){
-                return res.send({
-                    message: "Update error",
-                    errors: err,
-                    status: false,
-                }).status(400)
-            }
-            res.send({
-                message: "update success!",
-                data: resData,
-                status: true
-            })
-        });
 
-    }
 
-    const deleteCategory = async(req, res) => {
-        var deleteCate = {
-            _id: req.body.id,
-            title: req.body.title,
-            description: req.body.description
-        };
-        CategoryService.deleteCategory(deleteCate, function(err, resData){
-            if(err){
-                return res.send({
-                    message: "delete failse",
-                    errors: err,
+module.exports = {
+    createCategory : async(req, res , next) => {
+        try { 
+            const {title, description} = req.body
+            if(!title)
+                return res.status(400)
+                .json({
+                    message: "Please enter your Title",
                     status: false,
-                }).status(400)
-            }
+                    code: 0
+                })
+                if(!description)
+                return res.status(400)
+                .json({
+                     message: "Please enter your Description",
+                    status: false,
+                    code: 0
+                })
+                const newCate = new Categories({
+                    icon: req.body.icon,
+                    title: req.body.title,
+                    description: req.body.description
+                })
+                async.parallel([
+                    (cb) => {
+                        if(title)
+                        CategoryService,findOneCategory(title,(err, resData) => {
+                            if(err) cb(err)
+                            else if(!resData) cb(null, true)
+                            else cb(null, true)
+                        })
+                        else cb(null, true)
+                    }
+                ], (err, reuslt) => {
+                    if(err) return res.status(400).json({message:  "There was an error processing", errors: err});
+                    CategoryService.createCategory(newCate, (err, category) => {
+                        if(err) res.status(400).json({message: "There was an error processing",errors: err, code: 0});
+                        return res.send({
+                            message: "create title succsess",
+                            data: {
+                                icon: category.icon,
+                                title: category.title,
+                                description: category.description
+                            },
+                            code: 1,
+                            status: true
+                        })
+                    });
+                });
+        }catch (e) {
             res.send({
-                message: "delete success!",
-                data: resData,
-                status: true
+                message: e.message,
+                errors: e.errors,
+                code: 0
+            }).status(500) && next(e)
+        }
+    },
+
+    // update
+    updateCategory : async(req, res, next) => {
+        var updateCate = { };
+        if(req.body.icon) updateCate.icon = req.body.icon;
+        if(req.body.title) updateCate.title = req.body.title;
+        if(req.body.description) updateCate.description = req.body.description
+
+        const id = req.params.id
+        
+        if(!id)return res.status(400).json({message: "id is required", status: false, code: 0})
+        if(updateCate.icon === "") return res.status(400).json({ message: "Icon not null", status: false, code: 0});
+        if(updateCate.title === "") return res.status(400).json({ message: "Title not null", status: false, code: 0});
+        if(updateCate.description === "") return res.status(400).json({ message: "Descriptio  not null", status: false, code: 0});
+       
+        CategoryService.findOneCateById(id,(err, resFindCate) => {npm
+            if(err) return res.status(400).json({ message: "There was an error processing", errors: err, status: false});
+            if(!resFindCate) return res.status(400).json({ message: "not find Category", data: null,status: false});
+
+            async.parallel([
+                (cb) => {
+                    if(updateCate.icon){
+                        CategoryService.findOneCategory(updateCate.icon, (err, resData) => {
+                            if(err) cb(err)
+                            else if(!resData || (resData && resData._id.toString() === id)) cb(null, true)
+                            else cb(null, false)
+                        })
+                    }
+                    else cb(null, true)  
+                       
+                },
+                (cb) => {
+                    if(updateCate.title)
+                         CategoryService.findOneCategory(updateCate.title, (err, resData) => {
+                         if(err) cb(err)
+                         else if(!resData || (resData && resData._id.toString() === id)) cb(null, true)
+                         else cb(null, false)
+                     })
+                     else cb(null, true) 
+                    },
+                    (cb) => {
+                        if(updateCate.description)
+                             CategoryService.findOneCategory(updateCate.description, (err, resData) => {
+                             if(err) cb(err)
+                             else if(!resData || (resData && resData._id.toString() === id)) cb(null, true)
+                             else cb(null, false)
+                         })
+                         else cb(null, true) 
+                   }
+            ],(err, results) => {
+                if(err) return res.status(400).json({ message: "There was an error processing", errors: err, status: false});
+                if(!results[0]) return res.status(400).json({ message: "Icon already exists", status: false, code:0 });
+                if(!results[1]) return res.status(400).json({ message: "Title already exists", status: false, code:0 });
+                if(!results[2]) return res.status(400).json({ message: "Description already exists", status: false, code:0 });
+
+                updateCate.id = id
+                CategoryService.updateCategory(updateCate,(err, resData) => {
+               
+                    if(err) return res.status(400).json({ message: "There was an error processing", errors: err, status: false});
+                    return res.json({
+                        message: "update user success",
+                        data: resData,
+                        status: true,
+                        code: 1
+                    })
+                })
             })
         })
-    }
+    },
 
-    const getCategory = async(req, res) => {
-        var getCate = {
-            _id: req.params.id,
+    deleteCategory : async(req, res) => {
+        const {id} = req.body
+        if(!id) return res.status(400).json({message: "id is required", status: false, code: 0 })
+
+        CategoryService.findOneCateById(id, (err, resData) => {
+            if(err) return res.status(400).json({ message: "There was an error processing", errors: err, status: false});
+            if(!resData) return res.status(400).json({ message: "Not find Category", errors: err, status: false});
+
+            CategoryService.removeCateById(resData._id, (err,resRemoveCate) => {
+                if(err) return res.status(400).json({ message: "There was an error processing", errors: err, status: false});
+                res.json({
+                    message: "Delete category success",
+                    data: resRemoveCate,
+                    status: true,
+                    code: 1
+                })
+            })
+        })
+    },
+
+
+
+    getCategory : async ( req, res) => {
+        const getCate = {
+            _id: req.params._id,
+            icon: req.params.icon,
             title: req.params.title,
-            description: req.params.description
+            name: req.params.name
         };
-
-        CategoryService.getCategory(getCate, function(err, resData){            
+        CategoryService.getCategory(getCate, function(err,resData){
             if(err){
                 return res.send({
                     message: "get Category failse",
@@ -90,26 +178,40 @@ const postCreateCategory = async (req, res) => {
                 status: true
             })
         })
-    }
+    },
 
-    const searchCategory = async(req, res) =>{
-       var search = req.body.search
-        CategoryService.findCategory(search, function(err, resData){
-            if(err){
-                return res.send({
-                    message: "Seach Category failse",
-                    errors: err,
-                    status: false,
-                }).status(400)
+
+    searchCategory : async(req, res) => {
+        const search = {
+            text: req.query.search,
+            limit: req.query.limit || 10,
+            page: req.query.page || 1
+        }
+
+        search.skip = (search.page -1)*search.limit;
+        async.parallel([
+            (cb) => {
+                CategoryService.searchCategory(search, (err, data) => {
+                    if(err) returncb(err)
+                    cb(null,data)
+                })
+            },
+            (cb) => {
+                CategoryService.countCategory((err,count)=>{
+                    if(err) return cb(err);
+                    cb(null,count);
+                })
             }
-            res.send({
-                message: "Search succsess",
-                data: resData,
-                status: true
+        ],
+        (err,results) => {
+            if(err) return res.status(400).json({ message: "There was an error processing", errors: err, status: false});
+            res.json({
+                message: "search category success",
+                data: {
+                  category: results[0],
+                  count: results[1]
+                }
             })
         })
     }
-
-    module.exports = {
-        postCreateCategory,updateCategory,deleteCategory,getCategory,searchCategory
-    }
+}

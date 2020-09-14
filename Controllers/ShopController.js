@@ -214,10 +214,28 @@ module.exports = {
         if (userUpdate.storeOwnername === "") return res.status(400).json({ message: "storeOwnername not null", status: false, code: 0 });
         if (userUpdate.emailOwner === "") return res.status(400).json({ message: "Email not null", status: false, code: 0 });
         if (userUpdate.phone === "") return res.status(400).json({ message: "Phone not null", status: false, code: 0 });
-
         ShopService.findOneUserByID(id, (err, resFindUser) => {
             if (err) return res.status(400).json({ message: "There was an error processing", errors: err, status: false });
             if (!resFindUser) return res.status(400).json({ message: "not find user", data: null, status: false });
+
+            async.parallel([
+                (cb) => {
+                    // kiểm tra Username
+                    if (userUpdate.phone)
+                        ShopService.findPhone(userUpdate.phone, (err, resUserPhone) => {
+                            console.log(userUpdate.phone)
+                            if (err) cb(err)
+                            else if (!resUserPhone || (resUserPhone && resUserPhone._id.toString() === id)) cb(null, true)
+                            else cb(null, false)
+                        })
+                    else cb(null, true)
+                }
+            ], (err, results) => {
+                if (err) return res.status(400).json({ message: "There was an error processing", errors: err, status: false });
+                if (!results[0]) return res.status(400).json({ message: "Username already exists", status: false, code: 0 });
+                // if (!results[1]) return res.status(400).json({ message: "Email already exists", status: false, code: 0 });
+                // if (!results[2]) return res.status(400).json({ message: "Phone already exists", status: false, code: 0 });
+
                 ShopService.updateShop(id, userUpdate, (err, resUser) => {
                     if (err) return res.status(400).json({ message: "There was an error processing", errors: err, status: false });
                     res.json({
@@ -229,6 +247,9 @@ module.exports = {
                 })
 
             });
+        })
+
+
     }
     , deleteShop: async (req, res) => {
         var deleteShop = new Shop(req.body);
