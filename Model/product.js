@@ -52,7 +52,7 @@ const mongoose = require('mongoose');
     View: {type: Number}, // số lượng lượt xem
     ExpirationDateSale: {type: Date}, // ngày hết hạn sale
     StatusSale: {type: Boolean, default: false}, // ngày hết hạn sale
-    Sale: {type: Number, default: 0, max:100, min:1}, // giảm giá (%)
+    Sale: {type: Number, default: 0, max:100, min:0}, // giảm giá (%)
   });
   
   ProductSchema.index({'$**': 'text'},{ unique : true });
