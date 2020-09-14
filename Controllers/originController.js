@@ -1,24 +1,24 @@
-const BrandOrigin = require("../Model/brandOrigin");
-const BrandOriginService = require("../Services/brandOriginService");
+const Origin = require("../Model/origin");
+const OriginService = require("../Services/originService");
 const async = require("async");
 
 module.exports = {
-    postcreateBrandOrigin: async (req, res, next) => {
+    postcreateOrigin: async (req, res, next) => {
         try {
-            const {country} = req.body
+            const {countrys} = req.body
 
-            const newBrandOrigin = new BrandOrigin({
+            const newOrigin = new Origin({
                 
-                country: req.body.country
+                countrys: req.body.countrys
             })
 
-            BrandOriginService.createBrandOrigin(newBrandOrigin, (err, brandOrigin) => {
+            OriginService.createOrigin(newOrigin, (err, origin) => {
                 if (err) res.status(400).json({ message: "There was an error processing", errors: err, code: 0 });
                 return res.send({
-                    message: "create brandorigin success",
+                    message: "create origin success",
                     data: {
 
-                            country: brandOrigin.country
+                            countrys: origin.countrys
                     },
                     code: 1,
                     status: true
@@ -32,18 +32,18 @@ module.exports = {
             }).status(500) && next(e)
         }
     },
-    postdeleteBrandOrigin: (req, res) => {
+    postdeleteOrigin: (req, res) => {
         const { id } = req.params
         if (!id) return res.status(400).json({ message: "Id is required", status: false, code: 0 })
 
-        BrandOriginService.findOneBrandOriginByID(id, (err, resbrandOrigin) => {
+        OriginService.findOneOriginByID(id, (err, resorigin) => {
             if (err) return res.status(400).json({ message: "There was an error processing", errors: err, status: false });
 
-            BrandOrigin.findByIdAndRemove(id, {country:req.body.country}, (err, resRemoveBrandOrigin) => {
+            Origin.findByIdAndRemove(id, {countrys:req.body.countrys}, (err, resRemoveOrigin) => {
                 if (err) return res.status(400).json({ message: "There was an error processing", errors: err, status: false });
                 res.json({
-                    message: "Delete brandorigin success",
-                    data: resRemoveBrandOrigin,
+                    message: "Delete origin success",
+                    data: resRemoveOrigin,
                     status: true,
                     code: 1
                 })
@@ -51,23 +51,23 @@ module.exports = {
         })
     },
 
-    postupdateBrandOrigin: async (req, res, next) => {
-        const brandOriginUpdate = { };
+    postupdateOrigin: async (req, res, next) => {
+        const originUpdate = { };
 
-        if (req.body.country) brandOriginUpdate.country = req.body.country;
+        if (req.body.countrys) originUpdate.countrys = req.body.countrys;
 
         const { id } = req.params
 
         if (!id) return res.status(400).json({ message: "id is required", status: false, code: 0 })
 
-        BrandOriginService.findOneBrandOriginByID(id, (err, resFindBrandOrigin) => {
+        OriginService.findOneOriginByID(id, (err, resFindOrigin) => {
             if (err) return res.status(400).json({ message: "There was an error processing", errors: err, status: false });
 
-            BrandOrigin.findByIdAndUpdate(id,{country:req.body.country},(err, resbrandOrigin) => {
+            Origin.findByIdAndUpdate(id,{countrys:req.body.countrys},(err, resorigin) => {
                 if (err) return res.status(400).json({ message: "There was an error processing", errors: err, status: false });
                 res.json({
-                    message: "update brandorigin success",
-                    data: resbrandOrigin,
+                    message: "update origin success",
+                    data: resorigin,
                     status: true,
                     code: 1
                 })
@@ -79,8 +79,8 @@ module.exports = {
 
     getProfile : async (req, res) => {
        try{
-           const brandOrigin = await BrandOrigin.find()
-           res.json(brandOrigin)
+           const origin = await Origin.find()
+           res.json(origin)
        }catch(err){
            res.send('Error ' + err)
        }

@@ -9,4 +9,5 @@ router.use("/users",require('./usersRouter'))
 router.use("/product", require('./productRouter'))
 router.use("/trademark", require('./trademarkRouter'))
 router.use("/brandOrigin", require('./brandOriginRouter'))
+router.use("/origin", require('./originRouter'))
 module.exports = router;

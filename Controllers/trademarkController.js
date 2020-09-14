@@ -15,7 +15,7 @@ module.exports = {
             TrademarkService.createTrademark(newTrademark, (err, trademark) => {
                 if (err) res.status(400).json({ message: "There was an error processing", errors: err, code: 0 });
                 return res.send({
-                    message: "create user success",
+                    message: "create trademark success",
                     data: {
                             nameTrademark: trademark.nameTrademark
                     },
@@ -41,7 +41,7 @@ module.exports = {
             Trademark.findByIdAndRemove(id, {nameTrademark:req.body.nameTrademark}, (err, resRemoveTrademark) => {
                 if (err) return res.status(400).json({ message: "There was an error processing", errors: err, status: false });
                 res.json({
-                    message: "Delete thuong hieu success",
+                    message: "Delete trademark success",
                     data: resRemoveTrademark,
                     status: true,
                     code: 1
