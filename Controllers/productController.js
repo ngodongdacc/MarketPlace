@@ -4,7 +4,7 @@ const Products = require("../Model/product");
 module.exports = {
     create_product: (req, res)=> {
         const product = req.body
-        product.Image = req.file.path
+        // product.Image = req.file.path
         console.log(req.file.path);
         if(!product.IdUser) return res.status(400).json({message: "Vui lòng nhập IdUser", status:false});
         if(!product.IdShop) return res.status(400).json({message: "Vui lòng nhập IdShop",status: false});

@@ -32,7 +32,8 @@ var storage = multer.diskStorage({
   });
   
 
-router.post("/",upload.single("Image"),productCtr.create_product);
+// router.post("/",upload.single("Image"),productCtr.create_product);
+router.post("/",productCtr.create_product);
 router.post("/update/:id",productCtr.update_product);
 router.get("",productCtr.get_product);
 router.post("/delete/:id",productCtr.remove_product);
