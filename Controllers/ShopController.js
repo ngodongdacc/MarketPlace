@@ -208,8 +208,6 @@ module.exports = {
                     status: false,
                     code: 0
                 })
-        console.log(id);
-        console.log(userUpdate.storeOwnername);
         if (!id) return res.status(400).json({ message: "id is required", status: false, code: 0 })
         if (userUpdate.storeOwnername === "") return res.status(400).json({ message: "storeOwnername not null", status: false, code: 0 });
         if (userUpdate.emailOwner === "") return res.status(400).json({ message: "Email not null", status: false, code: 0 });
@@ -232,7 +230,7 @@ module.exports = {
                 }
             ], (err, results) => {
                 if (err) return res.status(400).json({ message: "There was an error processing", errors: err, status: false });
-                if (!results[0]) return res.status(400).json({ message: "Username already exists", status: false, code: 0 });
+                if (!results[0]) return res.status(400).json({ message: "Phone already exists", status: false, code: 0 });
                 // if (!results[1]) return res.status(400).json({ message: "Email already exists", status: false, code: 0 });
                 // if (!results[2]) return res.status(400).json({ message: "Phone already exists", status: false, code: 0 });
 
@@ -252,19 +250,20 @@ module.exports = {
 
     }
     , deleteShop: async (req, res) => {
-        var deleteShop = new Shop(req.body);
-        ShopService.deleteShop(deleteShop, function (err, resData) {
-            if (err) {
-                return res.send({
-                    message: "delete failed",
-                    errors: err,
-                    status: false,
-                }).status(400)
-            }
-            res.send({
-                message: "delete success!",
-                data: resData,
-                status: true
+        const id = req.params.id
+        if(!id) return res.status(400).json({message: "id is required", status: false, code: 0 })
+        ShopService.findOneUserByID(id, (err, resData) => {
+            if(err) return res.status(400).json({ message: "There was an error processing", errors: err, status: false});
+            if(!resData) return res.status(400).json({ message: "Not find Category", errors: err, status: false});
+
+            ShopService.deleteShop(resData._id, (err,resRemoveCate) => {
+                if(err) return res.status(400).json({ message: "There was an error processing", errors: err, status: false});
+                res.json({
+                    message: "Delete category success",
+                    data: resRemoveCate,
+                    status: true,
+                    code: 1
+                })
             })
         })
     }, getShop: async (req, res) => {
