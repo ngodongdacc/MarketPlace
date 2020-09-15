@@ -1,9 +1,9 @@
 var Cart = require("../Model/cart");
 const bcrypt = require("bcryptjs");
 
-const createCart = async (cart, cb) => {
+const createCart = async (userId,listproduct, cb) => {
   try {
-    Cart.create(cart, cb);
+     Cart.create({userId,listproduct}, cb);
   } catch (e) {
     throw e
   }
@@ -41,7 +41,16 @@ const findCart = async (search, cb) => {
     throw e
   }
 }
+
+const findCartUserId = async (search, cb) => {
+  try {
+    Cart.findOne({ userId: search }, cb)
+  } catch (e) {
+    throw e
+  }
+}
+
 module.exports = {
-  createCart, updateCart, deleteCart, getCart, findCart
+  createCart, updateCart, deleteCart, getCart, findCart,findCartUserId
 
 }

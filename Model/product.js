@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 const mongoose = require('mongoose');
   var Schema = mongoose.Schema;
 
@@ -59,13 +58,3 @@ const mongoose = require('mongoose');
   ProductSchema.index({'$**': 'text'},{ unique : true });
 
 module.exports = mongoose.model("Products",ProductSchema)
-=======
-const mongoose = require('mongoose');
-  var Schema = mongoose.Schema;
-  var productcSchema = new Schema({
-     products: {type: String , required: true}, 
-     nameProducts:  {type: String , required: true}, 
-     linkIcons: { type: String , required: true} 
-  });
-  module.exports = mongoose.model("product",productcSchema)
->>>>>>> hung
