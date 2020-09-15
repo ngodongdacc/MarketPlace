@@ -27,7 +27,7 @@ module.exports = {
             if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false});
             if(!resOrder) return res.json({message: "Không tìm thấy id đơn hàng",data: null,status:false});
 
-        Order.findByIdAndUpdate(resOrder._id, {$set: order},options,(err, resUpdate) => {
+        Order.findByIdAndUpdate(resOrder._id, {$set: order},{},(err, resUpdate) => {
                 if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false});
                 res.json({
                     message: "Cập nhật order thành công",
