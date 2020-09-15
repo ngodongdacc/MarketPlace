@@ -8,7 +8,6 @@ const { schema } = require('./category');
     UserId: {type: Schema.Types.ObjectId, ref: 'Users'},
     Products: {type: Object, required:true},
     Amount: {type: Number, required:true},
-    Price: {type: Number, required: true},
     Name: {type: String, required:true},
     Address: {type: String, required:true},
     Payment: {type: String, required:true},
