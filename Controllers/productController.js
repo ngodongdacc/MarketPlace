@@ -135,7 +135,7 @@ module.exports = {
         config.limit = req.query.limit ? Number(req.query.limit):20 
         config.skip = (config.page-1)*config.limit;
         
-        const query = { Name: { $regex: config.search, $options: "i" }}
+        const query = { Name: { $regex: config.search.toLowerCase(), $options: "i" }}
         async.parallel([
             (cb) => 
             Products.find(query)
