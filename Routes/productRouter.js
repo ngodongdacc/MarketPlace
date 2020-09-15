@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
@@ -41,3 +42,17 @@ router.post("/list/delete",productCtr.remove_list_product);
 router.get("/search",productCtr.search_product);
 
 module.exports = router
+=======
+const express = require('express');
+const router = express.Router();
+const productCtr = require("../Controllers/productController");
+
+router.post('/add', productCtr.postcreateProduct);
+router.post('/sua', productCtr.postcreateProduct);
+router.post('/xoa', productCtr.postcreateProduct);
+router.get('/lay', productCtr.postcreateProduct);
+
+
+
+module.exports = router;
+>>>>>>> hung
