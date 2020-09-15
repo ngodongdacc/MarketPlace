@@ -1,6 +1,7 @@
 const Users = require("../Model/users");
 const jwt = require("jsonwebtoken");
 const async = require("async");
+const bcrypt = require("bcryptjs");
 const { roles } = require('../middleware/roles')
 
 // Validator
@@ -241,15 +242,35 @@ module.exports = {
           if(!results[0]) return res.status(400).json({ message: "Email đã được sử dụng", status: false, code:0 });
           if(!results[1]) return res.status(400).json({ message: "Phone đã được sử dụng", status: false, code:0 });
 
-          usersService.updateUser(id, userUpdate,(err,resUser) => {
-            if(err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false});
-            res.json({
-              message: "Cập nhật thành công",
-              data: resUser,
-              status: true,
-              code: 1
+          if(userUpdate.Password){
+            bcrypt.genSalt(10, function(err, salt) {
+              bcrypt.hash(userUpdate.Password, salt,async function(err, hash) {
+               
+                userUpdate.Password = hash;
+                usersService.updateUser(id, userUpdate,(err,resUser) => {
+                  if(err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false});
+                  res.json({
+                    message: "Cập nhật thành công",
+                    data: resUser,
+                    status: true,
+                    code: 1
+                  });
+                })
+              });
             });
-          })
+          } else {
+            usersService.updateUser(id, userUpdate,(err,resUser) => {
+              if(err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false});
+              res.json({
+                message: "Cập nhật thành công",
+                data: resUser,
+                status: true,
+                code: 1
+              });
+            })
+            
+          }
+              
           
         });     
     })
