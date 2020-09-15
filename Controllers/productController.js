@@ -171,14 +171,18 @@ module.exports = {
     search_category: (req,res) => {
         
         const config = {};
-        config.search = req.query.search 
+        config.search = req.query.search || "" 
         config.IdCategory = req.query.IdCategory 
         config.page = req.query.page ? Number(req.query.page):1 
         config.limit = req.query.limit ? Number(req.query.limit):20 
         config.skip = (config.page-1)*config.limit;
 
         if(!config.IdCategory) return res.status(400).json({message: "Vui lòng nhập IdCategory", status: false})
-        const query = { Name: { $regex: config.search, $options: "i" }}
+        const query = { 
+                            Name: { $regex: config.search, $options: "i"},
+                            IdCategory : new mongoose.mongo.ObjectId(config.IdCategory)
+                    }
+                    console.log(query);
         async.parallel([
             (cb) => 
             Products.find(query)
@@ -189,6 +193,7 @@ module.exports = {
             (cb) => Products.count(query)
                             .exec((e,data)=> e ? cb(e) : cb(null,data))
         ], (err,results) => {
+            console.log(err);
             if(err) if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false });
             res.json({
                 message: "Lấy danh sách sản phẩm thành công",
