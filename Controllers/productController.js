@@ -1,11 +1,12 @@
 const async = require("async");
+const mongoose = require("mongoose");
 const Products = require("../Model/product");
 
 module.exports = {
     create_product: (req, res)=> {
         const product = req.body
         // product.Image = req.file.path
-        console.log(req.file.path);
+        // console.log(req.file.path);
         if(!product.IdUser) return res.status(400).json({message: "Vui lòng nhập IdUser", status:false});
         if(!product.IdShop) return res.status(400).json({message: "Vui lòng nhập IdShop",status: false});
         if(!product.IdCategory) return res.status(400).json({message: "Vui lòng nhập IdCategory",status: false});
@@ -135,11 +136,11 @@ module.exports = {
         config.limit = req.query.limit ? Number(req.query.limit):20 
         config.skip = (config.page-1)*config.limit;
         
-        const query = { Name: { $regex: config.search.toLowerCase(), $options: "i" }}
+        const query = { Name: { $regex: config.search, $options: "i" }}
         async.parallel([
             (cb) => 
             Products.find(query)
-                        .skip()
+                        .skip(config.skip)
                         .limit(config.limit)
                         .sort({Date: "desc"})
                         .exec((e,data) => e ? cb(e): cb(null, data)),
@@ -167,4 +168,36 @@ module.exports = {
     }
     },
 
+    search_category: (req,res) => {
+        
+        const config = {};
+        config.search = req.query.search 
+        config.IdCategory = req.query.IdCategory 
+        config.page = req.query.page ? Number(req.query.page):1 
+        config.limit = req.query.limit ? Number(req.query.limit):20 
+        config.skip = (config.page-1)*config.limit;
+
+        if(!config.IdCategory) return res.status(400).json({message: "Vui lòng nhập IdCategory", status: false})
+        const query = { Name: { $regex: config.search, $options: "i" }}
+        async.parallel([
+            (cb) => 
+            Products.find(query)
+                        .skip(config.skip)
+                        .limit(config.limit)
+                        .sort({Date: "desc"})
+                        .exec((e,data) => e ? cb(e): cb(null, data)),
+            (cb) => Products.count(query)
+                            .exec((e,data)=> e ? cb(e) : cb(null,data))
+        ], (err,results) => {
+            if(err) if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false });
+            res.json({
+                message: "Lấy danh sách sản phẩm thành công",
+                data: {
+                    products: results[0],
+                    count: results[1],
+                },
+                status: true
+            }) 
+        })
+    }
 }
