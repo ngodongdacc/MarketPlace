@@ -5,16 +5,16 @@ const { schema } = require('./category');
 
 
   var OrderSchema = new Schema({
-    UserId: {type: Schema.Types.ObjectId, ref: 'Users'},
-    Products: {type: Object, required:true},
-    Amount: {type: Number, required:true},
-    Price: {type: Number, required: true},
+    UserId: {type: Schema.Types.ObjectId, required:true},
+    Products: {type: Object},
+    Amount: {type: Number},
+    Price: {type: Number},
     Name: {type: String, required:true},
     Address: {type: String, required:true},
-    Payment: {type: String, required:true},
+    Payment: {type: String},
     Status: {type: Number, default: 0},
     IntoMoney: {type: Number},
-    IdCart: {type: Schema.Types.ObjectId}
+    IdCart: {type: Schema.Types.ObjectId, required:true}
   });
 
-  module.exports = mongoose.model("Ordder", schema);
+  module.exports = mongoose.model("Order", OrderSchema);
