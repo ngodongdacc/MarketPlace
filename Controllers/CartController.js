@@ -121,23 +121,23 @@ module.exports = {
                 status: true
             })
         })
+    },
+    showCartForUser: async (req, res) => {
+        const {userId } = req.body
+        // var getCart = new Cart(req.params);
+        Cart.findOne({userId}, function (err, resData) {
+            if (err) {
+                return res.send({
+                    message: "get Cart failse",
+                    errors: err,
+                    status: false,
+                }).status(400)
+            }
+            res.send({
+                message: "get succsess",
+                data: resData,
+                status: true
+            })
+        })
     }
-    // ,
-    //  searchCart: async (req, res) => {
-    //     var search = req.body.cartId
-    //     CartService.findCart(search, function (err, resData) {
-    //         if (err) {
-    //             return res.send({
-    //                 message: "Seach product failse",
-    //                 errors: err,
-    //                 status: false,
-    //             }).status(400)
-    //         }
-    //         res.send({
-    //             message: "Search succsess",
-    //             data: resData,
-    //             status: true
-    //         })
-    //     })
-    // }
 }
