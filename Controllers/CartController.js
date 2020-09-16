@@ -1,6 +1,7 @@
 const Cart = require("../Model/cart");
 const CartService = require("../Services/cartService");
-const UserService = require("../Services/usersService");
+const mongoose = require("mongoose");
+
 module.exports = {
     postCart: async (req, res, next) => {
         const { productId, quantity, userId, price, title, des,
@@ -123,9 +124,8 @@ module.exports = {
         })
     },
     showCartForUser: async (req, res) => {
-        const {userId } = req.query
-        // var getCart = new Cart(req.params);
-        Cart.findOne({userId}, function (err, resData) {
+        const {UserId } = req.query
+        Cart.findOne({ UserId: new mongoose.mongo.ObjectId(UserId)}, function (err, resData) {
             if (err) {
                 return res.send({
                     message: "get Cart failse",
