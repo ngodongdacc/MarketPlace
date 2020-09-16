@@ -12,6 +12,7 @@ module.exports = {
         try {
             Product.findOne({ _id: ProductId }, async (err, resFindProduct) => {
                 if (err) return res.status(400).json({ message: "Sản phẩm không còn tồn tại", errors: err, status: false });
+               console.log("tess", resFindProduct);
                 if (resFindProduct) {
 
                     const Total = Quantity * resFindProduct.Price;
