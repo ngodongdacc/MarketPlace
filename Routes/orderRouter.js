@@ -6,7 +6,7 @@ router.post("/create",orderController.createOrder);
 router.post("/update/:id",orderController.updateOrder);
 router.get("/get/:id",orderController.getOrder);
 router.post("/delete/:id",orderController.deleteOrder);
-router.get("/getOrderByUsers/:id",orderController.getOrdeByIdUsers);
+router.get("/getOrderByUsers",orderController.getOrderByIdUsers);
 
 
 

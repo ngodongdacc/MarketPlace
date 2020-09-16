@@ -3,7 +3,18 @@ const CartService = require("../Services/cartService");
 const UserService = require("../Services/usersService");
 module.exports = {
     postCart: async (req, res, next) => {
-        const { productId, quantity, userId, price, title, des } = req.body;
+        const { productId, quantity, userId, price, title, des,
+            IdShop,
+            IdCategory,
+            IdCategorySub,
+            Name,
+            Sale,
+            Image,
+            Color, 
+            NumberSell, 
+            ListedPrice,
+        
+        } = req.body;
         const total = quantity * price;
         try {
             Cart.findOne({ userId: userId }, (err, resFindUser) => {
@@ -16,7 +27,17 @@ module.exports = {
                         resFindUser.listProduct[itemIndex].total = (quantity + resFindUser.listProduct[itemIndex].quantity) * price;
                     } else {
                         //product does not exists in cart, add new item
-                        resFindUser.listProduct.push({ productId, quantity, price, total });
+                        resFindUser.listProduct.push({ productId, quantity, price, total,
+                            IdShop,
+                            IdCategory,
+                            IdCategorySub,
+                            Name,
+                            Sale,
+                            Image,
+                            Color, 
+                            NumberSell, 
+                            ListedPrice,
+                        });
                     }
                     resFindUser.subTotal = resFindUser.listProduct.map(listProduct => listProduct.total).reduce((acc, next) => acc + next);
                     Cart.findByIdAndUpdate(resFindUser._id, resFindUser, function (err, resData) {
@@ -31,7 +52,17 @@ module.exports = {
                     const subTotal = total;
                     Cart.create({
                         userId,
-                        listProduct: [{ productId, quantity, price, total }],
+                        listProduct: [{ productId, quantity, price, total,
+                            IdShop,
+                            IdCategory,
+                            IdCategorySub,
+                            Name,
+                            Sale,
+                            Image,
+                            Color, 
+                            NumberSell, 
+                            ListedPrice,
+                        }],
                         des,
                         title,
                         subTotal
@@ -88,23 +119,23 @@ module.exports = {
                 status: true
             })
         })
+    },
+    showCartForUser: async (req, res) => {
+        const {userId } = req.body
+        // var getCart = new Cart(req.params);
+        Cart.findOne({userId}, function (err, resData) {
+            if (err) {
+                return res.send({
+                    message: "get Cart failse",
+                    errors: err,
+                    status: false,
+                }).status(400)
+            }
+            res.send({
+                message: "get succsess",
+                data: resData,
+                status: true
+            })
+        })
     }
-    // ,
-    //  searchCart: async (req, res) => {
-    //     var search = req.body.cartId
-    //     CartService.findCart(search, function (err, resData) {
-    //         if (err) {
-    //             return res.send({
-    //                 message: "Seach product failse",
-    //                 errors: err,
-    //                 status: false,
-    //             }).status(400)
-    //         }
-    //         res.send({
-    //             message: "Search succsess",
-    //             data: resData,
-    //             status: true
-    //         })
-    //     })
-    // }
 }
