@@ -123,7 +123,7 @@ module.exports = {
         })
     },
     showCartForUser: async (req, res) => {
-        const {userId } = req.body
+        const {userId } = req.query
         // var getCart = new Cart(req.params);
         Cart.findOne({userId}, function (err, resData) {
             if (err) {
