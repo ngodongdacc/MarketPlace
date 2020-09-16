@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
     IdCategory:   {type: mongoose.Types.ObjectId, required: true},
     IdCategorySub:   {type: mongoose.Types.ObjectId, required: true},
     Name:   {type: String, required: true },
-    Image: {type: Array},
+    Image: {type: String},
     OutstandingFeatures: {type: String },//Đặc điểm nổi bật (ít 3 đặc điểm)
     DetailedAttributes: {type: String}, // Chi tiết thuộc tính
     SearchAttributes: {type: String}, // thuộc tính tìm kiếm
@@ -49,6 +49,10 @@ const mongoose = require('mongoose');
     Customs: {type: Array}, // mở rộng (size, màu),
     Number: {type: Number}, // số lượng
     NumberSell: {type: Number}, // số lượng bán được
+    View: {type: Number}, // số lượng lượt xem
+    ExpirationDateSale: {type: Date}, // ngày hết hạn sale
+    StatusSale: {type: Boolean, default: false}, // ngày hết hạn sale
+    Sale: {type: Number, default: 0, max:100, min:0}, // giảm giá (%)
   });
   
   ProductSchema.index({'$**': 'text'},{ unique : true });

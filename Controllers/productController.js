@@ -1,11 +1,11 @@
 const async = require("async");
 const Products = require("../Model/product");
-const Users = require("../Model/users");
-const userServic = require("../Services/usersService");
 
 module.exports = {
     create_product: (req, res)=> {
         const product = req.body
+        product.Image = req.file.path
+        console.log(req.file.path);
         if(!product.IdUser) return res.status(400).json({message: "Vui lòng nhập IdUser", status:false});
         if(!product.IdShop) return res.status(400).json({message: "Vui lòng nhập IdShop",status: false});
         if(!product.IdCategory) return res.status(400).json({message: "Vui lòng nhập IdCategory",status: false});
@@ -135,7 +135,7 @@ module.exports = {
         config.limit = req.query.limit ? Number(req.query.limit):20 
         config.skip = (config.page-1)*config.limit;
         
-        const query = { Name: { $regex: config.search, $options: "i" }}
+        const query = { Name: { $regex: config.search.toLowerCase(), $options: "i" }}
         async.parallel([
             (cb) => 
             Products.find(query)

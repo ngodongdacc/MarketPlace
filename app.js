@@ -1,4 +1,3 @@
-var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
@@ -37,19 +36,15 @@ app.use(expressSession({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
-
-app.use('/api/', require('./Routes/router'));
-app.use('/', (req,res)=>res.send("not found api"));
-app.use('/test', (req,res)=>res.send("not found api"));
-
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    res.setHeader('Access-Control-Allow-Credentials', true);
-  next(createError(404));
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
 });
+
+app.use('/api/', require('./Routes/router'));
+app.use('/', (req,res)=>res.status(404).send("not found api"));
 
 // error handler
 app.use(function(err, req, res, next) {

@@ -32,9 +32,9 @@ const updateShop = async (id,shop, cb) => {
     throw e
   }
 }
-const deleteShop = async (shop, cb) => {
+const deleteShop = async (id, cb) => {
   try {
-    Shop.deleteOne({ _id: shop.id }, cb);
+    Shop.deleteOne({ _id: id }, cb);
   } catch (e) {
     throw e
   }
