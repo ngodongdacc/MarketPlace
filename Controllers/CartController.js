@@ -79,6 +79,7 @@ module.exports = {
                             Cart.create({
                                 UserId,
                                 ListProduct: [{
+                                    _id:resFindProduct._id,
                                     ProductId, Quantity,
                                     Price: resFindProduct.Price, Total,
                                     IdUser: resFindProduct.IdUser,
@@ -137,24 +138,11 @@ module.exports = {
                                 Title,
                                 SubTotal
                             }, function (err, resBRC) {
-                                if (resBRC) {
-                                    const product = {};
-                                    product.Number = resFindProduct.Number - Quantity;
-                                    Product.findByIdAndUpdate(resFindProduct._id, { $set: product }, {}, (err, resUpdate) => {
-                                        if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-                                        if (resUpdate) {
-                                            res.json({
-                                                message: "Cập nhật sản phẩm thành công",
-                                                data: resUpdate,
-                                                status: true
-                                            })
-                                        }
-                                    })
-                                }
-
                                 if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
+                           
                                 res.json({
-                                    message: "Tạo Thêm mới sản phẩm vào giỏ hàng thành công ",
+                                    message: "Cập nhật sản phẩm thành công",
+                                    data: resBRC,
                                     status: true
                                 })
                             });
@@ -178,7 +166,7 @@ module.exports = {
             if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
             if (!resFindUser) return res.status(400).json({ message: "Không tìm thấy User", data: null, status: false });
             if (resFindUser) {
-                resFindUser.ListProduct.findIndex(p => p._id == ProductId) !== -1 && resFindUser.ListProduct.splice(resFindUser.ListProduct.findIndex(p => p.ProductId == ProductId), 1)
+                resFindUser.ListProduct.findIndex(p => p._id == ProductId) !== -1 && resFindUser.ListProduct.splice(resFindUser.ListProduct.findIndex(p => p._id == ProductId), 1)
 
                 Cart.findByIdAndUpdate(resFindUser._id, resFindUser, (err, resRemove) => {
                     if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
