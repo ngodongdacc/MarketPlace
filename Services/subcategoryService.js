@@ -16,7 +16,7 @@ const createSubCategory = async(subcategory,cb) => {
 
  const updateSubCategory = async(subcategory,cb) => {
      try{
-    SubCategories.updateOne({_id: subcategory.id},{title: subcategory.title, name: subcategory.name},cb);
+    SubCategories.updateOne({id: subcategory.id},{title: subcategory.title, name: subcategory.name},cb);
      }catch(e){
          throw e
      }
@@ -26,7 +26,7 @@ const createSubCategory = async(subcategory,cb) => {
 
 const deleteSubCategory = async(subcategory, cb) => {
     try{
-        SubCategories.deleteOne({_id: subcategory.id},cb);
+        SubCategories.deleteOne({id: subcategory.id},cb);
     }catch(e){
         throw e
     }

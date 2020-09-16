@@ -20,14 +20,14 @@ const createSubCategory = async(req, res) => {
 
         res.send({
             message: "create succsess",
-            data: resData26
+            data: resData
         })
     });
 }
 
 const updateSubCategory = async(req, res) => {
     var updateSubCate = {
-        id: req.body.id,
+        _id: req.body.id,
         title: req.body.title,
         name: req.body.name
     };
