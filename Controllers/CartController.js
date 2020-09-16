@@ -55,8 +55,6 @@ module.exports = {
     },
     deleteCart: async (req, res) => {
         const { productId, userId } = req.body
-        console.log(userId);
-        console.log(productId);
         Cart.findOne({ userId: userId }, async (err, resFindUser) => {
             if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
             if (!resFindUser) return res.status(400).json({ message: "Không tìm thấy User", data: null, status: false });

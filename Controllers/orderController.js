@@ -38,7 +38,7 @@ module.exports = {
         })
     },
     getOrder: async(req, res) => {
-        const id = req.body.id
+        const id = req.params.id
         if(!id) return res.status(400).json({message: "Vui lòng nhập Id", status:false});
 
 
@@ -70,6 +70,14 @@ module.exports = {
                 })
             })
         })
+    },
+
+    getOrdeByIdUsers: async(req, res) => {
+        const {UserId} = req.params
+        Order.findOne({UserId: UserId}, function(err,resFindOrder){
+            if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
+            if (!resFindOrder) return res.status(400).json({ message: "Không tìm thấy UserId", data: null, status: false });        })
+        console.log("11111");
     }
 }
 
