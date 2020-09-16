@@ -231,14 +231,8 @@ module.exports = {
         })
     },
     showCartForUser: async (req, res) => {
-<<<<<<< HEAD
         const {UserId } = req.query
-        console.log("UserId:: ",new mongoose.mongo.ObjectId(UserId));
         Cart.findOne({ UserId: new mongoose.mongo.ObjectId(UserId)}, function (err, resData) {
-=======
-        const id = req.params.id
-        Cart.findOne({ UserId: id }, function (err, resData) {
->>>>>>> tech24_Kokoro
             if (err) {
                 return res.send({
                     message: "get Cart failse",
