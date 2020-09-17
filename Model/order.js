@@ -11,6 +11,7 @@ const { schema } = require('./category');
     Price: {type: Number},
     Name: {type: String, required:true},
     Address: {type: String, required:true},
+    Phone: {type: Number, required:true},
     Payment: {type: String},
     Status: {type: Number, default: 0},
     IntoMoney: {type: Number},
