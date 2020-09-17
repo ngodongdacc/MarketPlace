@@ -6,6 +6,7 @@ var dotenv = require('dotenv');
 var passport = require('passport');
 var expressSession = require('express-session');
 var MemoryStore = require('memorystore')(expressSession)
+var cors = require('cors')
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(cors());
 
 app.use(expressSession({
   secret: process.env.secretKey || "QTData-MarketPlace",
@@ -38,8 +40,12 @@ app.use(passport.initialize());
 app.use(passport.session());
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
+  res.setHeader('Access-Control-Allow-Origin', req.header('origin') 
+|| req.header('x-forwarded-host') || req.header('referer') || req.header('host'));
+  // res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  res.setHeader('Access-Control-Allow-Credentials', true);
   next();
 });
 

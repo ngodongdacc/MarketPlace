@@ -33,13 +33,21 @@ module.exports = {
             if(!resOrder) return res.json({message: "Không tìm thấy id đơn hàng",data: null,status:false});
 
         Order.findByIdAndUpdate(resOrder._id, {$set: order},{},(err, resUpdate) => {
-                if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false});
-                if(resUpdate.Status == 1) return res.json({message: "Huỷ đơn hàng thành công"})
-                res.json({
-                    message: "Cập nhật order thành công",
-                    data: resUpdate,
-                    status: true
-                })
+                if(err) {
+                    return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false});
+                }else if(resOrder.Status == 1) {
+                    res.json({
+                        message: "Huỷ đơn hàng thành công",
+                        data: err,
+                        status: true
+                    })
+                }else{
+                    res.json({
+                        message: "Cập nhật order thành công",
+                        data: resUpdate,
+                        status: true
+                    })
+                }
              })
         })
     },
@@ -114,7 +122,4 @@ module.exports = {
             }) 
         })
     },
-    cancelOrders: async (req,res) => {
-        
-    }
 }

@@ -2,46 +2,21 @@ const mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var CartSchema = new Schema({
-    listProduct:
-        [
-            {
-                productId: {
-                    type: mongoose.Schema.Types.ObjectId,
-                    ref: "Products"
-                },
-                IdShop: {type: mongoose.Types.ObjectId, required: true},
-                IdCategory: { type: mongoose.Types.ObjectId, required: true },
-                IdCategorySub: { type: mongoose.Types.ObjectId, required: true },
-                Name: { type: String, required: true },
-                Sale: { type: Number, default: 0, max: 100, min: 0 },
-                Image: { type: String },
-                Color: { type: String }, // Màu họa tiết,
-                NumberSell: {type: Number}, // số lượng bán được,
-                quantity: { type: Number, default: 1 },
-                ListedPrice: { type: Number}, // Giá niêm yết
-                price: {
-                    type: Number,
-                    required: true
-                },
-                total: {
-                    type: Number,
-                    required: true,
-                }
-
-            }
-        ],
-    subTotal: {
+    ListProduct: {type:Array,default:[]},
+    SubTotal: {
         default: 0,
         type: Number
     },
-    userId: {
+    UserId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Users"
     },
     // cookieId: { type: String, default:"" },
-    status: { type: Boolean, default: true },
-    des: { type: String, default: "" },
-    title: { type: String },
+    Status: { type: Boolean, default: true },
+    Des: { type: String, default: "" },
+    Title: { type: String },
+    SubPrice:{
+        type: Number
+    }
 }, {
     timestamps: true
 });

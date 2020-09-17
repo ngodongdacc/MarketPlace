@@ -4,6 +4,7 @@ const Products = require("../Model/product");
 
 module.exports = {
     create_product: (req, res)=> {
+        console.log("request product:: ", req);
         const product = req.body
         // product.Image = req.file.path
         // console.log(req.file.path);
