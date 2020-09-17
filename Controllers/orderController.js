@@ -34,6 +34,7 @@ module.exports = {
 
         Order.findByIdAndUpdate(resOrder._id, {$set: order},{},(err, resUpdate) => {
                 if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false});
+                if(resUpdate.Status == 1) return res.json({message: "Huỷ đơn hàng thành công"})
                 res.json({
                     message: "Cập nhật order thành công",
                     data: resUpdate,
