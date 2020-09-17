@@ -6,7 +6,8 @@ const mongoose = require("mongoose");
 const UserService = require("../Services/usersService");
 
 module.exports = {
-    postCart: async (req, res, next) => {
+    postCart: (req, res, next) => {
+        console.log("request cart:: ", req);
         const { ProductId, Quantity, UserId, Title, Des,
         } = req.body;
         try {
