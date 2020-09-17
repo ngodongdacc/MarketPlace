@@ -10,8 +10,12 @@ module.exports = {
         if(!order.UserId) return res.status(400).json({message: "Vui lòng nhập UserID", status:false});
         if(!order.IdCart) return res.status(400).json({message: "Vui lòng nhập IdCart", status:false});
         if(!order.Name) return res.status(400).json({message: "Vui lòng nhập Name", status: false});
+        if(!order.Products) return res.status(400).json({message: "Vui lòng nhập Products", status: false});
+
 
         Order.create(order, (err,resData) => {
+            console.log(err, "1111");
+
             if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false});
             res.json({
                 message: "Tạo đơn hàng thành công !",
@@ -80,7 +84,6 @@ module.exports = {
         config.page = req.query.page ? Number(req.query.page):1 
         config.limit = req.query.limit ? Number(req.query.limit):20 
         config.skip = (config.page-1)*config.limit;
-        console.log(config.UserId, "111");
 
         if(!config.UserId) return res.status(400).json({message: "Vui lòng nhập IdUser", status: false})
         const query = {
@@ -109,5 +112,8 @@ module.exports = {
                 status: true
             }) 
         })
+    },
+    cancelOrders: async (req,res) => {
+        
     }
 }
