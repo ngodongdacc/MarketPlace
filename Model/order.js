@@ -6,7 +6,7 @@ const { schema } = require('./category');
 
   var OrderSchema = new Schema({
     UserId: {type: Schema.Types.ObjectId, required:true},
-    Products: {type: Object, required:true},
+    Products: {type: Object, required: true},
     Amount: {type: Number},
     Price: {type: Number},
     Name: {type: String, required:true},
