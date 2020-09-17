@@ -170,7 +170,7 @@ module.exports = {
                         })
                     } else {
                         res.json({
-                            message: "Không thể xóa giá trị này",
+                            message: "Sản phẩm phải có ít nhất 1 sản phẩm",
                             data: null,
                             status: false
                         })
