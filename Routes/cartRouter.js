@@ -1,7 +1,7 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
-var cartCtr = require("../Controllers/CartController");
+const cartCtr = require("../Controllers/CartController");
 
 router.post('/add', cartCtr.postCart);
 router.post('/update', cartCtr.postCart);
