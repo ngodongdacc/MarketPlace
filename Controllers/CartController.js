@@ -40,13 +40,13 @@ module.exports = {
                                     if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
                                     res.json({
                                         message: "Cập nhật mới sản phẩm vào giỏ hàng thành công",
-                                        
+
                                         status: true
                                     })
                                 });
                             } else {
-                                console.log("a",Quantity)
-                                resFindProduct.Quantity=Quantity;
+                                console.log("a", Quantity)
+                                resFindProduct.Quantity = Quantity;
                                 // resFindProduct.Quantity += Quantity; 
                                 resFindUser.ListProduct.push(
                                     resFindProduct
@@ -62,27 +62,34 @@ module.exports = {
                                 console.log(" resFindUser.SubTotal ", resFindUser.SubTotal)
                                 console.log(" resFindUser.SubPrice ", resFindUser.SubPrice)
                                 //product does not exists in cart, add new item
-                              
+
                                 resFindUser.SubTotal = resFindUser.ListProduct.map(ListProduct => ListProduct.Total).reduce((acc, next) => acc + next);
                                 Cart.findByIdAndUpdate(resFindUser._id, resFindUser, function (err, resData) {
                                     if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
                                     res.json({
                                         message: "Cập nhật mới sản phẩm vào giỏ hàng thành công",
-                                        data:resData,
+                                        data: resData,
                                         status: true
                                     })
                                 });
                             }
                         } else {
                             //no cart for user, create new cart
-                            let totals = await resFindUser.ListProduct.reduce((acc, next) =>
-                                acc + next.Quantity
-                                , 0);
-                            let prices = await resFindUser.ListProduct.reduce((acc, next) =>
-                                acc + (next.Price * next.Quantity)
-                                , 0);
-                            resFindUser.SubTotal = await totals;
-                            resFindUser.SubPrice = await prices;
+                            // let totals ;
+                            // let prices ;
+                            // if(resFindUser.ListProduct){
+                            //     totals = await resFindUser.ListProduct.reduce((acc, next) =>
+                            //     acc + next.Quantity
+                            //     , 0);
+                            //     prices = await resFindUser.ListProduct.reduce((acc, next) =>
+                            //     acc + (next.Price * next.Quantity)
+                            //     , 0);
+                            // }else{
+                            //     totals=
+                            // }
+
+                            SubTotal = Quantity;
+                            SubPrice = Quantity * resFindProduct.Price;
                             const ListProduct = [];
                             ListProduct.push(
                                 resFindProduct
@@ -92,8 +99,8 @@ module.exports = {
                                 ListProduct,
                                 Des,
                                 Title,
-                                SubTotal: resFindUser.SubTotal,
-                                SubPrice: resFindUser.SubPrice
+                                SubTotal: SubTotal,
+                                SubPrice: SubPrice
                             }, function (err, resBRC) {
                                 if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
                                 res.json({
@@ -191,6 +198,7 @@ module.exports = {
         Cart.findOne({ _id: id }, async (err, resFindUser) => {
             if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
             if (!resFindUser) return res.status(400).json({ message: "Không tìm thấy User", data: null, status: false });
+
             if (resFindUser) {
                 Cart.deleteOne({ _id: resFindUser._id }, (err, resRemove) => {
                     if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
@@ -230,11 +238,29 @@ module.exports = {
                     status: false,
                 }).status(400)
             }
-            res.send({
-                message: "get succsess",
-                data: resData,
-                status: true
-            })
+            if (resData) {
+                res.send({
+                    message: "get succsess",
+                    data: resData,
+                    status: true
+                })
+            } else {
+                const ListProduct = [];
+                Cart.create({
+                    UserId: id,
+                    ListProduct,
+                    SubTotal: 0,
+                    SubPrice: 0
+                }, function (err, resBRC) {
+                    if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
+                    res.json({
+                        message: "Không có sản phẩm trong cửa hàng",
+                        data: resBRC,
+                        status: true
+                    })
+                });
+            }
+
         })
     }
 }
