@@ -40,37 +40,41 @@ module.exports = {
                                     if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
                                     res.json({
                                         message: "Cập nhật mới sản phẩm vào giỏ hàng thành công",
+                                        
                                         status: true
                                     })
                                 });
                             } else {
+                                console.log("a",Quantity)
+                                resFindProduct.Quantity=Quantity;
+                                // resFindProduct.Quantity += Quantity; 
+                                resFindUser.ListProduct.push(
+                                    resFindProduct
+                                );
                                 let totals = await resFindUser.ListProduct.reduce((acc, next) =>
-                                    acc +  next.Quantity
+                                    acc + next.Quantity
                                     , 0);
                                 let prices = await resFindUser.ListProduct.reduce((acc, next) =>
                                     acc + (next.Price * next.Quantity)
                                     , 0);
-                                    resFindUser.SubTotal = await totals;
-                                    resFindUser.SubPrice = await prices;
-                                    console.log(resFindUser.SubTotal)
-                                    console.log(resFindUser.SubPrice)
+                                resFindUser.SubTotal = await totals;
+                                resFindUser.SubPrice = await prices;
+                                console.log(" resFindUser.SubTotal ", resFindUser.SubTotal)
+                                console.log(" resFindUser.SubPrice ", resFindUser.SubPrice)
                                 //product does not exists in cart, add new item
-                                resFindUser.ListProduct.push(
-                                    resFindProduct
-                                );
-                               
+                              
                                 resFindUser.SubTotal = resFindUser.ListProduct.map(ListProduct => ListProduct.Total).reduce((acc, next) => acc + next);
                                 Cart.findByIdAndUpdate(resFindUser._id, resFindUser, function (err, resData) {
                                     if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
                                     res.json({
                                         message: "Cập nhật mới sản phẩm vào giỏ hàng thành công",
+                                        data:resData,
                                         status: true
                                     })
                                 });
                             }
                         } else {
                             //no cart for user, create new cart
-
                             let totals = await resFindUser.ListProduct.reduce((acc, next) =>
                                 acc + next.Quantity
                                 , 0);
@@ -79,8 +83,6 @@ module.exports = {
                                 , 0);
                             resFindUser.SubTotal = await totals;
                             resFindUser.SubPrice = await prices;
-
-
                             const ListProduct = [];
                             ListProduct.push(
                                 resFindProduct
@@ -94,7 +96,6 @@ module.exports = {
                                 SubPrice: resFindUser.SubPrice
                             }, function (err, resBRC) {
                                 if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-
                                 res.json({
                                     message: "Thêm mới sản phẩm thành công",
                                     data: resBRC,
