@@ -143,12 +143,12 @@ module.exports = {
         })
     },
     delete_Quantity_OfCart: async (req, res) => {
-        let { id, UserId, Quantity } = req.body
+        let { ProductId, UserId, Quantity } = req.body
         Cart.findOne({ UserId: UserId }, async (err, resUserCart) => {
             if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
             if (!resUserCart) return res.status(400).json({ message: "Không tìm thấy User", data: null, status: false });
             if (resUserCart) {
-                let itemIndex = await resUserCart.ListProduct.findIndex(p => p._id == id);
+                let itemIndex = await resUserCart.ListProduct.findIndex(p => p._id == ProductId);
                 if (itemIndex > -1) {
                     if (resUserCart.ListProduct[itemIndex].Quantity > Quantity) {
                         resUserCart.ListProduct[itemIndex].Quantity -= Quantity;
