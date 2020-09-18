@@ -40,6 +40,7 @@ router.post("/delete/:id",productCtr.remove_product);
 router.get("/list",productCtr.get_list_product);
 router.post("/list/delete",productCtr.remove_list_product);
 router.get("/search",productCtr.search_product);
+router.get("/search/query",productCtr.search);
 router.get("/category/search",productCtr.search_category);
 
 module.exports = router

@@ -22,5 +22,21 @@ module.exports = {
         
             return true;
        
+    },
+    isPhone: (phone)=>{
+            var vnf_regex = /((09|03|07|08|05)+([0-9]{8})\b)/g;
+            if (!phone)
+                return false;
+        
+            if(phone.length<10)
+                return false;
+        
+            var valid = vnf_regex.test(phone);
+            if(!valid)
+                return false;
+        
+        
+            return true;
+       
     }
 }

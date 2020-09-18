@@ -4,6 +4,7 @@ const { updateOne, count } = require("../Model/category");
 const async = require("async");
 const { findOneCategory } = require("../Services/categoryService");
 const category = require("../Model/category");
+const mongoose = require("mongoose");
 // const category = require("../Model/category");
 
 
@@ -140,26 +141,69 @@ module.exports = {
 
 
     getCategory : async ( req, res) => {
-        category.aggregate([
-            {
-                $lookup:
-                  {
-                    from: "subcategorys",
-                    localField: "_id",
-                    foreignField: "IdCategory",
-                    as: "ListSubCategory"
-                  }
-             }
+        category
+            .aggregate([
+                {
+                    $lookup:
+                    {
+                        from: "subcategorys",
+                        localField: "_id",
+                        foreignField: "IdCategory",
+                        as: "ListSubCategory"
+                    }
+                }
          ]).exec(function(err, results){
-             
-            console.log(err);
+            if(err) {
+                console.log(err);
+                res.status(400)
+                    .json({
+                        message: "Có lỗi trong quá trình xử lý",
+                        errors: err,
+                        status: false
+                    })
+            } 
+            
             res.json({
-                data: results
+                message: "Lấy danh mục thành công",
+                data: results,
+                status: true
             })
-         })
+         })     
+    },
+    get_detail_category : async ( req, res) => {
+        console.log("id", req.query);
+        if(!req.query.Id) return res.status(400).json({message: "Vui lòng nhập vào Id danh mục"})
+        category
+            .aggregate([
+                {
+                    $match : { "_id" : new mongoose.Types.ObjectId(req.query.Id) } 
+                },
+                {
+                    $lookup:
+                    {
+                        from: "subcategorys",
+                        localField: "_id",
+                        foreignField: "IdCategory",
+                        as: "ListSubCategory"
+                    }
+                }
+         ]).exec(function(err, results){
+            if(err) {
+                console.log(err);
+                res.status(400)
+                    .json({
+                        message: "Có lỗi trong quá trình xử lý",
+                        errors: err,
+                        status: false
+                    })
+            } 
             
-            // .lookup({ from: 'subcategorys', localField: 'IdCategory', foreignField: '_id', as: 'ListSubCategory' })
-            
+            res.json({
+                message: "Lấy danh mục thành công",
+                data: results,
+                status: true
+            })
+         })     
     },
 
 

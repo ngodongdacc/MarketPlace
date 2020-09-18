@@ -1,7 +1,7 @@
 const Shop = require("../Model/shop");
 const jwt = require("jsonwebtoken");
 const async = require("async");
-const { isEmail } = require("../validator/EmailValidator");
+const { isEmail } = require("../validator/validator");
 
 const ShopService = require("../Services/shopService");
 

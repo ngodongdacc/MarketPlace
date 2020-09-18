@@ -5,7 +5,7 @@ const bcrypt = require("bcryptjs");
 const { roles } = require('../middleware/roles')
 
 // Validator
-const { isEmail } = require("../validator/EmailValidator");
+const { isEmail,isPhone } = require("../validator/validator");
 
 const usersService = require("../Services/usersService");
 
@@ -49,6 +49,13 @@ module.exports = {
         return res.status(400) // Kiểm tra Email
           .json({
             message: "Email không đúng định dạng",
+            status: false,
+            code: 0
+          })
+      if (!isPhone(Phone))
+        return res.status(400) // Kiểm tra Email
+          .json({
+            message: "Số điện thoại không đúng định dạng",
             status: false,
             code: 0
           })
@@ -210,10 +217,12 @@ module.exports = {
     var id = req.params.id;
 
     if (!id)return res.status(400).json({ message: "Id không được rỗng", status: false, code: 0})
-    if(userUpdate.FullName === "") return res.status(400).json({ message: "Vui lòng nhập FullName", status: false, code: 0});
-    if(userUpdate.Email === "") return res.status(400).json({ message: "Vui lòng nhập Email",status: false, code: 0 });
-    if(userUpdate.Phone === "") return res.status(400).json({ message: "Vui lòng nhập Phone", status: false, code: 0 });
-   
+    if(userUpdate.FullName === "") return res.status(400).json({ message: "Họ tên không được trống", status: false, code: 0});
+    if(userUpdate.Email === "") return res.status(400).json({ message: "Email không được rỗng",status: false, code: 0 });
+    if(userUpdate.Phone === "") return res.status(400).json({ message: "Số điện thoại không được rỗng", status: false, code: 0 });
+    if(userUpdate.Phone && !isPhone(userUpdate.Phone)) return res.status(400).json({ message: "Số điện thoại không đúng định dạng", status: false, code: 0});
+    if(userUpdate.Email && !isEmail(userUpdate.Email)) return res.status(400).json({ message: "Email không đúng định dạng", status: false, code: 0});
+    
     usersService.findOneUserByID(id,(err,resFindUser)=>{
       if(err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false});
       if(!resFindUser) return res.status(400).json({ message: "Không tìm thấy người dùng", data: null,status: false});
@@ -247,8 +256,9 @@ module.exports = {
               bcrypt.hash(userUpdate.Password, salt,async function(err, hash) {
                
                 userUpdate.Password = hash;
-                usersService.updateUser(id, userUpdate,(err,resUser) => {
+                Users.findByIdAndUpdate(id, userUpdate,(err,resUser) => {
                   if(err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false});
+                  delete resUser.Password;
                   res.json({
                     message: "Cập nhật thành công",
                     data: resUser,
@@ -270,8 +280,6 @@ module.exports = {
             })
             
           }
-              
-          
         });     
     })
 

@@ -23,6 +23,8 @@ module.exports = {
             })
         })
     },
+
+    // Cập nhật sản phẩm
     update_product: (req, res)=> {
         const product = req.body
         product.DateUpdate = Date.now();
@@ -205,5 +207,14 @@ module.exports = {
                 status: true
             }) 
         })
+    },
+
+    search: (req, res) => {
+        var gt = req.query.minPrice || 0
+        var lt = req.query.maxPrice || process.env.MAXPRICE || 100000000000
+        Products
+            .find()
+            .where('Price').gt(gt).lt(lt)
+            .exec((e,p)=>e?res.send(e):res.send(p))
     }
 }

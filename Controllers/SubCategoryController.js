@@ -1,92 +1,97 @@
-const SubCategories = require("../Model/subcategory");
-const SubCategoryService = require("../Services/subcategoryService");
-const { updateOne, model } = require("../Model/subcategory");
+const SubCategorys = require("../Model/subcategory");
 
 const createSubCategory = async(req, res) => {
-    var newSubCategory = new SubCategories({
-        title: req.body.title,
-        name: req.body.name,
+    var newSubCategory = new SubCategorys({
+        Title: req.body.Title,
+        Name: req.body.Name,
+        IdCategory: req.body.IdCategory,
     });
-    SubCategoryService.createSubCategory(newSubCategory, function(err, resData){
+    SubCategorys.create(newSubCategory, function(err, resData){
         if(err){
             return res.send({
-                message: "create user fail",
-                data: null,
-                errors: err.errors,
-                code: 0,
+                message: "Có lỗi trong quá trình xử lý",
+                errors: err,
                 status: false,
               }).status(400)
         }
-
-        res.send({
-            message: "create succsess",
-            data: resData
+        res.json({
+            message: "Tạo mới danh mục con thành công",
+            data: resData,
+            status: true
         })
     });
 }
 
 const updateSubCategory = async(req, res) => {
     var updateSubCate = {
-        _id: req.body.id,
-        title: req.body.title,
-        name: req.body.name
+        Id: req.body.Id,
+        Title: req.body.Title,
+        Name: req.body.Name
     };
-    SubCategoryService.updateSubCategory(updateSubCate, function(err, resData){
+
+    if(!updateSubCate.Id) return res.json({message: "Vui lòng nhập Id", status: false}).status(400);
+    if(updateSubCate.Title == "") return res.json({message: "Title không được rỗng", status: false}).status(400);
+    if(updateSubCate.Name == "") return res.json({message: "Name không được rỗng", status: false}).status(400);
+
+    SubCategorys.findById(updateSubCate.Id, (err, resCate) =>{
         if(err){
-            return res.send({
-                message: "Update error",
+            return res.json({
+                message: "Có lỗi trong quá trình xử lý",
                 errors: err,
                 status: false,
             }).status(400)
         }
-        res.send({
-            message: "update success!",
-            data: resData,
-            status: true
-        })
+        if(!resCate) return res.json({message: "Không tìm thấy id danh mục", status: false})
+        
+        SubCategorys
+                    .findByIdAndUpdate(resCate._id,{$set: updateSubCate}, {new: true},)
+                    .exec( (err, resUp) => {
+                        if(err) res.json({
+                            message: "Có lỗi trong quá trình xử lý",
+                            errors: err,
+                            status: false,
+                        }).status(400);
+
+                        res.send({
+                            message: "Cập nhật danh mục thành công!",
+                            data: resUp,
+                            status: true
+                        })
+                    })
+        
     });
 
 }
 
 const deleteSubCategory = async(req, res) => {
-    var deleteSubCate = {
-        _id: req.body.id,
-        title: req.body.title,
-        name: req.body.name
-    };
-    SubCategoryService.deleteSubCategory(deleteSubCate, function(err, resData){
-        if(err){
-            return res.send({
-                message: "delete failse",
-                errors: err,
-                status: false,
-            }).status(400)
-        }
-        res.send({
-            message: "delete success!",
-            data: resData,
-            status: true
+    if(!req.body.Id) return res.json({ message: "Vui lòng nhập Id",status: false,}).status(400)
+
+    SubCategorys.findById(req.body.Id,(err, resSub) => {
+        if(err) return res.send({ message: "Có lỗi trong quá trình xử lý",errors: err,status: false,}).status(400)
+        if(!resSub) return res.send({ message: "Không tìm thấy danh mục",status: false,}).status(400);
+
+        SubCategorys.findByIdAndDelete(resSub._id,(err,resDel) => {
+            res.json({
+                message: "Xóa danh mục thành công",
+                data: resDel,
+                status: true
+            })
         })
+
     })
 }
 
 const getSubCategory = async(req, res) => {
-    var getSubCate = {
-        _id: req.params.id,
-        title: req.params.title,
-        name: req.params.name
-    };
 
-    SubCategoryService.getSubCategory(getSubCate, function(err, resData){            
-        if(err){
-            return res.send({
-                message: "get Category failse",
+    SubCategorys.find({}, (err, resData) =>{            
+     if(err) return res.json({
+                message: "Có lỗi trong quá trình xử lý",
                 errors: err,
                 status: false,
             }).status(400)
-        }
+        
         res.send({
-            message: "get succsess",
+            message: "Lấy danh sách danh mục thành công",
             data: resData,
             status: true
         })
