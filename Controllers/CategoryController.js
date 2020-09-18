@@ -19,12 +19,12 @@ module.exports = {
                         })}
                 
             const newCate = new category({
-                icon: req.body.icon,
-                title: req.body.title,
-                description: req.body.description
+                Icon: req.body.Icon,
+                Iitle: req.body.Title,
+                Iescription: req.body.Description
                 })
                 
-                category.findOne({title: title }, function (err, resData) {
+                category.findOne({Title: Title }, function (err, resData) {
                             if(err) return res.status(400).json({message:  "There was an error processing", errors: err, status: false}); 
                             
                             if(resData) return res.status(400).json({message:  "Tên danh mục đã tồn tại", errors: null, status: false}); 
@@ -42,7 +42,7 @@ module.exports = {
             console.log(e);
             res.send({
                 message: "Có lỗi trong quá trình xử lý",
-                errors: e.errors,
+                errors: errors,
                 code: 0
             }).status(500) && next(e)
         }
@@ -51,16 +51,16 @@ module.exports = {
     // update
     updateCategory : async(req, res, next) => {
         var updateCate = { };
-        if(req.body.icon) updateCate.icon = req.body.icon;
-        if(req.body.title) updateCate.title = req.body.title;
-        if(req.body.description) updateCate.description = req.body.description
+        if(req.body.Icon) updateCate.Icon = req.body.Icon;
+        if(eq.body.Title) updateCate.Title = req.body.Title;
+        if(req.body.Description) updateCate.Description = req.body.Description
 
         const id = req.params.id
         
         if(!id)return res.status(400).json({message: "id is required", status: false, code: 0})
-        if(updateCate.icon === "") return res.status(400).json({ message: "Icon not null", status: false, code: 0});
-        if(updateCate.title === "") return res.status(400).json({ message: "Title not null", status: false, code: 0});
-        if(updateCate.description === "") return res.status(400).json({ message: "Descriptio  not null", status: false, code: 0});
+        if(updateCate.Icon === "") return res.status(400).json({ message: "Icon not null", status: false, code: 0});
+        if(updateCate.Title === "") return res.status(400).json({ message: "Title not null", status: false, code: 0});
+        if(updateCate.Description === "") return res.status(400).json({ message: "Descriptio  not null", status: false, code: 0});
        
         CategoryService.findOneCateById(id,(err, resFindCate) => {npm
             if(err) return res.status(400).json({ message: "There was an error processing", errors: err, status: false});
@@ -68,8 +68,8 @@ module.exports = {
 
             async.parallel([
                 (cb) => {
-                    if(updateCate.icon){
-                        CategoryService.findOneCategory(updateCate.icon, (err, resData) => {
+                    if(updateCate.Icon){
+                        CategoryService.findOneCategory(updateCate.Icon, (err, resData) => {
                             if(err) cb(err)
                             else if(!resData || (resData && resData._id.toString() === id)) cb(null, true)
                             else cb(null, false)
@@ -79,8 +79,8 @@ module.exports = {
                        
                 },
                 (cb) => {
-                    if(updateCate.title)
-                         CategoryService.findOneCategory(updateCate.title, (err, resData) => {
+                    if(updateCate.Title)
+                         CategoryService.findOneCategory(updateCate.Title, (err, resData) => {
                          if(err) cb(err)
                          else if(!resData || (resData && resData._id.toString() === id)) cb(null, true)
                          else cb(null, false)
@@ -88,8 +88,8 @@ module.exports = {
                      else cb(null, true) 
                     },
                     (cb) => {
-                        if(updateCate.description)
-                             CategoryService.findOneCategory(updateCate.description, (err, resData) => {
+                        if(updateCate.Description)
+                             CategoryService.findOneCategory(updateCate.Description, (err, resData) => {
                              if(err) cb(err)
                              else if(!resData || (resData && resData._id.toString() === id)) cb(null, true)
                              else cb(null, false)
@@ -140,26 +140,26 @@ module.exports = {
 
 
     getCategory : async ( req, res) => {
-        const getCate = {
-            _id: req.params._id,
-            icon: req.params.icon,
-            title: req.params.title,
-            name: req.params.name
-        };
-        CategoryService.getCategory(getCate, function(err,resData){
-            if(err){
-                return res.send({
-                    message: "get Category failse",
-                    errors: err,
-                    status: false,
-                }).status(400)
-            }
-            res.send({
-                message: "get succsess",
-                data: resData,
-                status: true
+        category.aggregate([
+            {
+                $lookup:
+                  {
+                    from: "subcategorys",
+                    localField: "_id",
+                    foreignField: "IdCategory",
+                    as: "ListSubCategory"
+                  }
+             }
+         ]).exec(function(err, results){
+             
+            console.log(err);
+            res.json({
+                data: results
             })
-        })
+         })
+            
+            // .lookup({ from: 'subcategorys', localField: 'IdCategory', foreignField: '_id', as: 'ListSubCategory' })
+            
     },
 
 

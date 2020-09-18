@@ -2,14 +2,14 @@ const mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var SubCategorySchema = new Schema({
-    idCategory: {
+    IdCategory: {
         type:mongoose.SchemaTypes.ObjectId
     },
-    title: {
+    Title: {
         type: String ,
           required: true
       },
-    name: {
+    Name: {
         type: String ,
          required: true
       },
