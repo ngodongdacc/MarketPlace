@@ -15,6 +15,7 @@ router.post('/delete/:id',checkSignIn(),UsersCtr.grantAccess("deleteAny","users"
 router.post('/role',checkSignIn(),UsersCtr.grantAccess("deleteAny","users"),UsersCtr.postDeleteUser); // Lấy thông tin user
 router.post('/remove/list',UsersCtr.remove_list_user); // Lấy thông tin user
 router.get('/search',UsersCtr.getSearch); // Lấy thông tin user
+router.get('/getAll',UsersCtr.get_all_user); // Lấy tất cả user
 
 router.get("/logout", (req,res) => {
     req.logOut();

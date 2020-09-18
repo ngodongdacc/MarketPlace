@@ -307,10 +307,7 @@ module.exports = {
     search.skip = (search.page - 1)*search.limit;
     async.parallel([
       (cb) => {
-        usersService.searchUsers(search, (err,data) => {
-          if(err) return cb(err)
-          cb(null,data)
-        }) 
+        Users.find()
       },
       (cb) => {
         usersService.countUsers((err,count)=>{
@@ -319,6 +316,7 @@ module.exports = {
         })
       }
     ],(err,results) => {
+
       if(err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false});
       res.json({
         message: "Danh sách người dùng",
@@ -329,6 +327,37 @@ module.exports = {
       })
     })
    
+   
+  },
+
+  get_all_user: (req,res) => {
+    let config = {
+      limit: req.query.limit || 20,
+      page: req.query.page || 1, 
+    }
+    config.skip = (config.page - 1)*config.limit;
+    async.parallel([
+      (cb) => {
+        Users.find()
+              .skip(config.skip)
+              .limit(config.limit)
+              .sort({Date: -1})
+              .exec((e,u) => e?cb(e):cb(null,u))
+      },
+      (cb) => {
+        Users.count().exec((e,c)=>e?cb(e):cb(null, c))
+      }
+    ],(err,results) => {
+
+      if(err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false});
+      res.json({
+        message: "Danh sách người dùng",
+        data: {
+          users: results[0],
+          count: results[1]
+        }
+      })
+    })
    
   },
 

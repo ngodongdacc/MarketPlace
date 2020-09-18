@@ -9,6 +9,7 @@ ac.grant("basic")
 ac.grant("supervisor")
  .extend("basic")
  .readAny("users")
+ .updateOwn("users")
 
 ac.grant("admin")
  .extend("basic")
