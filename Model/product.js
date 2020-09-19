@@ -56,6 +56,7 @@ const mongoose = require('mongoose');
     Sale: {type: Number, default: 0, max:100, min:0}, // giảm giá (%)
   });
   
-  ProductSchema.index({'$**': 'text'},{ unique : true });
-
-module.exports = mongoose.model("Products",ProductSchema)
+  ProductSchema.index({'Name': 'text'});
+  const Products = mongoose.model("Products",ProductSchema); 
+  Products.createIndexes();
+module.exports = Products
