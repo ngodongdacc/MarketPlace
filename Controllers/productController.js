@@ -240,6 +240,8 @@ module.exports = {
                         }
                     ]
                 };
+                if(req.query.idCategory) query.$and.push({ IdCategory: new mongoose.mongo.ObjectId(req.query.idCategory) })
+                if(req.query.idTrademark) query.$and.push({ IdTrademark: new mongoose.mongo.ObjectId(req.query.idTrademark) })
 
                 cb(null, query)
             },
