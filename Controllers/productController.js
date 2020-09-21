@@ -219,7 +219,7 @@ module.exports = {
         let config = {
             limit: Number(req.query.limit) || process.env.LIMIT || 20,
             page: Number(req.body.page) || 1,
-            sort: JSON.parse(req.query.sort) || { Date: -1 }
+            sort:req.query.sort? JSON.parse(req.query.sort) : { "Date": -1 }
         }
         config.skip = (config.page - 1) * config.limit;
 
