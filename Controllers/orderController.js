@@ -11,6 +11,8 @@ module.exports = {
         if(!order.IdCart) return res.status(400).json({message: "Vui lòng nhập IdCart", status:false});
         if(!order.Name) return res.status(400).json({message: "Vui lòng nhập Name", status: false});
         if(!order.Products) return res.status(400).json({message: "Vui lòng nhập Products", status: false});
+        if(!order.Phone) return res.status(400).json({message: "Vui lòng nhập Phone", status: false});
+
 
 
         Order.create(order, (err,resData) => {
