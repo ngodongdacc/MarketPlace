@@ -307,7 +307,7 @@ module.exports = {
   },
   getSearch: (req,res) => {
     const search = {
-      text: req.query.search,
+      text: req.query.search || "",
       limit: req.query.limit || 20,
       page: req.query.page || 1, 
     }
@@ -316,6 +316,7 @@ module.exports = {
     async.parallel([
       (cb) => {
         Users.find()
+              .exec((e,u)=>e?cb(e):cb(null,u))
       },
       (cb) => {
         usersService.countUsers((err,count)=>{

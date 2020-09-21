@@ -217,9 +217,8 @@ module.exports = {
                     // $and:[
                         
                             $or: [
-                                {$text: {$search: req.query.search || ""}}, 
                                 {Name: new RegExp("^.*?"+EscapeRegExp(req.query.search || "")+ ".*$", "i") },
-                                {ListCategory: {$elemMatch: {title:new RegExp("^.*?"+EscapeRegExp(req.query.search))}}}
+                                {ListCategory: { $elemMatch: { title:new RegExp("^.*?"+EscapeRegExp(req.query.search || ""))}}}
                             ],
                             // $and: [
                             //     {
@@ -240,20 +239,24 @@ module.exports = {
                 cb(null, query)
             },
             (query,cb) => {
-                
+                console.log("query:: ", query);
                 Products
                 .aggregate([
-                    {
-                        $lookup:
+                    // {$match: {$text: {$search: req.query.search || ""}}}, 
+                    {$lookup:
                         {
                             from: "categorys",
                             localField: "IdCategory",
                             foreignField: "_id",
-                            as: "ListCategory"
-                        }
+                            as: "ListCategory",
+                        },
+                        
+                        
                     },
-                    { $changeStream: { fullDocument: 'default' } },
-                    { $match: query }
+                    { $match: query },
+                    
+                    // {"$unwind": "$categorys"},
+                    // { $group: { _id: null, views: { $sum: "$views" } } }
 
              ])
                 // .find(query)
