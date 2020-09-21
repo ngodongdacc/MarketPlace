@@ -46,6 +46,7 @@ const mongoose = require('mongoose');
     OperationModel: { type: String}, // Mô hình vận hành (kho hàng tiki)
     ImageList: { type: Array}, // Danh sách hình ảnh
     TradeDocument: { type: Array}, // Tài liệu thương hiệu
+    IdTrademark: { type: mongoose.Types.ObjectId }, // thương hiệu
     Status: { type: Array}, // trạng thái [chờ duyệt, đã duyệt]
     Customs: {type: Array}, // mở rộng (size, màu),
     Number: {type: Number}, // số lượng
@@ -54,9 +55,10 @@ const mongoose = require('mongoose');
     ExpirationDateSale: {type: Date}, // ngày hết hạn sale
     StatusSale: {type: Boolean, default: false}, // ngày hết hạn sale
     Sale: {type: Number, default: 0, max:100, min:0}, // giảm giá (%)
+    // ListCategory: {type: Array}, // giảm giá (%)
   });
   
-  ProductSchema.index({'Name': 'text'});
+  // ProductSchema.index({'Name': 'text', "DetailedDescription":"text"});
   const Products = mongoose.model("Products",ProductSchema); 
   Products.createIndexes();
 module.exports = Products
