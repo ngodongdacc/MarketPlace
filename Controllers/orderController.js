@@ -13,22 +13,7 @@ const Cart = require("../Model/cart")
 
 module.exports = {
     createOrder: (req, res, next)=>{
-        // const order = req.body
-        // if(!order.UserId) return res.status(400).json({message: "Vui lòng nhập UserID", status:false});
-        // if(!order.IdCart) return res.status(400).json({message: "Vui lòng nhập IdCart", status:false});
-        // if(!order.Name) return res.status(400).json({message: "Vui lòng nhập Name", status: false});
-        // if(!order.Products) return res.status(400).json({message: "Vui lòng nhập Products", status: false});
 
-
-        // Order.create(order, (err,resData) => {
-        //     if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false});
-        //     res.json({
-        //         message: "Tạo đơn hàng thành công !",
-        //         data: resData,
-        //         status: true
-        //     })
-        // })
-        // console.log("request cart:: ", req);
         const { UserId, IdCart, Name, Price,Address,Payment,IntoMoney, Products, Phone, Status} = req.body;
         try{
             Cart.findOne({_id: IdCart}, async(err, resFindCart) => {
@@ -43,7 +28,6 @@ module.exports = {
 
                         if (err) return res.status(400).json({ message: "Không tìm thấy user", errors: err, status: false });
                         if(resFindUser){
-                            resFindUser.IntoMoney = await Intomoneys;
                         var OrderUpdate = {};
                         OrderUpdate = await resFindUser;
 
@@ -52,29 +36,22 @@ module.exports = {
                             IntoMoney: OrderUpdate.money
                         }, function(err,resData){
                             if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-                            res.json({
-                                message: "Cập nhật mới sản phẩm vào giỏ hàng thành công",
-                                status: true
-                            })
                         });
-
                         }else {
                            resFindCart.SubPrice ==  Price;
-                            IntoMoney ==  Price * count[resFindCart.SubPrice]
-                            const Products = [];
-                            Products.push(resFindCart)
+                           Price * count[resFindCart.SubPrice] ==  IntoMoney
                         };
                         Order.create({
                             UserId,
                             IdCart,
                             Products,
-                            Price: Price,
+                            Price: resFindCart.SubPrice,
                             Name,
                             Address,
                             Phone,
                             Payment,
                             Status,
-                            IntoMoney: IntoMoney
+                            IntoMoney: resFindCart.SubTotal
                         }, function(err, resOrder) {
                             if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
                             res.json({
