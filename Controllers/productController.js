@@ -1,7 +1,7 @@
 const async = require("async");
 const mongoose = require("mongoose");
 const Products = require("../Model/product");
-
+const EscapeRegExp = require("escape-string-regexp");
 module.exports = {
     create_product: (req, res)=> {
         console.log("request product:: ", req);
@@ -210,11 +210,71 @@ module.exports = {
     },
 
     search: (req, res) => {
-        var gt = req.query.minPrice || 0
-        var lt = req.query.maxPrice || process.env.MAXPRICE || 100000000000
-        Products
-            .find()
-            .where('Price').gt(gt).lt(lt)
-            .exec((e,p)=>e?res.send(e):res.send(p))
+      
+        async.waterfall([
+            (cb) => {
+                var query = {
+                    // $and:[
+                        
+                            $or: [
+                                {$text: {$search: req.query.search || ""}}, 
+                                {Name: new RegExp("^.*?"+EscapeRegExp(req.query.search || "")+ ".*$", "i") },
+                                {ListCategory: {$elemMatch: {title:new RegExp("^.*?"+EscapeRegExp(req.query.search))}}}
+                            ],
+                            // $and: [
+                            //     {
+                            //         Price: {$gt: req.query.minPrice || 0},
+                            //     },
+                            //     {
+                            //         Price: {$lt: req.query.maxPrice || process.env.MAXPRICE || 100000000000 || 0}
+                            //     }
+                            // ]
+                            
+                            
+                            
+                        // { $gt: [ "$Price", req.query.minPrice || 0 ] }, 
+                        // { $lt: [ "$Price", req.query.maxPrice || process.env.MAXPRICE || 100000000000 ] }
+                    // ]
+                };
+                    
+                cb(null, query)
+            },
+            (query,cb) => {
+                
+                Products
+                .aggregate([
+                    {
+                        $lookup:
+                        {
+                            from: "categorys",
+                            localField: "IdCategory",
+                            foreignField: "_id",
+                            as: "ListCategory"
+                        }
+                    },
+                    { $changeStream: { fullDocument: 'default' } },
+                    { $match: query }
+
+             ])
+                // .find(query)
+                //.collation({locale: "en", strength: 2})
+                // .aggregate([  
+                //      { $match: { Name: new RegExp("^.*?"+EscapeRegExp(req.query.search)+ ".*$", "i") } } 
+    
+                // ])
+                // .where('Price').gt(gt).lt(lt)
+                .exec((e,p)=>e?cb(e):cb(null,p))
+                
+            }
+        ],(err, results) => {
+            console.log("error:: ", err);
+            if(err) if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false });
+
+            res.json({
+                message: "Lấy sản phẩm thành công",
+                data: results,
+                status: true
+            })
+        })
     }
 }
