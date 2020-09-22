@@ -2,76 +2,61 @@ const Order = require("../Model/order");
 const async = require("async");
 const Users = require("../Model/users");
 const userServic = require("../Services/usersService");
+const cartServie = require("../Services/cartService")
 const { mongo, Mongoose } = require("mongoose");
 const mongoose = require("mongoose");
 const Product = require("../Model/product");
 const { count } = require("../Model/product");
 const order = require("../Model/order");
-const Cart = require("../Model/cart")
+const Cart = require("../Model/cart");
+const cartService = require("../Services/cartService");
 
 
 
 module.exports = {
     createOrder: (req, res, next)=>{
-
-        const { UserId, IdCart, Name, Price,Address,Payment,IntoMoney, Products, Phone, Status} = req.body;
+        
+       const IdCart = req.body.IdCart
+        const order = req.body
+       const UserId = req.body.UserId
+       if(!UserId) return res.status(400).json({message: "Vui lòng nhập Id", status:false});
         try{
-            Cart.findOne({_id: IdCart}, async(err, resFindCart) => {
-
-                if (err) return res.status(400).json({ message: "Giỏ hàng không tồn tại", errors: err, status: false });
-                console.log(resFindCart);
-
-                if(resFindCart) {
-                    resFindCart.SubPrice = Price;
-                    const money = Price * count[resFindCart.SubPrice]
-                    Order.findOne({UserId: UserId}, async(err,resFindUser)=>{
-
-                        if (err) return res.status(400).json({ message: "Không tìm thấy user", errors: err, status: false });
-                        if(resFindUser){
-                        var OrderUpdate = {};
-                        OrderUpdate = await resFindUser;
-
-                        Order.findOneAndUpdate({_id: resFindUser._id},{
-                            Price: OrderUpdate.Price,
-                            IntoMoney: OrderUpdate.money
-                        }, function(err,resData){
-                            if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-                        });
-                        }else {
-                           resFindCart.SubPrice ==  Price;
-                           Price * count[resFindCart.SubPrice] ==  IntoMoney
-                        };
-                        Order.create({
-                            UserId,
-                            IdCart,
-                            Products,
-                            Price: resFindCart.SubPrice,
-                            Name,
-                            Address,
-                            Phone,
-                            Payment,
-                            Status,
-                            IntoMoney: resFindCart.SubTotal
-                        }, function(err, resOrder) {
-                            if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-                            res.json({
-                                message: "Thêm mới sản phẩm thành công",
-                                data: resOrder,
-                                status: true
-                            })
-                        })
+        
+                    Cart.findOne({_id: IdCart}, async(err,resCart) => {
+                        if (err) return res.status(400).json({ message: "Giỏ hàng không còn tồn tại", errors: err, status: false });
+                        if(!resCart) return res.json({message: "Không tìm thấy ID CART", data: null, status: false});
+                            var UserCart = resCart.UserId;
+                            if(UserId == UserCart){
+                                order.IntoMoney = resCart.SubPrice
+                                Order.create(order,(err,resOrder) =>{
+                                    if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false});
+                                    res.json({
+                                        message: "Create Order success",
+                                        data: resOrder,
+                                        status: true
+                                    })
+                                    deleteProductFromCart(UserCart);
+                                })
+                            }else{
+                                res.json({
+                                    message: "Tạo đơn hàng thất bại",
+                                    data: null,
+                                    status: false
+                                })
+                            }
                     })
-                }
-            })
-        }catch (e) {
+                    
+        }catch (e){
             res.send({
                 message: e.message,
                 errors: e.errors,
                 code: 0
             }).status(500) && next(e)
         }
-        
     },
+
+
+
     updateOrder: (req,res) => {
         const order = req.body
         const id = req.params.id
@@ -203,5 +188,31 @@ module.exports = {
                     status: true
                 })
             })
-    }
+    },
+}
+
+function deleteProductFromCart(UserId){
+    Cart.findOne({ UserId: UserId }, async (err, resFindUser) => {
+        if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
+        if (!resFindUser) return res.status(400).json({ message: "Không tìm thấy User", data: null, status: false });
+        if (resFindUser) {
+            resFindUser.ListProduct.findIndex(p => p._id == ProductId) !== -1 && resFindUser.ListProduct.splice(resFindUser.ListProduct.findIndex(p => p._id == ProductId), 1)
+            let totals = await resFindUser.ListProduct.reduce((acc, next) =>
+                acc + next.Quantity
+                , 0);
+            let prices = await resFindUser.ListProduct.reduce((acc, next) =>
+                acc + (next.Price * next.Quantity)
+                , 0);
+            resFindUser.SubTotal = await totals;
+            resFindUser.SubPrice = await prices;
+            Cart.findByIdAndUpdate(resFindUser._id, resFindUser, (err, resRemove) => {
+                if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
+                res.json({
+                    message: "Xóa sản phẩm thành công",
+                    data: resRemove,
+                    status: true
+                })
+            })
+        }
+    })
 }

@@ -49,8 +49,15 @@ const findCartUserId = async (search, cb) => {
     throw e
   }
 }
+const getCartById = async (id,cb) => {
+  try {         
+     Cart.findById(id,cb);
+  } catch(e) {
+    throw e
+  }
+}
 
 module.exports = {
-  createCart, updateCart, deleteCart, getCart, findCart,findCartUserId
+  createCart, updateCart, deleteCart, getCart, findCart,findCartUserId, getCartById
 
 }

@@ -7,7 +7,6 @@ const { schema } = require('./category');
   var OrderSchema = new Schema({
     UserId: {type: mongoose.Types.ObjectId, required:true},
     Products: {type: Array, required:true},
-    Price: {type: Number},
     Name: {type: String, required:true},
     Address: {type: String},
     Phone: {type: Number},
@@ -20,3 +19,5 @@ const { schema } = require('./category');
   });
 
   module.exports = mongoose.model("Order", OrderSchema);
+
+ 
