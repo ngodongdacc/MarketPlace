@@ -15,4 +15,4 @@ var SubCategorySchema = new Schema({
       },
 });
 
-module.exports = mongoose.model("SubCategoris", SubCategorySchema)
+module.exports = mongoose.model("SubCategorys", SubCategorySchema)
