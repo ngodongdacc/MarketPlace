@@ -7,7 +7,6 @@ const EscapeRegExp = require("escape-string-regexp");
 const { IsJsonString } = require("../validator/validator");
 module.exports = {
     create_product: (req, res) => {
-        console.log("request product:: ", req);
         const product = req.body
         // product.Image = req.file.path
         // console.log(req.file.path);
@@ -132,9 +131,9 @@ module.exports = {
             })
     },
 
+    // Tìm kiếm theo tên
     search_product: (req, res) => {
         try {
-
 
             const config = {};
             config.search = req.query.search
@@ -174,6 +173,7 @@ module.exports = {
         }
     },
 
+    // tìm kiếm theo danh mục
     search_category: (req, res) => {
 
         const config = {};
@@ -212,6 +212,7 @@ module.exports = {
         })
     },
 
+    // Tìm kiếm nâng cao
     search: (req, res) => {
         if(req.query.sort && !IsJsonString(req.query.sort)) 
             return res.json({message: "sort phải là dạng json", status: false}) 
@@ -233,10 +234,10 @@ module.exports = {
                     ],
                     $and: [
                         {
-                            Price: { $gt: req.query.minPrice || 0 },
-                        },
-                        {
-                            Price: { $lt: req.query.maxPrice || process.env.MAXPRICE || 100000000000 }
+                            Price: { 
+                                $gte: Number(req.query.minPrice) || 0 , 
+                                $lt: Number(req.query.maxPrice) || process.env.MAXPRICE || 100000000000
+                            },
                         }
                     ]
                 };
@@ -246,6 +247,7 @@ module.exports = {
                 cb(null, query)
             },
             (query, cb) => {
+                console.log("query:: ", query.$and[0]);
                 async.parallel([
                     (cb) => Products
                         .aggregate([
@@ -269,7 +271,6 @@ module.exports = {
                                     as: "Trademark",
                                 },
                             },
-                            // { $sort: config.sort },
                             { $skip: config.skip },
                             { $limit: config.limit }
                         ])
@@ -315,7 +316,7 @@ module.exports = {
                 message: "Lấy sản phẩm thành công",
                 data: {
                     products: results[0],
-                    counts: results[1][0].counts
+                    counts: results[1]
                 },
                 status: true
             })
