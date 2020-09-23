@@ -114,7 +114,6 @@ module.exports = {
         // console.log(UserId)
         Cart.findOne({ UserId: UserId }, async (err, resFindUser) => {
             if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-            if (!resFindUser) return res.status(400).json({ message: "Không tìm thấy User", data: null, status: false });
             if (resFindUser) {
                 resFindUser.ListProduct.findIndex(p => p._id == ProductId) !== -1 && resFindUser.ListProduct.splice(resFindUser.ListProduct.findIndex(p => p._id == ProductId), 1)
                 let totals = await resFindUser.ListProduct.reduce((acc, next) =>

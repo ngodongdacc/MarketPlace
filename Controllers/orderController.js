@@ -19,6 +19,7 @@ module.exports = {
        const IdCart = req.body.IdCart
         const order = req.body
        const UserId = req.body.UserId
+       const ProductId = req.body.ProductId
        if(!UserId) return res.status(400).json({message: "Vui lòng nhập Id", status:false});
         try{
         
@@ -28,14 +29,25 @@ module.exports = {
                             var UserCart = resCart.UserId;
                             if(UserId == UserCart){
                                 order.IntoMoney = resCart.SubPrice
+                                order.Products = resCart.ListProduct
+                                order.GrossProduct = resCart.SubTotal
                                 Order.create(order,(err,resOrder) =>{
                                     if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false});
-                                    res.json({
-                                        message: "Create Order success",
-                                        data: resOrder,
-                                        status: true
+                                    resCart.ListProduct = [];
+                                    resCart.SubTotal = 0;
+                                    resCart.SubPrice = 0;
+                                    Cart.findOneAndUpdate({_id: resCart._id }, {
+                                        ListProduct: resCart.ListProduct,
+                                        SubPrice: resCart.SubPrice,
+                                        SubTotal: resCart.SubTotal
+                                    },function(err, resDataCart) {
+                                        if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý", errors:err , status: false});
+                                        res.json({
+                                            message: "Tạo đơn hàng thành công",
+                                            data: resOrder,
+                                            status: true
+                                        })
                                     })
-                                    deleteProductFromCart(UserCart);
                                 })
                             }else{
                                 res.json({
@@ -189,30 +201,4 @@ module.exports = {
                 })
             })
     },
-}
-
-function deleteProductFromCart(UserId){
-    Cart.findOne({ UserId: UserId }, async (err, resFindUser) => {
-        if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-        if (!resFindUser) return res.status(400).json({ message: "Không tìm thấy User", data: null, status: false });
-        if (resFindUser) {
-            resFindUser.ListProduct.findIndex(p => p._id == ProductId) !== -1 && resFindUser.ListProduct.splice(resFindUser.ListProduct.findIndex(p => p._id == ProductId), 1)
-            let totals = await resFindUser.ListProduct.reduce((acc, next) =>
-                acc + next.Quantity
-                , 0);
-            let prices = await resFindUser.ListProduct.reduce((acc, next) =>
-                acc + (next.Price * next.Quantity)
-                , 0);
-            resFindUser.SubTotal = await totals;
-            resFindUser.SubPrice = await prices;
-            Cart.findByIdAndUpdate(resFindUser._id, resFindUser, (err, resRemove) => {
-                if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-                res.json({
-                    message: "Xóa sản phẩm thành công",
-                    data: resRemove,
-                    status: true
-                })
-            })
-        }
-    })
 }

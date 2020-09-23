@@ -13,6 +13,7 @@ const { schema } = require('./category');
     Payment: {type: String},
     Status: {type: Number, default: 0},
     IntoMoney: {type: Number},
+    GrossProduct: {type: String},
     IdCart: {type: mongoose.Types.ObjectId, required:true},
     Date: { type: Date, default: Date.now }, // ngày tạo 
     DateUpdate: { type: Date, default: Date.now }, // ngày cập nhật
