@@ -97,17 +97,15 @@ module.exports = {
           else cb(null, true);
         }
         ], (err, results) => {
-          if(err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err});
-          if(!results[0]) return res.status(400).json({ message: "Email đã được sử dụng", status: false, code:0 });
-          if(!results[1]) return res.status(400).json({ message: "Số điện thoại đã được sử dụng", status: false, code:0 });
+          if(err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false});
+          if(!results[0]) return res.status(400).json({ message: "Email đã được sử dụng", status: false});
+          if(!results[1]) return res.status(400).json({ message: "Số điện thoại đã được sử dụng", status: false});
 
           usersService.createUser(newUser, (err, user) => {
             if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý",errors: err, code: 0 });
-            console.log("user",user);
             return res.json({
               message: "Tạo tài khoản thành công",
               data: user,
-              code: 1,
               status: true
             })
           });
@@ -124,7 +122,7 @@ module.exports = {
   },
 
   // Đăng nhập
-  postLogin : async (req, res, next) => {
+  postLogin : async (req, res) => {
     const { Username, Password } = req.body
     if (!Username) // kiểm tra Username
       return res.status(400)
@@ -165,7 +163,7 @@ module.exports = {
         if (isMath) {
           var token = jwt.sign(userTrue.toJSON(), process.env.secretKey || "QTData-MarketPlace", { expiresIn: process.env.TimeToken || 60000000 });
           return res.json({
-            message: "login success",
+            message: "Đăng nhập thành công",
             data: {
               user: {
                 Username: userTrue.Username,
