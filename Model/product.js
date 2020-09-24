@@ -16,16 +16,16 @@ const mongoose = require('mongoose');
     NumberEvaluation: {type: Number}, // Số lượng đánh giá
     DetailedDescription: {type: String}, // Mô tả chi tiết sản phẩm
     PackingLength: {type: Number}, // chiều dài đóng gói
-    PackingWidth: {type: Number}, // chiều dài đóng gọi
+    PackingWidth: {type: Number}, // chiều rông đóng gọi
     Weight: {type: Number}, // trọng lượng
     CategoryGoods: {type: String}, // danh mục hàng hóa nguy hiểm
     IMEI: {type: Boolean, default: false}, // quản lý bằng Imaei
     Serial: {type: Boolean, default: false}, // Quản lý bằng serial
     Model: {type: String, default: false}, // Dòng sản phẩm
-    Unit: {type: Object}, // Đơn vị tính
+    Unit: {type: String}, // Đơn vị tính
     Date: { type: Date, default: Date.now }, // ngày tạo 
     DateUpdate: { type: Date, default: Date.now }, // ngày cập nhật
-    DeliveryAddress: { type: Object }, // địa chỉ giao hàng
+    DeliveryAddress: { type: String }, // địa chỉ giao hàng
     Material: { type: String }, // Chất liệu
     Size: { type: String }, // Kích cỡ
     Color: { type: String }, // Màu họa tiết
@@ -43,20 +43,22 @@ const mongoose = require('mongoose');
     ListedPrice: { type: Number}, // Giá niêm yết
     Price: { type: Number}, // Giá bán
     CodeProduct: { type: String}, // Mã sản phẩm
-    OperationModel: { type: String}, // Mô hình vận hành (kho hàng tiki)
+    OperationModel: { type: String}, // Mô hình vận hành (kho hàng qt-data)
     ImageList: { type: Array}, // Danh sách hình ảnh
     TradeDocument: { type: Array}, // Tài liệu thương hiệu
-    Status: { type: Array}, // trạng thái [chờ duyệt, đã duyệt]
+    IdTrademark: { type: mongoose.Types.ObjectId }, // thương hiệu
+    Status: { type: Number}, // trạng thái [chờ duyệt, đã duyệt]
     Customs: {type: Array}, // mở rộng (size, màu),
     Number: {type: Number}, // số lượng
     NumberSell: {type: Number}, // số lượng bán được
-    View: {type: Number}, // số lượng lượt xem
+    ViewNumber: {type: Number}, // số lượng lượt xem
     ExpirationDateSale: {type: Date}, // ngày hết hạn sale
-    StatusSale: {type: Boolean, default: false}, // ngày hết hạn sale
+    StatusSale: {type: Boolean, default: false}, // 
     Sale: {type: Number, default: 0, max:100, min:0}, // giảm giá (%)
+    StatusNew : {type: Boolean, default: false}, // sản phẩm mới (%)
   });
   
-  ProductSchema.index({'Name': 'text'});
+  // ProductSchema.index({'Name': 'text', "DetailedDescription":"text"});
   const Products = mongoose.model("Products",ProductSchema); 
   Products.createIndexes();
 module.exports = Products

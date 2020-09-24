@@ -15,7 +15,7 @@ ac.grant("admin")
  .extend("basic")
  .extend("supervisor")
 //  .updateAny("users")
- .readAny("users")
+ .deleteOwn("users")
 
 return ac;
 })();

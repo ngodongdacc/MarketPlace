@@ -10,6 +10,7 @@ const { count } = require("../Model/product");
 const order = require("../Model/order");
 const Cart = require("../Model/cart");
 const cartService = require("../Services/cartService");
+const e = require("express");
 
 
 
@@ -21,6 +22,8 @@ module.exports = {
        const UserId = req.body.UserId
        const ProductId = req.body.ProductId
        if(!UserId) return res.status(400).json({message: "Vui lòng nhập Id", status:false});
+       if(order.Name=== "") return res.status(400).json({ message: "Tên không được bỏ trống!", status: false, code: 0});
+
         try{
         
                     Cart.findOne({_id: IdCart}, async(err,resCart) => {
@@ -76,25 +79,53 @@ module.exports = {
         Order.findById(id,(err, resOrder) => {
             if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false});
             if(!resOrder) return res.json({message: "Không tìm thấy id đơn hàng",data: null,status:false});
-
-        Order.findByIdAndUpdate(resOrder._id, {$set: order},{},(err, resUpdate) => {
-                if(err) {
-                    return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false});
-                }else if(resOrder.Status == 1) {
-                    res.json({
-                        message: "Huỷ đơn hàng thành công",
-                        data: err,
-                        status: true
-                    })
-                }else{
-                    res.json({
-                        message: "Cập nhật order thành công",
-                        data: resUpdate,
-                        status: true
-                    })
-                }
-             })
-        })
+            Cart.findOne({_id: resOrder.IdCart},async(err, resCart) => {
+                if (err) return res.status(400).json({ message: "OOP Lỗi Rồi", errors: err, status: false });
+                if(!resCart) return res.json({message: "Không tìm thấy ID CART", data: null, status: false});
+                // order.IntoMoney = resCart.SubPrice
+                // order.Products = resCart.ListProduct
+                // order.GrossProduct = resCart.SubTotal
+                Order.findByIdAndUpdate(resOrder._id, {$set: order},{},(err, resUpdate) => {
+                    if(err) {
+                        return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false});
+                    }else if(resUpdate.Status == 1) {
+                        res.json({
+                            message: "Đơn hàng đã xác nhận ",
+                            data: resUpdate,
+                            status: true
+                        })
+                    }else if(resUpdate.Status == 2) {
+                        res.json({
+                            message: "Đang giao hàng",
+                            data: resUpdate,
+                            status: true
+                        })
+                    }else if(resUpdate.Status == 3) {
+                        res.json({
+                            message: "Đã giao hàng",
+                            data: resUpdate,
+                            status: true
+                        })
+                    }else if(resUpdate.Status == 4) {
+                        if(resUpdate.Reason == "") {
+                            return res.status(400).json({ message: "Vui lòng điền lý do bạn huỷ đơn hàng", status: false, code: 0})
+                        }else{
+                            res.json({
+                                message: "Huỷ đơn hàng",
+                                data: resUpdate,
+                                status: true
+                            })
+                        }
+                    }else{
+                        res.json({
+                            message: "Đơn hàng đang chờ xác nhận!",
+                            data: resUpdate,
+                            status: true
+                        })
+                    }
+                 })
+            })
+            })
     },
     getOrder: async(req, res) => {
         const id = req.params.id

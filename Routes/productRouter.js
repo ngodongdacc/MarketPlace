@@ -6,6 +6,7 @@ const multer = require("multer");
 // controller
 const productCtr = require("../Controllers/productController");
 
+// Begin import img
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
       cb(null, './Public/images/products')
@@ -30,6 +31,7 @@ var storage = multer.diskStorage({
     },
     fileFilter: fileFilter
   });
+// end import img
   
 
 // router.post("/",upload.single("Image"),productCtr.create_product);

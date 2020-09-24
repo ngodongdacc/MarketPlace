@@ -2,28 +2,25 @@ const mongoose = require('mongoose');
   var Schema = mongoose.Schema;
 
   var UserSchema = new Schema({
-    LastName: {type: String, default:""},
-    FirstName:   {type: String , default:""},
-    FullName:   {type: String , default:""},
+    LastName: {type: String, default:""}, // Họ
+    FirstName:   {type: String , default:""}, // Tên
+    FullName:   {type: String , default:""}, // Họ và Tên
     Address:   {type: Array , default:""}, // địa chỉ
     Gender:   {type: Number }, // giới tính 
     Birthday:   {type: Date }, // Ngày sinh 
-    Email:   {type: String , required: true,unique: true},
-    Password: {type: String , required: true, unique: true},
-    Phone: {type: String , default:""},
+    Email:   {type: String , required: true,unique: true}, // Email
+    Password: {type: String , required: true, unique: true}, // Mật khẩu
+    Phone: {type: String , default:""}, // Điện thoại
     Sale: {type: Boolean, default: false }, // nhận chương trình khuyến mãi
     Role: {
       type: String,
       default: 'basic',
       enum: ["basic", "supervisor", "admin"]
-     },
-    Date: { type: Date, default: Date.now },
-    DateUpdate: { type: Date, default: Date.now },
+     }, // Phân quyền
+    Date: { type: Date, default: Date.now }, // Ngày tạo
+    DateUpdate: { type: Date, default: Date.now }, // Ngày update
     hidden: Boolean,
-    Avatar: {
-      type: String,
-      default: "",
-    },
+    Avatar: { type: String, default: "", }, // ảnh đại diện
     Facebook: {
       uid: String,
       token: String,

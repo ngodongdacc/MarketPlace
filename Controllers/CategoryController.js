@@ -12,8 +12,8 @@ const mongoose = require("mongoose");
 module.exports = {
     createCategory : async(req, res , next) => {
         try { 
-            const {title} = req.body
-            if(!title){ return res.status(400).json({
+            const {Title} = req.body
+            if(!Title){ return res.status(400).json({
                             message: "Please enter your Title",
                             status: false,
                             code: 0
@@ -21,11 +21,11 @@ module.exports = {
                 
             const newCate = new category({
                 Icon: req.body.Icon,
-                Iitle: req.body.Title,
-                Iescription: req.body.Description
+                Title: req.body.Title,
+                Description: req.body.Description
                 })
                 
-                category.findOne({Title: Title }, function (err, resData) {
+                category.findOne({Title: newCate.Title }, function (err, resData) {
                             if(err) return res.status(400).json({message:  "There was an error processing", errors: err, status: false}); 
                             
                             if(resData) return res.status(400).json({message:  "Tên danh mục đã tồn tại", errors: null, status: false}); 
