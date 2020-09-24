@@ -84,13 +84,13 @@
 
     | Tên Trường  | Kiểu dữ liệu     |               Mô tả                  |  
     |:----------:  |:------------:    |:--------------------------------:    |  
-    |    body     |    object |         [ Product object](#data-structure-user-object)      |
+    |    body     |    object |         [ Product object](#data-structure-product-object)      |
 
 - Dữ liệu trả về
 
     | Tên Trường   | Kiểu dữ liệu     |                        Mô tả                         |  
     |:----------:  |:------------:    |:---------------------------------------------------: |  
-    |   data      |    object        | [ Product object](#data-structure-user-object)|  
+    |   data      |    object        | [ Product object](#data-structure-product-object)|  
     |   status     |    boolean         | true: thành công, false: thất bại                          |  
     |   message    |    string        | Tin nhắn trả về                                      |  
   
@@ -108,13 +108,13 @@
 
     | Tên Trường  | Kiểu dữ liệu     |               Mô tả                  |  
     |:----------:  |:------------:    |:--------------------------------:    |  
-    |    body     |    object |         [ Product object](#data-structure-user-object)      |
+    |    body     |    object |         [ Product object](#data-structure-product-object)      |
 
 - Dữ liệu trả về
 
     | Tên Trường   | Kiểu dữ liệu     |                        Mô tả                         |  
     |:----------:  |:------------:    |:---------------------------------------------------: |  
-    |   data      |    object        | [ Product object](#data-structure-user-object)    |  
+    |   data      |    object        | [ Product object](#data-structure-product-object)    |  
     |   status     |    boolean         | true - thành công, false - thất bại                           |  
     |   message    |    string        | Tin nhắn trả về                                      |  
   
@@ -132,13 +132,13 @@
 
     | Tên Trường  | Kiểu dữ liệu     |               Mô tả                  |  
     |:----------:  |:------------:    |:--------------------------------:    |  
-    |    body     |    object |         [ Product object](#data-structure-user-object)      |
+    |    body     |    object |         [ Product object](#data-structure-product-object)      |
 
 - Dữ liệu trả về
 
     | Tên Trường   | Kiểu dữ liệu     |                        Mô tả                         |  
     |:----------:  |:------------:    |:---------------------------------------------------: |  
-    |   data      |    object        | [ Product object](#data-structure-user-object)  + token    |  
+    |   data      |    object        | [ Product object](#data-structure-product-object)  + token    |  
     |   status     |    boolean         | true - Thành công; false - Có lỗi                           |  
     |   message    |    string        | Tin nhắn trả về                                      |  
 
