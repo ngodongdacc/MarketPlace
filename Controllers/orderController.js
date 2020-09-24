@@ -36,7 +36,6 @@ module.exports = {
                         var UserCart = resCart.UserId;
                         var IdProduct = resCart.ProductId
                         var itemIndex = await resCart.ListProduct.findIndex(p => p.IdProduct == ProductId);
-                        console.log("sad", ProductId);
                         if (itemIndex <= -1){
                                 return res.status(400).json({message: "Không có sản phẩm trong giỏ hàng", data: null, errors: err, stutus:false});
                             }else if(UserId == UserCart){
