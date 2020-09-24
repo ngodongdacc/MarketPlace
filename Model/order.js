@@ -11,10 +11,12 @@ const { schema } = require('./category');
     Address: {type: String},
     Phone: {type: Number},
     Payment: {type: String},
+    CodeOrder: {type: String},
     Status: {type: Number, default: 0},
     IntoMoney: {type: Number},
     GrossProduct: {type: String},
     Reason: {type: String},
+    IdShop: {type: mongoose.Types.ObjectId, required: true},
     IdCart: {type: mongoose.Types.ObjectId, required:true},
     Date: { type: Date, default: Date.now }, // ngày tạo 
     DateUpdate: { type: Date, default: Date.now }, // ngày cập nhật
