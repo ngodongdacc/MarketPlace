@@ -62,3 +62,21 @@
 |55| Status                     | Number         |    0     |           | trạng thái [chờ duyệt, đã duyệt]       |
 |56| StatusNew                  | Boolean         |    null     |           | Sản phẩm mới       |
 |57| Customs                    | Array         |    null     |           | mở rộng (size, màu)         |
+
+## 2. Service info  
+### 1. Thông tin service * Tên service: **Product**  
+* Source code: ./Controller/productController.js  
+* Danh sách routers  
+   * [Thêm sản phẩm mới](#thêm-sản-phẩm-mới)  
+   * [Cập nhật sản phẩm ](#cập-nhật-sản-phẩm )  
+   * [Xóa sản phẩm ](#xóa-sản-phẩm)
+   * [Xóa danh sách sản phẩm](#xóa-danh-sách-sản-phẩm)
+   * [Tìm kiếm sản phẩm của shop ](#tìm-kiếm-sản-phẩm-của-shop)
+   * [Lấy chi tiết sản phẩm của người dùng ](#lấy-chi-tiết-sản-phẩm-của-người-dùng)
+   * [Lấy chi tiết sản phẩm của shop ](#lấy-chi-tiết-sản-phẩm-của-shop)
+  
+### 1.1  Thêm sản phẩm mới  
+ - Router: **/api/product**  
+ - Function: **create_product()**  
+ - Method: **POST**
+ - Paremeter: 
