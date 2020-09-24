@@ -20,17 +20,26 @@ module.exports = {
        const IdCart = req.body.IdCart
         const order = req.body
        const UserId = req.body.UserId
+       const IdShop = req.body.IdShop
        const ProductId = req.body.ProductId
-       if(!UserId) return res.status(400).json({message: "Vui lòng nhập Id", status:false});
+       if(!UserId) return res.status(400).json({message: "Vui lòng nhập IdUser", status:false});
+       if(!IdShop) return res.status(400).json({message: "Vui lòng nhập IdShop", status:false});
        if(order.Name=== "") return res.status(400).json({ message: "Tên không được bỏ trống!", status: false, code: 0});
+       if(order.Phone=== "") return res.status(400).json({ message: "SĐT không được bỏ trống!", status: false, code: 0});
+       if(order.Address=== "") return res.status(400).json({ message: "Địa chỉ không được bỏ trống!", status: false, code: 0});
+
 
         try{
-        
                     Cart.findOne({_id: IdCart}, async(err,resCart) => {
                         if (err) return res.status(400).json({ message: "Giỏ hàng không còn tồn tại", errors: err, status: false });
                         if(!resCart) return res.json({message: "Không tìm thấy ID CART", data: null, status: false});
-                            var UserCart = resCart.UserId;
-                            if(UserId == UserCart){
+                        var UserCart = resCart.UserId;
+                        var IdProduct = resCart.ProductId
+                        var itemIndex = await resCart.ListProduct.findIndex(p => p.IdProduct == ProductId);
+                        console.log("sad", ProductId);
+                        if (itemIndex <= -1){
+                                return res.status(400).json({message: "Không có sản phẩm trong giỏ hàng", data: null, errors: err, stutus:false});
+                            }else if(UserId == UserCart){
                                 order.IntoMoney = resCart.SubPrice
                                 order.Products = resCart.ListProduct
                                 order.GrossProduct = resCart.SubTotal
