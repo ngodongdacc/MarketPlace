@@ -236,7 +236,7 @@ module.exports = {
                         {
                             Price: { 
                                 $gte: Number(req.query.minPrice) || 0 , 
-                                $lt: Number(req.query.maxPrice) || process.env.MAXPRICE || 100000000000
+                                $lt: Number(req.query.maxPrice) || Number(process.env.MAXPRICE) || 100000000000
                             },
                         }
                     ]
@@ -316,7 +316,7 @@ module.exports = {
                 message: "Lấy sản phẩm thành công",
                 data: {
                     products: results[0],
-                    counts: results[1]
+                    counts: results[1][0] ? results[1][0].counts : 0
                 },
                 status: true
             })
