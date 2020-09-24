@@ -67,13 +67,13 @@
 ### 1. Thông tin service * Tên service: **Product**  
 * Source code: ./Controller/productController.js  
 * Danh sách routers  
-   * [Thêm sản phẩm mới](#thêm-sản-phẩm-mới)  
-   * [Cập nhật sản phẩm ](#cập-nhật-sản-phẩm )  
-   * [Xóa sản phẩm ](#xóa-sản-phẩm)
-   * [Xóa danh sách sản phẩm](#xóa-danh-sách-sản-phẩm)
-   * [Tìm kiếm sản phẩm của shop ](#tìm-kiếm-sản-phẩm-của-shop)
-   * [Lấy chi tiết sản phẩm của người dùng ](#lấy-chi-tiết-sản-phẩm-của-người-dùng)
-   * [Lấy chi tiết sản phẩm của shop ](#lấy-chi-tiết-sản-phẩm-của-shop)
+   * [1.1: Thêm sản phẩm mới](#11--thêm-sản-phẩm-mới)  
+   * [1.2: Cập nhật sản phẩm ](#12--cập-nhật-sản-phẩm )  
+   * [1.3: Xóa sản phẩm ](#13--xóa-sản-phẩm)
+   * [1.4: Xóa danh sách sản phẩm](#14--xóa-danh-sách-sản-phẩm)
+   * [1.5: Tìm kiếm sản phẩm của shop ](#15--tìm-kiếm-sản-phẩm-của-shop)
+   * [1.6: Lấy chi tiết sản phẩm của người dùng ](#16--lấy-chi-tiết-sản-phẩm-của-người-dùng)
+   * [1.7: Lấy chi tiết sản phẩm của shop ](#17--lấy-chi-tiết-sản-phẩm-của-shop)
   
 ### 1.1  Thêm sản phẩm mới  
  - Router: **/api/product**  
@@ -176,7 +176,7 @@
     |    idCategory     |    string | null |         Id của danh mục      |
     |    idCategorySub     |    string | null |         Id của danh mục con      |
     |    minPrice     |    number | 0 |         khoảng giá thấp nhất      |
-    |    maxPrice     |    number | 100.000.000.000 |         khoảng giá thấp nhất      |
+    |    maxPrice     |    number | 100.000.000.000 |         khoảng giá cao nhất      |
 
 - Dữ liệu trả về
 
