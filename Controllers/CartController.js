@@ -7,13 +7,12 @@ const UserService = require("../Services/usersService");
 
 module.exports = {
     postCart: (req, res, next) => {
-        console.log("request cart:: ", req);
+        // console.log("request cart:: ", req);
         const { ProductId, Quantity, UserId, Title, Des,
         } = req.body;
         try {
             Product.findOne({ _id: ProductId }, async (err, resFindProduct) => {
                 if (err) return res.status(400).json({ message: "Sản phẩm không còn tồn tại", errors: err, status: false });
-               console.log("tess", resFindProduct);
                 if (resFindProduct) {
                     resFindProduct.Quantity = Quantity;
                     const Total = Quantity * resFindProduct.Price;
@@ -22,7 +21,6 @@ module.exports = {
                         if (resFindUser) {
                             const itemIndex = await resFindUser.ListProduct.findIndex(p => p._id == ProductId);
                             if (itemIndex > -1) {
-                                //product exists in the cart, update the quantity
                                 resFindUser.ListProduct[itemIndex].Quantity += Quantity;
                                 let totals = await resFindUser.ListProduct.reduce((acc, next) =>
                                     acc + next.Quantity
@@ -77,20 +75,6 @@ module.exports = {
                                 });
                             }
                         } else {
-                            //no cart for user, create new cart
-                            // let totals ;
-                            // let prices ;
-                            // if(resFindUser.ListProduct){
-                            //     totals = await resFindUser.ListProduct.reduce((acc, next) =>
-                            //     acc + next.Quantity
-                            //     , 0);
-                            //     prices = await resFindUser.ListProduct.reduce((acc, next) =>
-                            //     acc + (next.Price * next.Quantity)
-                            //     , 0);
-                            // }else{
-                            //     totals=
-                            // }
-
                             SubTotal = Quantity;
                             SubPrice = Quantity * resFindProduct.Price;
                             const ListProduct = [];
@@ -130,7 +114,6 @@ module.exports = {
         // console.log(UserId)
         Cart.findOne({ UserId: UserId }, async (err, resFindUser) => {
             if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-            if (!resFindUser) return res.status(400).json({ message: "Không tìm thấy User", data: null, status: false });
             if (resFindUser) {
                 resFindUser.ListProduct.findIndex(p => p._id == ProductId) !== -1 && resFindUser.ListProduct.splice(resFindUser.ListProduct.findIndex(p => p._id == ProductId), 1)
                 let totals = await resFindUser.ListProduct.reduce((acc, next) =>

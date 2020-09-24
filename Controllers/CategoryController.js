@@ -63,7 +63,7 @@ module.exports = {
         if(updateCate.Title === "") return res.status(400).json({ message: "Title not null", status: false, code: 0});
         if(updateCate.Description === "") return res.status(400).json({ message: "Descriptio  not null", status: false, code: 0});
        
-        CategoryService.findOneCateById(id,(err, resFindCate) => {npm
+        CategoryService.findOneCateById(id,(err, resFindCate) => {
             if(err) return res.status(400).json({ message: "There was an error processing", errors: err, status: false});
             if(!resFindCate) return res.status(400).json({ message: "not find Category", data: null,status: false});
 

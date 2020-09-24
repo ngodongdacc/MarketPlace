@@ -8,6 +8,7 @@ const { IsJsonString } = require("../validator/validator");
 module.exports = {
     create_product: (req, res) => {
         const product = req.body
+<<<<<<< HEAD
         // product.Image = req.file.path
         // console.log(req.file.path);
         if (!product.IdUser) return res.status(400).json({ message: "Vui lòng nhập IdUser", status: false });
@@ -15,6 +16,14 @@ module.exports = {
         if (!product.IdCategory) return res.status(400).json({ message: "Vui lòng nhập IdCategory", status: false });
         if (!product.IdCategorySub) return res.status(400).json({ message: "Vui lòng nhập IdCategorySub", status: false });
         if (!product.Name) return res.status(400).json({ message: "Vui lòng nhập Name", status: false });
+=======
+   
+        if(!product.IdUser) return res.status(400).json({message: "Vui lòng nhập IdUser", status:false});
+        if(!product.IdShop) return res.status(400).json({message: "Vui lòng nhập IdShop",status: false});
+        if(!product.IdCategory) return res.status(400).json({message: "Vui lòng nhập IdCategory",status: false});
+        if(!product.IdCategorySub) return res.status(400).json({message: "Vui lòng nhập IdCategorySub",status: false});
+        if(!product.Name) return res.status(400).json({message: "Vui lòng nhập Name", status: false});
+>>>>>>> hoang
 
         Products.create(product, (err, resProduct) => {
             if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
