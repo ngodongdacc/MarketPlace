@@ -243,6 +243,7 @@ module.exports = {
                 };
                 if(req.query.idCategory) query.$and.push({ IdCategory: new mongoose.mongo.ObjectId(req.query.idCategory) })
                 if(req.query.idTrademark) query.$and.push({ IdTrademark: new mongoose.mongo.ObjectId(req.query.idTrademark) })
+                if(req.query.idCategorySub) query.$and.push({ IdCategorySub: new mongoose.mongo.ObjectId(req.query.idCategorySub) })
 
                 cb(null, query)
             },

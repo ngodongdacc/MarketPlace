@@ -6,7 +6,7 @@
 ##### Data structure (Product object)
 
 |Stt|Tên trường| Kiểu dữ liệu | Giá mặc định | Bắt buộc | Mô tả |
-|:------------------:|:------------------:  |:------------:    |:----------------:    |:--------:    |:--------------------------------------------------:  ||2|  
+|:------------------:|:------------------:  |:------------:    |:----------------:    |:--------:    |:--------------------------------------------------:  |  
 |1| _id               | ObjectId  | random | required | Id của sản phẩm |
 |2| Name              | String    |           | required | Tên của sản phẩm |
 |3| IdUser            | ObjectId  |           | required | Id của tài khoản đăng sản phẩm lên |
@@ -40,7 +40,7 @@
 |31| Model                      | String         |    null     |           |Dòng sản phẩm          |
 |32| Unit                       | String        |    null     |           | Đơn vị tính          |
 |33| Date                       | Date        |    Now     |           | ngày tạo          |
-|34| DateUpdate                 | Date       |    Date.now     |           | ngày cập nhật          |
+|34| DateUpdate                 | Date       |    now     |           | ngày cập nhật          |
 |35| DeliveryAddress            | String        |    null     |           | địa chỉ giao hàng         |
 |36| Material                   | String        |    null     |           | Chất liệu        |
 |37| Size                       | String        |    null     |           | Kích cỡ         |
@@ -80,3 +80,132 @@
  - Function: **create_product()**  
  - Method: **POST**
  - Paremeter: 
+ - Body:
+
+    | Tên Trường  | Kiểu dữ liệu     |               Mô tả                  |  
+    |:----------:  |:------------:    |:--------------------------------:    |  
+    |    body     |    object |         [ Product object](#data-structure-user-object)      |
+
+- Dữ liệu trả về
+
+    | Tên Trường   | Kiểu dữ liệu     |                        Mô tả                         |  
+    |:----------:  |:------------:    |:---------------------------------------------------: |  
+    |   data      |    object        | [ Product object](#data-structure-user-object)|  
+    |   status     |    boolean         | true: thành công, false: thất bại                          |  
+    |   message    |    string        | Tin nhắn trả về                                      |  
+  
+### 1.2  Cập nhật sản phẩm  
+ - Router: **/api/product/update/:id**  
+ - Function: **update_product()**  
+ - Method: **POST**
+ - Paremeter: 
+   
+    | Tên Trường  | Kiểu dữ liệu     |               Mô tả                  |  
+    |:----------:  |:------------:    |:--------------------------------:    |  
+    |    id     |    String  |         id của product      |
+
+ - Body:
+
+    | Tên Trường  | Kiểu dữ liệu     |               Mô tả                  |  
+    |:----------:  |:------------:    |:--------------------------------:    |  
+    |    body     |    object |         [ Product object](#data-structure-user-object)      |
+
+- Dữ liệu trả về
+
+    | Tên Trường   | Kiểu dữ liệu     |                        Mô tả                         |  
+    |:----------:  |:------------:    |:---------------------------------------------------: |  
+    |   data      |    object        | [ Product object](#data-structure-user-object)    |  
+    |   status     |    boolean         | true - thành công, false - thất bại                           |  
+    |   message    |    string        | Tin nhắn trả về                                      |  
+  
+### 1.3  Xóa sản phẩm  
+ - Router: **/api/product/delete/:id**  
+ - Function: **remove_product()**  
+ - Method: **POST**
+ - Paremeter: 
+        
+    | Tên Trường  | Kiểu dữ liệu     |               Mô tả                  |  
+    |:----------:  |:------------:    |:--------------------------------:    |  
+    |    id     |    String  |         id của product      |
+
+ - Body:
+
+    | Tên Trường  | Kiểu dữ liệu     |               Mô tả                  |  
+    |:----------:  |:------------:    |:--------------------------------:    |  
+    |    body     |    object |         [ Product object](#data-structure-user-object)      |
+
+- Dữ liệu trả về
+
+    | Tên Trường   | Kiểu dữ liệu     |                        Mô tả                         |  
+    |:----------:  |:------------:    |:---------------------------------------------------: |  
+    |   data      |    object        | [ Product object](#data-structure-user-object)  + token    |  
+    |   status     |    boolean         | true - Thành công; false - Có lỗi                           |  
+    |   message    |    string        | Tin nhắn trả về                                      |  
+
+### 1.4  Xóa danh sách sản phẩm  
+ - Router: **/api/product/list/delete**  
+ - Function: **remove_list_product()**  
+ - Method: **POST**
+ - Paremeter: 
+
+ - Body:
+
+    | Tên Trường  | Kiểu dữ liệu     |               Mô tả                  |  
+    |:----------:  |:------------:    |:--------------------------------:    |  
+    |    listIdProduct     |    array |         Danh sách id của product      |
+
+- Dữ liệu trả về
+
+    | Tên Trường   | Kiểu dữ liệu     |                        Mô tả                         |  
+    |:----------:  |:------------:    |:---------------------------------------------------: |  
+    |   data      |    object        |  Số lượng prouct xóa thành công   |  
+    |   status     |    boolean         | true - Thành công; false - Có lỗi                           |  
+    |   message    |    string        | Tin nhắn trả về                                      |  
+
+### 1.5  Tìm kiếm sản phẩm của shop  
+ - Router: **/api/product/search**  
+ - Function: **search_product()**  
+ - Method: **GET**
+ - Paremeter: 
+    | Tên Trường  | Kiểu dữ liệu     | mặc định |               Mô tả                  |  
+    |:----------:  |:------------:|:------------:    |:--------------------------------:    |  
+    |    search     |    string | null |         Từ khóa tìm kiếm      |
+    |    page     |    number | 1 |         trang cần xem     |
+    |    limit     |    number | 20 |         Số lượng kết quả trả về      |
+    |    sort     |    object | {"Date": -1} |         Trường sắp xếp      |
+    |    idCategory     |    string | null |         Id của danh mục      |
+    |    idCategorySub     |    string | null |         Id của danh mục con      |
+    |    minPrice     |    number | 0 |         khoảng giá thấp nhất      |
+    |    maxPrice     |    number | 100.000.000.000 |         khoảng giá thấp nhất      |
+
+- Dữ liệu trả về
+
+    | Tên Trường   | Kiểu dữ liệu     |                        Mô tả                         |  
+    |:----------:  |:------------:    |:---------------------------------------------------: |  
+    |   data      |    object        |  Danh sách sản phấm tìm thấy   |  
+    |   status     |    boolean         | true - Thành công; false - Có lỗi                           |  
+    |   message    |    string        | Tin nhắn trả về                                      |  
+
+### 1.6  Lấy chi tiết sản phẩm của người dùng  
+ - Router: **/api/product**  
+ - Function: **get_product()**  
+ - Method: **GET**
+ - Paremeter:
+    | Tên Trường  | Kiểu dữ liệu     |              Mô tả                  |  
+    |:----------:  |:------------:   |:--------------------------------:    |  
+    |    id     |    string |          id của product      |
+
+- Dữ liệu trả về
+
+    | Tên Trường   | Kiểu dữ liệu     |                        Mô tả                         |  
+    |:----------:  |:------------:    |:---------------------------------------------------: |  
+    |   data      |    object        |  Chi tiết product   |  
+    |   status     |    boolean         | true - Thành công; false - Có lỗi                           |  
+    |   message    |    string        | Tin nhắn trả về                                      |  
+
+### 1.7  Lấy chi tiết sản phẩm của shop  
+ - Router: **/**  
+ - Function: **()**  
+ - Method: **GET**
+ - Paremeter: 
+  
