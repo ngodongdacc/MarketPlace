@@ -63,8 +63,8 @@ module.exports = {
                             }else{
                                 res.json({
                                     message: "Tạo đơn hàng thất bại",
-                                    data: null,
-                                    status: false
+                                    errors: err,
+                                    status: 400
                                 })
                             }
                     })
