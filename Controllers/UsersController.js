@@ -11,7 +11,7 @@ const usersService = require("../Services/usersService");
 
 module.exports = {
   // Tạo tài khoản mới
-  postCreateUser : async (req, res, next) => {
+  post_create_user : async (req, res, next) => {
     try {
       const { FullName, Email, Password, Phone } = req.body
       if (!FullName)
@@ -122,7 +122,7 @@ module.exports = {
   },
 
   // Đăng nhập
-  postLogin : async (req, res) => {
+  post_login : async (req, res) => {
     const { Username, Password } = req.body
     if (!Username) // kiểm tra Username
       return res.status(400)
@@ -191,7 +191,7 @@ module.exports = {
   },
 
   // lấy thông tin user
-  getProfile : async (req, res) => {
+  get_profile : async (req, res) => {
     res.send({
       code: 1,
       data: {
@@ -202,7 +202,7 @@ module.exports = {
   },
 
   // Cập nhật thông tin
-  postUpdate : async (req, res) => {
+  post_update : async (req, res) => {
     var userUpdate = req.body;
       // if(req.body.Fullname)  userUpdate.Fullname =  req.body.Fullname;
       // if(req.body.LastName)  userUpdate.LastName = req.body.LastName;
@@ -303,7 +303,7 @@ module.exports = {
       })
     })
   },
-  getSearch: (req,res) => {
+  get_search: (req,res) => {
     const search = {
       text: req.query.search || "",
       limit: req.query.limit || 20,
