@@ -16,7 +16,6 @@ module.exports = {
         if (!product.IdCategorySub) return res.status(400).json({ message: "Vui lòng nhập IdCategorySub", status: false });
         if (!product.Name) return res.status(400).json({ message: "Vui lòng nhập Name", status: false });
 
-
         Products.create(product, (err, resProduct) => {
             if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
             res.json({
@@ -236,13 +235,14 @@ module.exports = {
                         {
                             Price: { 
                                 $gte: Number(req.query.minPrice) || 0 , 
-                                $lt: Number(req.query.maxPrice) || process.env.MAXPRICE || 100000000000
+                                $lt: Number(req.query.maxPrice) || Number(process.env.MAXPRICE) || 100000000000
                             },
                         }
                     ]
                 };
                 if(req.query.idCategory) query.$and.push({ IdCategory: new mongoose.mongo.ObjectId(req.query.idCategory) })
                 if(req.query.idTrademark) query.$and.push({ IdTrademark: new mongoose.mongo.ObjectId(req.query.idTrademark) })
+                if(req.query.idCategorySub) query.$and.push({ IdCategorySub: new mongoose.mongo.ObjectId(req.query.idCategorySub) })
 
                 cb(null, query)
             },
@@ -316,7 +316,7 @@ module.exports = {
                 message: "Lấy sản phẩm thành công",
                 data: {
                     products: results[0],
-                    counts: results[1]
+                    counts: results[1][0] ? results[1][0].counts : 0
                 },
                 status: true
             })

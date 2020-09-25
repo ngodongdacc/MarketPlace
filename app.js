@@ -11,7 +11,7 @@ var cors = require('cors')
 dotenv.config();
 
 require("./Controllers/Passport");
-require('./Model/index');
+require('./Model/database');
 
 var app = express();
 

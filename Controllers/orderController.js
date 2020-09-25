@@ -278,4 +278,27 @@ module.exports = {
         })
     },
 
+    deleteListOrder: async(req, res) => {
+        const ListIdOrder = req.body.ListId;
+        if(!ListIdOrder || (Array.isArray(ListIdOrder) && ListIdOrder.length === 0)) return res.status(400).json({ message: "Vui lòng chọn đơn hàng cần xóa", status: false });
+        if(!Array.isArray(ListIdOrder)) return res.status(400).json({message:"ListId phải là Array", stutus: false});
+        Order.findOne({_id: ListIdOrder}, async(err, resDataOrder) => {
+            if (err) return res.status(400).json({ message: "Đơn hàng không còn tồn tại", errors: err, status: false });
+            if(!resDataOrder){
+                return res.json({message: "Không tìm thấy IdOrder", data: null, status: false})
+            }else{
+                Order.deleteMany({ _id: { $in: ListIdOrder } })
+                .exec((err, resData) => {
+                    if (err) if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
+                    res.send({
+                        message: `Xóa thành công ${resData.n} đơn hàng`,
+                        data: resData,
+                        status: true
+                    })
+                })
+            }
+            
+        })
+    }
+
 }
