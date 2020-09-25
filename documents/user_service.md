@@ -35,7 +35,7 @@
    * [2.6: Lấy thông tin tài khoản người dùng ](#26--lấy-thông-tin-tài-khoản-người-dùng)
    
   
-### 2.1  Thêm tài khoản người dùng mới  
+### 2.1  Đăng ký tài khoản người dùng
  - Router: **/api/users**  
  - Function: **post_create_user()**  
  - Method: **POST**
