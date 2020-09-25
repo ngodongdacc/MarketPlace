@@ -176,10 +176,10 @@ module.exports = {
         config.limit = req.query.limit ? Number(req.query.limit):20 
         config.skip = (config.page-1)*config.limit;
 
-        if(!config.UserId) return res.status(400).json({message: "Vui lòng nhập IdUser", status: false})
+        if(!config.UserId) return res.status(400).json({message: "Vui lòng nhập UserId", status: false})
         const query = {
-                UserId: new mongo.ObjectId(config.UserId),
-                Name: {$regex: config.search, $options: "i"}
+                Name: { $regex: config.search, $options: "i" },
+                UserId: new mongoose.mongo.ObjectId(config.UserId)
         }
         console.log(query);
         async.parallel([
@@ -187,17 +187,17 @@ module.exports = {
             Order.find(query)
                     .skip(config.skip)
                     .limit(config.limit)
-                    .sort({Name: "desc"})
+                    .sort({Date: "desc"})
                     .exec((e,data) => e ? cb(e): cb(null, data)),  
             (cb) => Order.count(query)
                     .exec((e,data)=> e ? cb(e) : cb(null,data))
         ],(err,results) => {
-            console.log(err);
+            // console.log(err);
             if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false});
             res.json({
                 message: "Lấy danh sách order thành công",
                 data: {
-                    Order: results[0],
+                    order: results[0],
                     count: results[1],
                 },
                 status: true
@@ -208,34 +208,74 @@ module.exports = {
         const config = {};
         config.search = req.query.search || ""
         config.IdCart = req.query.IdCart
-        config.page = req.query.page ? Number(req.query.page):1
-        config.limit = req.query.limit ? Number(req.query.limit):20 
-        config.skip = (config.page-1)*config.limit;
+        config.page = req.query.page ? Number(req.query.page) : 1
+        config.limit = req.query.limit ? Number(req.query.limit) : 20
+        config.skip = (config.page - 1) * config.limit;
 
-        if(!config.IdCart) return res.status(400).json({message: "Vui lòng nhập IdCategory", status: false})
+        if (!config.IdCart) return res.status(400).json({ message: "Vui lòng nhập Id Cart", status: false })
         const query = {
-                            Name: { $regex: config, $options: "i"},
-                            IdCart: new mongoose.mongo.ObjectId(config.IdCart)
-                    }
-            async.parallel([
-                (cb) => 
-                Order.find(query)
-                    .skip(config.skip)
-                    .limit(config.limit)
-                    .sort({Date: "desc"})
-                    .exec((e,data) => e ? cb(e): cb(null, data)),
-                (cb) => Order.count(query)
-                        .exec((e,data)=> e ? cb(e) : cb(null, data))
-            ],(err, results) => {
-                if(err) if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false });
-                res.json({
-                    message: "Lấy danh sách đơn hàng thành công",
-                    data: {
-                        order: results[0],
-                        count: results[1],
-                    },
-                    status: true
-                })
+            Name: { $regex: config.search, $options: "i" },
+            IdCart: new mongoose.mongo.ObjectId(config.IdCart)
+        }
+        console.log(query);
+        async.parallel([
+            (cb) => Order.find(query)
+                .skip(config.skip)
+                .limit(config.limit)
+                .sort({ Date: "desc" })
+                .exec((e, data) => e ? cb(e) : cb(null, data)),
+
+            (cb) => Order.count(query)
+                .exec((e, data) => e ? cb(e) : cb(null, data))
+        ], (err, results) => {
+            console.log(err);
+            if (err) if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
+            res.json({
+                message: "Lấy danh sách đơn hàng thành công",
+                data: {
+                    order: results[0],
+                    count: results[1],
+                },
+                status: true
             })
+        })
     },
+   searchListOrderByShop: (req, res) => {
+
+        const config = {};
+        config.search = req.query.search || ""
+        config.IdShop = req.query.IdShop
+        config.page = req.query.page ? Number(req.query.page) : 1
+        config.limit = req.query.limit ? Number(req.query.limit) : 20
+        config.skip = (config.page - 1) * config.limit;
+
+        if (!config.IdShop) return res.status(400).json({ message: "Vui lòng nhập Id Shop", status: false })
+        const query = {
+            Name: { $regex: config.search, $options: "i" },
+            IdShop: new mongoose.mongo.ObjectId(config.IdShop)
+        }
+        console.log(query);
+        async.parallel([
+            (cb) => Order.find(query)
+                .skip(config.skip)
+                .limit(config.limit)
+                .sort({ Date: "desc" })
+                .exec((e, data) => e ? cb(e) : cb(null, data)),
+
+            (cb) => Order.count(query)
+                .exec((e, data) => e ? cb(e) : cb(null, data))
+        ], (err, results) => {
+            console.log(err);
+            if (err) if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
+            res.json({
+                message: "Lấy danh sách đơn hàng thành công",
+                data: {
+                    order: results[0],
+                    count: results[1],
+                },
+                status: true
+            })
+        })
+    },
+
 }

@@ -7,6 +7,8 @@ router.post("/update/:id",orderController.updateOrder);
 router.get("/get/:id",orderController.getOrder);
 router.post("/delete/:id",orderController.deleteOrder);
 router.get("/getOrderByUsers",orderController.getOrderByIdUsers);
+router.get("/getOrderByCart",orderController.getOrderByCart);
+router.get("/serchListOrderByShop",orderController.searchListOrderByShop);
 
 
 
