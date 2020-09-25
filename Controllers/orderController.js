@@ -285,7 +285,7 @@ module.exports = {
         Order.findOne({_id: ListIdOrder}, async(err, resDataOrder) => {
             if (err) return res.status(400).json({ message: "Đơn hàng không còn tồn tại", errors: err, status: false });
             if(!resDataOrder){
-                return res.json({message: "Không tìm thấy IdOrder", data: null, status: false})
+                return res.json({message: "Không tìm thấy IdOrder", data: resDataOrder, status: false})
             }else{
                 Order.deleteMany({ _id: { $in: ListIdOrder } })
                 .exec((err, resData) => {
