@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const orderController = require("../Controllers/orderController")
+const {checkSignIn} = require("../middleware/auth")
 
-router.post("/create",orderController.createOrder);
+router.post("/create",checkSignIn(),orderController.createOrder);
 router.post("/update/:id",orderController.updateOrder);
 router.get("/get/:id",orderController.getOrder);
 router.post("/delete/:id",orderController.deleteOrder);

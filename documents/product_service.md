@@ -75,7 +75,7 @@
    * [2.6: Lấy chi tiết sản phẩm của người dùng ](#26--lấy-chi-tiết-sản-phẩm-của-người-dùng)
    * [2.7: Lấy chi tiết sản phẩm của shop ](#27--lấy-chi-tiết-sản-phẩm-của-shop)
   
-### 2.1  Thêm sản phẩm mới  
+### 2.12  Thêm sản phẩm mới test
  - Router: **/api/product**  
  - Function: **create_product()**  
  - Method: **POST**
