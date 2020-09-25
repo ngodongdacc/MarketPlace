@@ -20,10 +20,8 @@ module.exports = {
        const IdCart = req.body.IdCart
         const order = req.body
        const UserId = req.body.UserId
-       const IdShop = req.body.IdShop
        const ProductId = req.body.ProductId
        if(!UserId) return res.status(400).json({message: "Vui lòng nhập IdUser", status:false});
-       if(!IdShop) return res.status(400).json({message: "Vui lòng nhập IdShop", status:false});
        if(order.Name=== "") return res.status(400).json({ message: "Tên không được bỏ trống!", status: false, code: 0});
        if(order.Phone=== "") return res.status(400).json({ message: "SĐT không được bỏ trống!", status: false, code: 0});
        if(order.Address=== "") return res.status(400).json({ message: "Địa chỉ không được bỏ trống!", status: false, code: 0});
@@ -285,7 +283,7 @@ module.exports = {
         Order.findOne({_id: ListIdOrder}, async(err, resDataOrder) => {
             if (err) return res.status(400).json({ message: "Đơn hàng không còn tồn tại", errors: err, status: false });
             if(!resDataOrder){
-                return res.json({message: "Không tìm thấy IdOrder", data: resDataOrder, status: false})
+                return res.json({message: "Không tìm thấy IdOrder", data: resDataOrder, status: false});
             }else{
                 Order.deleteMany({ _id: { $in: ListIdOrder } })
                 .exec((err, resData) => {
