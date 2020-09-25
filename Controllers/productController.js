@@ -175,7 +175,6 @@ module.exports = {
 
     // tìm kiếm theo danh mục
     search_category: (req, res) => {
-
         const config = {};
         config.search = req.query.search || ""
         config.IdCategory = req.query.IdCategory

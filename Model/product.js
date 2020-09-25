@@ -40,7 +40,7 @@ const mongoose = require('mongoose');
     WarrantySevice: { type: String}, // Dịch vụ bảo hành ([bảo hành chính hãng, bảo hành thông qua sàn điện tử])
     WarrantyTime: { type: Number}, // Thời gian bảo hành
     WarrantyUnit: { type: String}, // Đơn vị bảo hành ([tháng, năm])
-    ListedPrice: { type: Number}, // Giá niêm yết
+    LiedPrice: { type: Number}, // Giá niêm yết
     Price: { type: Number}, // Giá bán
     CodeProduct: { type: String}, // Mã sản phẩm
     OperationModel: { type: String}, // Mô hình vận hành (kho hàng qt-data)
