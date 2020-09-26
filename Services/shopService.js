@@ -91,6 +91,16 @@ module.exports = {
     } catch (e) {
       throw e
     }
+  },
+  comparePassword : async (myPassword,hash,cb) => {
+    try {         
+      bcrypt.compare(myPassword,hash,(err,isMath) => {
+        if(err) throw err
+        cb(null, isMath)
+      })
+    } catch(e) {
+      throw e
+    }
   }
 
 }
