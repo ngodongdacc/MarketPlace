@@ -212,7 +212,8 @@ module.exports = {
                                 Phone: userTrue.Phone,
                                 Country: userTrue.Country,
                                 CommodityIndustry: userTrue.CommodityIndustry,
-                                BusinessRegisCode: userTrue.BusinessRegisCode
+                                BusinessRegisCode: userTrue.BusinessRegisCode,
+                                IdShop:   userTrue._id
                             },
                             token: "Bearer " + token
                         },
