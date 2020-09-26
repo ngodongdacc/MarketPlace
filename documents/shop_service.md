@@ -31,12 +31,12 @@
 
 - Source code: ./Controller/ShopController.js
 - Danh sách routers
-  - [2.1: Đăng ký tài khoản người dùng shop](#21--đăng-ký-tài-khoản-người-dùng-shop)
-  - [2.2: Đăng nhập shop](#22--đăng-nhập-shop)
-  - [2.3: Cập nhật thông tin tài khoản người dùng shop](#23--cập-nhật-thông-tin-tài-khoản-người-dùng-shop)
-  - [2.4: Xóa danh sách người dùng shop](#24--xóa-danh-sách-người-dùng-shop)
+  - [2.1: Đăng ký tài khoản người dùng shop](#21-đăng-ký-tài-khoản-người-dùng-shop)
+  - [2.2: Đăng nhập shop](#22-đăng-nhập)
+  - [2.3: Cập nhật thông tin tài khoản người dùng shop](#23-cập-nhật-thông-tin-tài-khoản-người-dùng)
+  <!-- - [2.4: Xóa danh sách người dùng shop](#24--xóa-danh-sách-người-dùng-shop)
   - [2.5: Tìm kiếm tài khoản người dùng shop ](#25--tìm-kiếm-tài-khoản-người-dùng-shop)
-  - [2.6: Lấy thông tin tài khoản người dùng shop ](#26--lấy-thông-tin-tài-khoản-người-dùng-shop)
+  - [2.6: Lấy thông tin tài khoản người dùng shop ](#26--lấy-thông-tin-tài-khoản-người-dùng-shop) -->
 
 ### 2.1 Đăng ký tài khoản người dùng shop
 
