@@ -201,6 +201,6 @@
 
   | Tên Trường | Kiểu dữ liệu |                    Mô tả                    |
   | :--------: | :----------: | :-----------------------------------------: |
-  |    data    |    object    | [ User object](#data-structure-shop-object) |
+  |    data    |    object    | [ Shop object](#data-structure-shop-object) |
   |   status   |   boolean    |      true - Thành công; false - Có lỗi      |
   |  message   |    string    |               Tin nhắn trả về               |
