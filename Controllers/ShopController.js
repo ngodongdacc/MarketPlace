@@ -7,7 +7,7 @@ const ShopService = require("../Services/shopService");
 const shopService = require("../Services/shopService");
 
 module.exports = {
-    postshop: async (req, res, next) => {
+    postshop: (req, res, next) => {
         try {
             const { Phone, EmailOwner, PasswordShop, ShopName, BusinessRegisCode } = req.body
             if (!ShopName)
@@ -156,7 +156,7 @@ module.exports = {
 
     },
     // Đăng nhập
-    post_login: async (req, res) => {
+    post_login: (req, res) => {
         const { Email, Password } = req.body
 
         if (!Email) // kiểm tra Username
@@ -213,7 +213,7 @@ module.exports = {
                                 Country: userTrue.Country,
                                 CommodityIndustry: userTrue.CommodityIndustry,
                                 BusinessRegisCode: userTrue.BusinessRegisCode,
-                                IdShop:   userTrue._id
+                                IdShop: userTrue._id
                             },
                             token: "Bearer " + token
                         },
@@ -231,19 +231,27 @@ module.exports = {
             })
         })
     },
-    updateShop: async (req, res, next) => {
-        var userUpdate = {};
-        if (req.body.StoreOwnername) userUpdate.StoreOwnername = req.body.StoreOwnername;
-        if (req.body.Phone) userUpdate.Phone = req.body.Phone;
-        if (req.body.EmailOwner) userUpdate.EmailOwner = req.body.EmailOwner;
-        if (req.body.PasswordShop) userUpdate.PasswordShop = req.body.PasswordShop;
+    updateShop: (req, res, next) => {
+        var shopUpdate = {};
+        if (req.body.ShopName) shopUpdate.ShopName = req.body.ShopName;
+        if (req.body.StoreOwnername) shopUpdate.StoreOwnername = req.body.StoreOwnername;
+        if (req.body.Phone) shopUpdate.Phone = req.body.Phone;
+        if (req.body.EmailOwner) shopUpdate.EmailOwner = req.body.EmailOwner;
+        if (req.body.PasswordShop) shopUpdate.PasswordShop = req.body.PasswordShop;
         var id = req.params.id;
         if (!id) return res.status(400).json({ message: "ID Shop is required", status: false, code: 0 })
-        const { Phone, EmailOwner, PasswordShop, ShopName } = req.body
+        const { Phone, EmailOwner, PasswordShop, ShopName, StoreOwnername } = req.body
         if (!ShopName)
             return res.status(400) // kiểm tra Usename
                 .json({
                     message: "Please enter your Shop name",
+                    status: false,
+                    code: 0
+                })
+        if (!StoreOwnername)
+            return res.status(400) // kiểm tra StoreOwnername
+                .json({
+                    message: "Please enter your Store Owner name",
                     status: false,
                     code: 0
                 })
@@ -290,19 +298,20 @@ module.exports = {
                     status: false,
                     code: 0
                 })
-  
-        if (userUpdate.StoreOwnername === "") return res.status(400).json({ message: "StoreOwnername not null", status: false, code: 0 });
-        if (userUpdate.EmailOwner === "") return res.status(400).json({ message: "Email not null", status: false, code: 0 });
-        if (userUpdate.Phone === "") return res.status(400).json({ message: "Phone Number not null", status: false, code: 0 });
-        if (userUpdate.Phone && !isPhone(userUpdate.Phone)) return res.status(400).json({ message: "Số điện thoại không đúng định dạng", status: false, code: 0 });
-        ShopService.findOneUserByID(id, (err, resFindUser) => {
+
+        if (shopUpdate.StoreOwnername === "") return res.status(400).json({ message: "StoreOwnername not null", status: false, code: 0 });
+        if (shopUpdate.EmailOwner === "") return res.status(400).json({ message: "Email not null", status: false, code: 0 });
+        if (shopUpdate.Phone === "") return res.status(400).json({ message: "Phone Number not null", status: false, code: 0 });
+        if (shopUpdate.ShopName === "") return res.status(400).json({ message: "Shop Name not null", status: false, code: 0 });
+        if (shopUpdate.Phone && !isPhone(shopUpdate.Phone)) return res.status(400).json({ message: "Số điện thoại không đúng định dạng", status: false, code: 0 });
+        Shop.findById(id, (err, resFindShop) => {
             if (err) return res.status(400).json({ message: "There was an error processing", errors: err, status: false });
-            if (!resFindUser) return res.status(400).json({ message: "not find user", data: null, status: false });
+            if (!resFindShop) return res.status(400).json({ message: "not find shop", data: null, status: false });
 
             async.parallel([
                 (cb) => {// kiểm tra Email
-                    if (userUpdate.Email)
-                        ShopService.findEmail(userUpdate.Email, (err, resEmailUser) => {
+                    if (shopUpdate.Email)
+                        ShopService.findEmail(shopUpdate.Email, (err, resEmailUser) => {
                             if (err) cb(err)
                             else if (!resEmailUser || (resEmailUser && resEmailUser._id.toString()) === id) cb(null, true);
                             else cb(null, false);
@@ -310,8 +319,8 @@ module.exports = {
                     else cb(null, true)
                 },
                 (cb) => {// kiểm tra Phone
-                    if (userUpdate.Phone)
-                        ShopService.findPhone(userUpdate.Phone, (err, resPhone) => {
+                    if (shopUpdate.Phone)
+                        ShopService.findPhone(shopUpdate.Phone, (err, resPhone) => {
                             if (err) cb(err)
                             else if (!resPhone || (resPhone && resPhone._id.toString() === id)) cb(null, true);
                             else cb(null, false);
@@ -322,16 +331,16 @@ module.exports = {
                 if (err) return res.status(400).json({ message: "There was an error processing", errors: err, status: false });
                 if (!results[0]) return res.status(400).json({ message: "Email already exists", status: false, code: 0 });
                 if (!results[1]) return res.status(400).json({ message: "Phone already exists", status: false, code: 0 });
-                if (userUpdate.PasswordShop) {
+                if (shopUpdate.PasswordShop) {
                     bcrypt.genSalt(10, function (err, salt) {
-                        bcrypt.hash(userUpdate.PasswordShop, salt, async function (err, hash) {
-                            userUpdate.PasswordShop = hash;
-                            Shop.findByIdAndUpdate(id, userUpdate, (err, resUser) => {
+                        bcrypt.hash(shopUpdate.PasswordShop, salt, async function (err, hash) {
+                            shopUpdate.PasswordShop = hash;
+                            Shop.findByIdAndUpdate(id, shopUpdate, (err, resShop) => {
                                 if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-                                delete resUser.PasswordShop;
+                                delete resShop.PasswordShop;
                                 res.json({
                                     message: "Cập nhật thành công",
-                                    data: resUser,
+                                    data: resShop,
                                     status: true,
                                     code: 1
                                 });
@@ -339,11 +348,11 @@ module.exports = {
                         });
                     });
                 } else {
-                    ShopService.updateShop(id, userUpdate, (err, resUser) => {
+                    ShopService.updateShop(id, shopUpdate, (err, resShop) => {
                         if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
                         res.json({
                             message: "Cập nhật thành công",
-                            data: resUser,
+                            data: resShop,
                             status: true,
                             code: 1
                         });
@@ -354,7 +363,7 @@ module.exports = {
             });
         })
     }
-    , deleteShop: async (req, res) => {
+    , deleteShop: (req, res) => {
         const id = req.params.id
         if (!id) return res.status(400).json({ message: "id is required", status: false, code: 0 })
         ShopService.findOneUserByID(id, (err, resData) => {
@@ -372,7 +381,7 @@ module.exports = {
             })
         })
     },
-    delete_listShop: async (req, res) => {
+    delete_listShop: (req, res) => {
         const ListIdOwnerShop = req.body.ListId;
         if (!ListIdOwnerShop || (Array.isArray(ListIdOwnerShop) && ListIdOwnerShop.length === 0)) return res.status(400).json({ message: "Vui lòng chọn danh sách cần xóa", status: false });
         if (!Array.isArray(ListIdOwnerShop)) return res.status(400).json({ message: "ListId phải là Array", stutus: false });
@@ -394,71 +403,84 @@ module.exports = {
 
         })
     }
-    , getShop: async (req, res) => {
-        let config = {
-            limit: req.query.limit || 20,
-            page: req.query.page || 1,
-        }
+    , getShop: (req, res) => {
+        const config = {};
+        config.page = req.query.page ? Number(req.query.page) : 1
+        config.limit = req.query.limit ? Number(req.query.limit) : 20
         config.skip = (config.page - 1) * config.limit;
         async.parallel([
-            (cb) => {
-                Shop.find()
-                    .skip(config.skip)
-                    .limit(config.limit)
-                    .sort({ Date: -1 })
-                    .exec((e, u) => e ? cb(e) : cb(null, u))
-            },
-            (cb) => {
-                Shop.count().exec((e, c) => e ? cb(e) : cb(null, c))
-            }
+            (cb) => Shop
+                .find({})
+                .skip(config.skip)
+                .limit(config.limit)
+                .sort({ createdAt: "desc" })
+                .exec((e, data) => e ? cb(e) : cb(null, data)),
+            (cb) => Shop.count().exec((e, data) => e ? cb(e) : cb(null, data))
         ], (err, results) => {
-
-            if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
+            if (err) if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
             res.json({
-                message: "Danh sách chủ cửa hàng",
+                message: "Lấy danh sách cửa hàng thành công",
                 data: {
-                    users: results[0],
-                    count: results[1]
-                }
+                    shop: results[0],
+                    count: results[1],
+                },
+                status: true
             })
         })
     },
-    searchShop: async (req, res) => { // Tìm kiếm theo điều kiện yêu cầu: Id, tên, địa chỉ, nghành hàng
-        const search = {
-            text: req.query.search || "",
-            limit: req.query.limit || 20,
-            page: req.query.page || 1,
-        }
+    searchShop: (req, res) => { // Tìm kiếm theo điều kiện yêu cầu: Id, tên, địa chỉ, nghành hàng
+        try {
+            const config = {};
+            config.Country = req.query.Country
+            config.StoreOwnername = req.query.StoreOwnername
+            config.ShopName = req.query.ShopName
+            config.CommodityIndustry = req.query.CommodityIndustry
+            config.page = req.query.page ? Number(req.query.page) : 1
+            config.limit = req.query.limit ? Number(req.query.limit) : 20
+            config.skip = (config.page - 1) * config.limit;
 
-        search.skip = (search.page - 1) * search.limit;
-        async.parallel([
-            (cb) => {
-                Shop.find()
-                    .exec((e, u) => e ? cb(e) : cb(null, u))
-            },
-            (cb) => {
-                ShopService.countOwnerShop((err, count) => {
-                    if (err) return cb(err);
-                    cb(null, count);
+            const query = {
+                ShopName: { $regex: config.ShopName, $options: "i" },
+                CommodityIndustry: { $regex: config.CommodityIndustry, $options: "i" },
+                Country: { $regex: config.Country, $options: "i" },
+                StoreOwnername: { $regex: config.StoreOwnername, $options: "i" }
+            }
+            async.parallel([
+                (cb) =>
+                    Shop.find(query)
+                        .skip(config.skip)
+                        .limit(config.limit)
+                        .sort({ ShopName: "desc" })
+                        .exec((e, resDataSearch) => e ? cb(e) : cb(null, resDataSearch)),
+                (cb) => Shop.count(query)
+                    .exec((e, resDataSearch) => e ? cb(e) : cb(null, resDataSearch))
+            ], (err, results) => {
+                if (err) if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
+                res.json({
+                    message: "Lấy danh sách sản phẩm thành công",
+                    data: {
+                        shop: results[0],
+                        count: results[1],
+                    },
+                    status: true
                 })
-            }
-        ], (err, results) => {
-            if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-            res.json({
-                message: "Danh sách chủ cửa hàng",
-                data: {
-                    users: results[0],
-                    count: results[1]
-                }
             })
-        })
+        } catch (error) {
+            console.log(error);
+            res.status(500)
+                .json({
+                    message: "lỗi hệ thống",
+                    errors: error,
+                    status: 500
+                })
+        }
     },
-    shop_details_forIdOwnerShop: async (req, res) => {
+    shop_details_forIdOwnerShop: (req, res) => {
         const search = req.query.search;
         if (!search)  // Kiểm tra so dien thoai
             return res.status(400)
                 .json({
-                    message: "Id is required",
+                    message: "Id Shop is required",
                     status: false,
                     code: 0
                 })
