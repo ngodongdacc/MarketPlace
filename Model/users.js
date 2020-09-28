@@ -14,8 +14,8 @@ const mongoose = require('mongoose');
     Sale: {type: Boolean, default: false }, // nhận chương trình khuyến mãi
     Role: {
       type: String,
-      default: 'basic',
-      enum: ["basic", "supervisor", "admin"]
+      default: 'user',
+      enum: ["user", "supervisor", "admin"]
      }, // Phân quyền
     Date: { type: Date, default: Date.now }, // Ngày tạo
     DateUpdate: { type: Date, default: Date.now }, // Ngày update

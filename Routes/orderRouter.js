@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const orderController = require("../Controllers/orderController")
-
 const {checkSignIn} = require("../middleware/auth")
 // const {} = require("../validator/order/validatorOrder")
 
