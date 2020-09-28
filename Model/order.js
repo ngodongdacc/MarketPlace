@@ -8,6 +8,7 @@ const { schema } = require('./category');
     UserId: {type: mongoose.Types.ObjectId, required:true},
     Products: {type: Array, required:true},
     Name: {type: String, required:true},
+    Email: {type: String},
     Address: {type: String},
     Phone: {type: Number},
     Payment: {type: String},
