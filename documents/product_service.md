@@ -67,13 +67,13 @@
 ### Thông tin service * Tên service: **Product**  
 * Source code: ./Controller/productController.js  
 * Danh sách routers  
-   * [2.1: Thêm sản phẩm mới](#21--thêm-sản-phẩm-mới)  
-   * [2.2: Cập nhật sản phẩm ](#22--cập-nhật-sản-phẩm )  
-   * [2.3: Xóa sản phẩm ](#23--xóa-sản-phẩm)
-   * [2.4: Xóa danh sách sản phẩm](#24--xóa-danh-sách-sản-phẩm)
-   * [2.5: Tìm kiếm sản phẩm của shop ](#25--tìm-kiếm-sản-phẩm-của-shop)
-   * [2.6: Lấy chi tiết sản phẩm của người dùng ](#26--lấy-chi-tiết-sản-phẩm-của-người-dùng)
-   * [2.7: Lấy chi tiết sản phẩm của shop ](#27--lấy-chi-tiết-sản-phẩm-của-shop)
+   * [2.1: Thêm sản phẩm mới](#11--thêm-sản-phẩm-mới)  
+   * [2.2: Cập nhật sản phẩm ](#12--cập-nhật-sản-phẩm )  
+   * [2.3: Xóa sản phẩm ](#13--xóa-sản-phẩm)
+   * [2.4: Xóa danh sách sản phẩm](#14--xóa-danh-sách-sản-phẩm)
+   * [2.5: Tìm kiếm sản phẩm của shop ](#15--tìm-kiếm-sản-phẩm-của-shop)
+   * [2.6: Lấy chi tiết sản phẩm của người dùng ](#16--lấy-chi-tiết-sản-phẩm-của-người-dùng)
+   * [2.7: Lấy chi tiết sản phẩm của shop ](#17--lấy-chi-tiết-sản-phẩm-của-shop)
   
 ### 2.1  Thêm sản phẩm mới  
  - Router: **/api/product**  
@@ -118,7 +118,7 @@
     |   status     |    boolean         | true - thành công, false - thất bại                           |  
     |   message    |    string        | Tin nhắn trả về                                      |  
   
-### 2.3  Xóa sản phẩm  
+### 1.3  Xóa sản phẩm  
  - Router: **/api/product/delete/:id**  
  - Function: **remove_product()**  
  - Method: **POST**
@@ -142,7 +142,7 @@
     |   status     |    boolean         | true - Thành công; false - Có lỗi                           |  
     |   message    |    string        | Tin nhắn trả về                                      |  
 
-### 2.4  Xóa danh sách sản phẩm  
+### 1.4  Xóa danh sách sản phẩm  
  - Router: **/api/product/list/delete**  
  - Function: **remove_list_product()**  
  - Method: **POST**
@@ -162,7 +162,7 @@
     |   status     |    boolean         | true - Thành công; false - Có lỗi                           |  
     |   message    |    string        | Tin nhắn trả về                                      |  
 
-### 2.5  Tìm kiếm sản phẩm của shop  
+### 1.5  Tìm kiếm sản phẩm của shop  
  - Router: **/api/product/search**  
  - Function: **search_product()**  
  - Method: **GET**
@@ -186,7 +186,7 @@
     |   status     |    boolean         | true - Thành công; false - Có lỗi                           |  
     |   message    |    string        | Tin nhắn trả về                                      |  
 
-### 2.6  Lấy chi tiết sản phẩm của người dùng  
+### 1.6  Lấy chi tiết sản phẩm của người dùng  
  - Router: **/api/product**  
  - Function: **get_product()**  
  - Method: **GET**
@@ -203,7 +203,7 @@
     |   status     |    boolean         | true - Thành công; false - Có lỗi                           |  
     |   message    |    string        | Tin nhắn trả về                                      |  
 
-### 2.7  Lấy chi tiết sản phẩm của shop  
+### 1.7  Lấy chi tiết sản phẩm của shop  
  - Router: **/**  
  - Function: **()**  
  - Method: **GET**

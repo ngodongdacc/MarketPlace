@@ -2,12 +2,14 @@ const Users = require("../Model/users");
 const jwt = require("jsonwebtoken");
 const async = require("async");
 const bcrypt = require("bcryptjs");
-const { roles } = require('../middleware/roles')
+const { roles } = require('../middleware/roles');
+const mongoose = require("mongoose");
 
 // Validator
 const { isEmail,isPhone } = require("../validator/validator");
 
 const usersService = require("../Services/usersService");
+const { error_400, error_500, success } = require("../validator/errors");
 
 module.exports = {
   // Tạo tài khoản mới
@@ -192,6 +194,7 @@ module.exports = {
 
   // lấy thông tin user
   get_profile : async (req, res) => {
+    delete req.user.Password;
     res.send({
       code: 1,
       data: {
@@ -199,6 +202,19 @@ module.exports = {
       },
       status: true,
     });
+  },
+  
+  // lấy thông tin user của tài khoản khác
+  get_profile_id : async (req, res) => {
+    let id = req.params.id
+    if(!id) return error_400(res,"Vui lòng nhập id", "id");
+    if(!mongoose.Types.ObjectId.isValid(id)) return error_400(res,"Vui lòng nhập id đúng định dạng", "ObjectId");
+
+    Users.findById(id, (e,u) => {
+      if(e) return error_500(res,e);
+      else if(!u) return error_400(res,"Không tìm thấy tài khoản người dùng",id);
+      else success(res,`Lấy thông tin tài khoản ${id} thành công`,u);
+    })
   },
 
   // Cập nhật thông tin
