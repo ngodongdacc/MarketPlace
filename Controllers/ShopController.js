@@ -7,7 +7,7 @@ const ShopService = require("../Services/shopService");
 const shopService = require("../Services/shopService");
 
 module.exports = {
-    postshop: (req, res, next) => {
+    postshop:async (req, res, next) => {
         try {
             const { Phone, EmailOwner, PasswordShop, ShopName, BusinessRegisCode } = req.body
             if (!ShopName)
@@ -17,6 +17,8 @@ module.exports = {
                         status: false,
                         code: 0
                     })
+            if (Phone && !isPhone(Phone)) return res.status(400).json({ message: "Số điện thoại không đúng định dạng", status: false, code: 0 });
+
             if (PasswordShop.length < 5)  // Kiểm tra password
                 return res.status(400)
                     .json({
@@ -231,7 +233,7 @@ module.exports = {
             })
         })
     },
-    updateShop: (req, res, next) => {
+    updateShop: async(req, res, next) => {
         var shopUpdate = {};
         if (req.body.ShopName) shopUpdate.ShopName = req.body.ShopName;
         if (req.body.StoreOwnername) shopUpdate.StoreOwnername = req.body.StoreOwnername;
@@ -428,7 +430,7 @@ module.exports = {
             })
         })
     },
-    searchShop: (req, res) => { // Tìm kiếm theo điều kiện yêu cầu: Id, tên, địa chỉ, nghành hàng
+    searchShop: async(req, res) => { // Tìm kiếm theo điều kiện yêu cầu: Id, tên, địa chỉ, nghành hàng
         try {
             const config = {};
             config.Country = req.query.Country
