@@ -70,7 +70,7 @@
     |   status     |    boolean         | true: thành công, false: thất bại                          |  
     |   message    |    string        | Tin nhắn trả về                                      |  
 
-## 2.2 Câp nhập 1 đơn hàng
+### 2.2 Câp nhập 1 đơn hàng
 - Router: **/api/order/(id order cần update)**  
  - Function: **updateOrder()**  
  - Method: **POST**
@@ -103,7 +103,7 @@
     |   status     |    boolean         | true: thành công, false: thất bại                          |  
     |   message    |    string        | Tin nhắn trả về                                      |  
 
-## 2.3 Lấy ra chi tiết 1 đơn hàng
+### 2.3 Lấy ra chi tiết 1 đơn hàng
  - Router: **/api/get/(id order)**  
  - Function: **getOrder()**  
  - Method: **GET**
@@ -121,7 +121,7 @@
     |   message    |    string        | Tin nhắn trả 
     về                                      |  
     
-## 2.4 Xoá 1 đơn hàng
+### 2.4 Xoá 1 đơn hàng
 - Router: **/api/delete/:id**  
  - Function: **deleteOrder()**  
  - Method: **POST**
@@ -145,7 +145,7 @@
     |   status     |    boolean         | true - Thành công; false - Có lỗi                           |  
     |   message    |    string        | Tin nhắn trả về                                      |  
 
-## 2.5 Lấy ra danh sách đơn hàng theo ID người dùng
+### 2.5 Lấy ra danh sách đơn hàng theo ID người dùng
 - Router: **/api/getOrderByUsers**  
  - Function: **getOrderByIdUsers()**  
  - Method: **GET**
@@ -167,7 +167,7 @@
     |   status     |    boolean         | true - Thành công; false - Có lỗi                           |  
     |   message    |    string        | Tin nhắn trả về                                      |  
 
-## 2.6 Lấy ra danh sách đơn hàng theo ID giỏ hàng
+### 2.6 Lấy ra danh sách đơn hàng theo ID giỏ hàng
 - Router: **/api/getOrderByCart**  
  - Function: **getOrderByCart()**  
  - Method: **GET**
@@ -189,7 +189,7 @@
     |   status     |    boolean         | true - Thành công; false - Có lỗi                           |  
     |   message    |    string        | Tin nhắn trả về 
 
-## 2.7 Xoá danh sách đơn hàng
+### 2.7 Xoá danh sách đơn hàng
 - Router: **/api/order/list/delete**  
  - Function: **deleteListOrder()**  
  - Method: **POST**
