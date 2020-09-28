@@ -18,4 +18,5 @@ router.get("/getOrderByUsers", orderController.getOrderByIdUsers);
 router.get("/getOrderByCart", orderController.getOrderByCart);
 router.get("/serchListOrderByShop", orderController.searchListOrderByShop);
 router.post("/list/delete", orderController.deleteListOrder);
+router.post("/updateStutus/:id", orderController.updateStatusOrder);
 module.exports = router;
