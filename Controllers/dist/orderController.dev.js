@@ -27,7 +27,11 @@ var Cart = require("../Model/cart");
 
 var cartService = require("../Services/cartService");
 
-var e = require("express");
+var express = require("express");
+
+var _require3 = require("../validator/validator"),
+    isEmail = _require3.isEmail,
+    isPhone = _require3.isPhone;
 
 module.exports = {
   createOrder: function createOrder(req, res, next) {
@@ -51,6 +55,26 @@ module.exports = {
     });
     if (order.Address === "") return res.status(400).json({
       message: "Địa chỉ không được bỏ trống!",
+      status: false,
+      code: 0
+    });
+    if (order.Email === "") return res.status(400).json({
+      message: "Email không được bỏ trống!",
+      status: false,
+      code: 0
+    });
+    if (order.Payment === "") return res.status(400).json({
+      message: "Email không được bỏ trống!",
+      status: false,
+      code: 0
+    });
+    if (!isEmail(order.Email)) return res.status(400).json({
+      message: "Email not format",
+      status: false,
+      code: 0
+    });
+    if (!isPhone(order.Phone)) return res.status(400).json({
+      message: "Phone not format",
       status: false,
       code: 0
     });
@@ -168,6 +192,7 @@ module.exports = {
   },
   updateOrder: function updateOrder(req, res) {
     var order = req.body;
+    order.DateUpdate = Date.now();
     var id = req.params.id;
     if (!id) return res.status(400).json({
       message: "Vui lòng nhập Id",
@@ -216,7 +241,8 @@ module.exports = {
 
               case 4:
                 Order.findByIdAndUpdate(resOrder._id, {
-                  $set: order
+                  $set: order,
+                  "new": true
                 }, {}, function (err, resUpdate) {
                   if (err) {
                     return res.status(400).json({

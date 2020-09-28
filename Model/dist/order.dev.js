@@ -22,6 +22,9 @@ var OrderSchema = new Schema({
     type: String,
     required: true
   },
+  Email: {
+    type: String
+  },
   Address: {
     type: String
   },

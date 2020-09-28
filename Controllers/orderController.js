@@ -10,7 +10,9 @@ const { count } = require("../Model/product");
 const order = require("../Model/order");
 const Cart = require("../Model/cart");
 const cartService = require("../Services/cartService");
-const e = require("express");
+const express = require("express");
+const { isEmail, isPhone } = require("../validator/validator");
+
 
 
 
@@ -25,7 +27,10 @@ module.exports = {
        if(order.Name=== "") return res.status(400).json({ message: "Tên không được bỏ trống!", status: false, code: 0});
        if(order.Phone=== "") return res.status(400).json({ message: "SĐT không được bỏ trống!", status: false, code: 0});
        if(order.Address=== "") return res.status(400).json({ message: "Địa chỉ không được bỏ trống!", status: false, code: 0});
-
+       if(order.Email=== "") return res.status(400).json({ message: "Email không được bỏ trống!", status: false, code: 0});
+       if(order.Payment=== "") return res.status(400).json({ message: "Email không được bỏ trống!", status: false, code: 0});
+       if(!isEmail(order.Email)) return res.status(400).json({message: "Email not format",status: false,code: 0});
+       if(!isPhone(order.Phone)) return res.status(400).json({message: "Phone not format",status: false,code: 0})
 
         try{
                     Cart.findOne({_id: IdCart}, async(err,resCart) => {
@@ -80,6 +85,7 @@ module.exports = {
 
     updateOrder: (req,res) => {
         const order = req.body
+        order.DateUpdate = Date.now();
         const id = req.params.id
         if(!id) return res.status(400).json({message: "Vui lòng nhập Id", status:false})
         Order.findById(id,(err, resOrder) => {
@@ -88,7 +94,7 @@ module.exports = {
             Cart.findOne({_id: resOrder.IdCart},async(err, resCart) => {
                 if (err) return res.status(400).json({ message: "OOP Lỗi Rồi", errors: err, status: false });
                 if(!resCart) return res.json({message: "Không tìm thấy ID CART", data: null, status: false});
-                Order.findByIdAndUpdate(resOrder._id, {$set: order},{},(err, resUpdate) => {
+                Order.findByIdAndUpdate(resOrder._id, {$set: order,new: true},{},(err, resUpdate) => {
                     if(err) {
                         return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false});
                     }else if(resUpdate.Status == 1) {
