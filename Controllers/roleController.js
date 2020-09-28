@@ -1,20 +1,20 @@
-const Role = require("../Model/role");
+const RoleSchema = require("../Model/role");
 const {error_500,error_400, success} = require("../validator/errors");
 
 module.exports = {
     create_role: (req,res) => {
-        let {Roles, Title} = req.body;
+        let {Title} = req.body;
 
         if(!Title || Title === "") 
            return error_400(res,"Vui lòng nhập Title","Title") 
 
-        Role.findOne({Title: Title},(e,r) => {
+        RoleSchema.findOne({Title: Title},(e,r) => {
            if(e) 
                return error_500(res,e);
            else if(r) 
                return error_400(res,"Loại tài khoản đã tồn tại", "Title");
            else 
-                Role.create({Title: Title, Roles: Roles},
+                RoleSchema.create({Title: Title},
                             (e,role) => {
                                 if(e) return error_400(res,e)
                                 success(res,"Thêm loại thành công",role)
@@ -40,7 +40,7 @@ module.exports = {
         query = {};
         if(search) query.$text = { $search: search };
 
-        Role.find(query)
+        RoleSchema.find(query)
             .skip(skip)
             .limit(limit)
             .sort(sort)
@@ -49,5 +49,27 @@ module.exports = {
                 return success(res,"Lấy danh sách loại tài khoản thành công",r)
             })
 
+    },
+
+    add_role: (req,res) => {
+        let {Title,Role} = req.body
+        if(!Title || Title === "") return error_400(res,"Vui lòng nhập Title","Title");
+        if(!Role) return error_400(res,"Vui lòng nhập Role","Role");
+        if(typeof Role !== "number") return error_400(res,"Vui lòng nhập quyền là dạng số","Role");
+        if(Role < 0) return error_400(res,"Vui lòng nhập quyền lớn hơn 0","Role");
+
+        RoleSchema.findOne({Title: Title}, (e,r)=>{
+            if(e) return error_500(res,e)
+            if(!r) return error_400(res, "Không tìm thấy loại tài khoản","Title")
+
+            let index = r.Roles.indexOf(Role);
+            if(index>0) return success(res,`Thêm quyền ${Role} vào ${Title} thành công`);
+            
+            r.Roles.push(Number(Role));
+            RoleSchema.findByIdAndUpdate(r._id,r,{new: true},(e,r)=>{
+                if(e) return error_500(res,e);
+                success(res,`Thêm quyền ${Role} vào ${Title} thành công`);
+            })
+        })
     }
 }
