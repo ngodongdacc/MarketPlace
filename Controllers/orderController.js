@@ -81,12 +81,21 @@ module.exports = {
         }
     },
 
-
+    
 
     updateOrder: (req,res) => {
         const order = req.body
         order.DateUpdate = Date.now();
         const id = req.params.id
+        if(order.Products=== "") return res.status(400).json({ message: "Sản phẩm không được bỏ trống!", status: false, code: 0});
+        if(order.Name=== "") return res.status(400).json({ message: "Tên không được bỏ trống!", status: false, code: 0});
+        if(order.Phone=== "") return res.status(400).json({ message: "SĐT không được bỏ trống!", status: false, code: 0});
+        if(order.Address=== "") return res.status(400).json({ message: "Địa chỉ không được bỏ trống!", status: false, code: 0});
+        if(order.Email=== "") return res.status(400).json({ message: "Email không được bỏ trống!", status: false, code: 0});
+        if(order.Payment=== "") return res.status(400).json({ message: "Phương thức thanh toán không được bỏ trống!", status: false, code: 0});
+        if(order.Reason=== "") return res.status(400).json({ message: "Lý do không được bỏ trống!", status: false, code: 0});
+        if(!isEmail(order.Email)) return res.status(400).json({message: "Email not format",status: false,code: 0});
+        if(!isPhone(order.Phone)) return res.status(400).json({message: "Phone not format",status: false,code: 0})
         if(!id) return res.status(400).json({message: "Vui lòng nhập Id", status:false})
         Order.findById(id,(err, resOrder) => {
             if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false});
@@ -97,38 +106,9 @@ module.exports = {
                 Order.findByIdAndUpdate(resOrder._id, {$set: order,new: true},{},(err, resUpdate) => {
                     if(err) {
                         return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false});
-                    }else if(resUpdate.Status == 1) {
-                        res.json({
-                            message: "Đơn hàng đã xác nhận ",
-                            data: resUpdate,
-                            status: true
-                        })
-                    }else if(resUpdate.Status == 2) {
-                        res.json({
-                            message: "Đang giao hàng",
-                            data: resUpdate,
-                            status: true
-                        })
-                    }else if(resUpdate.Status == 3) {
-                        res.json({
-                            message: "Đã giao hàng",
-                            data: resUpdate,
-                            status: true
-                        })
-                      
-                    }else if(resUpdate.Status == 4) {
-                        if(resUpdate.Reason == "") {
-                            return res.status(400).json({ message: "Vui lòng điền lý do bạn huỷ đơn hàng", status: false, code: 0})
-                        }else{
-                            res.json({
-                                message: "Huỷ đơn hàng",
-                                data: resUpdate,
-                                status: true
-                            })
-                        }
                     }else{
                         res.json({
-                            message: "Đơn hàng đang chờ xác nhận!",
+                            message: "Cập nhâp đơn hàng thành công",
                             data: resUpdate,
                             status: true
                         })

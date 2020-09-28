@@ -233,7 +233,6 @@ module.exports = {
                 if (!results[0]) return res.status(400).json({ message: "Phone already exists", status: false, code: 0 });
                 // if (!results[1]) return res.status(400).json({ message: "Email already exists", status: false, code: 0 });
                 // if (!results[2]) return res.status(400).json({ message: "Phone already exists", status: false, code: 0 });
-
                 ShopService.updateShop(id, userUpdate, (err, resUser) => {
                     if (err) return res.status(400).json({ message: "There was an error processing", errors: err, status: false });
                     res.json({
