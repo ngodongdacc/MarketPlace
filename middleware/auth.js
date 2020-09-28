@@ -3,7 +3,7 @@ const Role = require("../Model/role");
 const {error_400,error_500} = require("../validator/errors");
 module.exports = {
     checkSignIn: () => passport.authenticate('jwt', { session: false }),
-<<<<<<< HEAD
+    checkLogInShop: () => passport.authenticate('shop-jwt', { session: false }),
     checkRole:(role) => {
         return async (req, res, next) => {
             try {
@@ -26,7 +26,5 @@ module.exports = {
             }
     }
 }
-=======
-    checkLogInShop: () => passport.authenticate('shop-jwt', { session: false })
->>>>>>> tech24_Kokoro
+    
 }
