@@ -9,7 +9,6 @@ module.exports = {
             try {
                 Role.findOne({ Title: req.user.Role})
                     .exec(async (e,r) =>{
-                       
                         if(e) {
                             return error_500(res,e);
                         } else if(!r) {

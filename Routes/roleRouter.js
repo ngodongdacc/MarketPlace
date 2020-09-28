@@ -6,6 +6,6 @@ const roleCtr = require("../Controllers/roleController");
 
 router.post("/", roleCtr.create_role);
 router.get("/search",checkSignIn(), checkRole(3),roleCtr.search);
-router.get("/add",checkSignIn(),roleCtr.add_role);
+router.post("/add",checkSignIn(),roleCtr.add_role);
 
 module.exports = router;
