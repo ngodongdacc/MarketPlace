@@ -82,7 +82,6 @@ module.exports = {
     },
 
     
-
     updateOrder: (req,res) => {
         const order = req.body
         order.DateUpdate = Date.now();
