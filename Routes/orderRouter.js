@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const orderController = require("../Controllers/orderController")
-
 const {checkSignIn} = require("../middleware/auth")
 // const {} = require("../validator/order/validatorOrder")
 
@@ -14,7 +13,7 @@ router.get("/getOrderByUsers",orderController.getOrderByIdUsers);
 router.get("/getOrderByCart",orderController.getOrderByCart);
 router.get("/serchListOrderByShop",orderController.searchListOrderByShop);
 router.post("/list/delete",orderController.deleteListOrder);
-router.post("/updateStutus/:id",orderController.updateStatusOrder);
+router.post("/updateStatus/:id",orderController.updateStatusOrder)
 
 
 

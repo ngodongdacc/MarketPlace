@@ -198,11 +198,6 @@ module.exports = {
       message: "Vui lòng nhập Id",
       status: false
     });
-    if (order.Products === "") return res.status(400).json({
-      message: "Sản phẩm không được bỏ trống!",
-      status: false,
-      code: 0
-    });
     if (order.Name === "") return res.status(400).json({
       message: "Tên không được bỏ trống!",
       status: false,
@@ -224,7 +219,7 @@ module.exports = {
       code: 0
     });
     if (order.Payment === "") return res.status(400).json({
-      message: "Phương thức thanh toán không được bỏ trống!",
+      message: "Email không được bỏ trống!",
       status: false,
       code: 0
     });
@@ -240,7 +235,7 @@ module.exports = {
     });
     Order.findById(id, function (err, resOrder) {
       if (resOrder.Status === 1 || resOrder.Status === 2 || resOrder.Status === 3 || resOrder.Status === 4) return res.status(400).json({
-        message: "Không thể cập nhập đơn hàng khi đang trong quá trinh giao hàng và xử lý hàng",
+        message: "Không thể update đơn hàng trong khi đã đang giao hàng và xác thực đơn hàng!",
         status: false,
         code: 0
       });
@@ -297,7 +292,7 @@ module.exports = {
                     });
                   } else {
                     res.json({
-                      message: "Cập nhâp đơn hàng thành công",
+                      message: "Đơn hàng đang chờ xác nhận!",
                       data: resUpdate,
                       status: true
                     });
