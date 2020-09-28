@@ -188,7 +188,7 @@
 
 ### 2.6 Lấy thông tin tài khoản người dùng shop
 
-- Router: **/api/shop/shop-details**
+- Router: **/api/shop/shop-details/:id**
 - Function: **shop_details_forIdOwnerShop()**
 - Method: **GET**
 - header:
@@ -196,7 +196,10 @@
   |  Tên Trường   | Kiểu dữ liệu |      Mô tả      |
   | :-----------: | :----------: | :-------------: |
   | Authorization |    string    | Token đăng nhập |
-
+- Paremeter:
+  | Tên Trường | Kiểu dữ liệu | mặc định | Mô tả |  
+   |:----------: |:------------:|:------------: |:--------------------------------: |  
+   | search | string | null | id của shop |
 - Dữ liệu trả về
 
   | Tên Trường | Kiểu dữ liệu |                    Mô tả                    |

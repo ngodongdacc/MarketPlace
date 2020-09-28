@@ -4,7 +4,6 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { isEmail, isPhone } = require("../validator/validator");
 const ShopService = require("../Services/shopService");
-const shopService = require("../Services/shopService");
 
 module.exports = {
     postshop:async (req, res, next) => {
@@ -196,26 +195,26 @@ module.exports = {
             if (!results[0] && !results[1])
                 return res.status(400).json({ message: "Email hoặc mật khẩu không đúng", status: false });
 
-            var userTrue = results[0]
-            if (!userTrue) userTrue = results[1];
+            var shopTrue = results[0]
+            if (!shopTrue) shopTrue = results[1];
 
-            shopService.comparePassword(userLogin.PasswordShop, userTrue.PasswordShop, (err, isMath) => {
+            ShopService.comparePassword(userLogin.PasswordShop, shopTrue.PasswordShop, (err, isMath) => {
                 if (err)
                     return res.status(400).json({ message: "Tên đăng nhập hoặc mật khẩu không đúng", status: false, errors: "compare" });
                 if (isMath) {
-                    var token = jwt.sign(userTrue.toJSON(), process.env.secretKey || "QTData-MarketPlace", { expiresIn: process.env.TimeToken || 60000000 });
+                    var token = jwt.sign(shopTrue.toJSON(), process.env.secretKey || "QTData-MarketPlace", { expiresIn: process.env.TimeToken || 60000000 });
                     return res.json({
                         message: "Đăng nhập thành công",
                         data: {
-                            user: {
-                                StoreOwnername: userTrue.StoreOwnername,
-                                EmailOwner: userTrue.EmailOwner,
-                                ShopName: userTrue.ShopName,
-                                Phone: userTrue.Phone,
-                                Country: userTrue.Country,
-                                CommodityIndustry: userTrue.CommodityIndustry,
-                                BusinessRegisCode: userTrue.BusinessRegisCode,
-                                IdShop: userTrue._id
+                            shop: {
+                                StoreOwnername: shopTrue.StoreOwnername,
+                                EmailOwner: shopTrue.EmailOwner,
+                                ShopName: shopTrue.ShopName,
+                                Phone: shopTrue.Phone,
+                                Country: shopTrue.Country,
+                                CommodityIndustry: shopTrue.CommodityIndustry,
+                                BusinessRegisCode: shopTrue.BusinessRegisCode,
+                                IdShop: shopTrue._id
                             },
                             token: "Bearer " + token
                         },
@@ -337,7 +336,7 @@ module.exports = {
                     bcrypt.genSalt(10, function (err, salt) {
                         bcrypt.hash(shopUpdate.PasswordShop, salt, async function (err, hash) {
                             shopUpdate.PasswordShop = hash;
-                            Shop.findByIdAndUpdate(id, shopUpdate, (err, resShop) => {
+                            Shop.findByIdAndUpdate(id,{$set:shopUpdate,new:true },{} , (err, resShop) => {
                                 if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
                                 delete resShop.PasswordShop;
                                 res.json({
