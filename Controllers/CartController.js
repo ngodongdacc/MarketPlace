@@ -14,90 +14,97 @@ module.exports = {
             Product.findOne({ _id: ProductId }, async (err, resFindProduct) => {
                 if (err) return res.status(400).json({ message: "Sản phẩm không còn tồn tại", errors: err, status: false });
                 if (resFindProduct) {
-                    resFindProduct.Quantity = Quantity;
-                    const Total = Quantity * resFindProduct.Price;
-                    Cart.findOne({ UserId: UserId }, async (err, resFindUser) => {
-                        if (err) return res.status(400).json({ message: "Không tìm thấy user", errors: err, status: false });
-                        if (resFindUser) {
-                            const itemIndex = await resFindUser.ListProduct.findIndex(p => p._id == ProductId);
-                            if (itemIndex > -1) {
-                                resFindUser.ListProduct[itemIndex].Quantity += Quantity;
-                                let totals = await resFindUser.ListProduct.reduce((acc, next) =>
-                                    acc + next.Quantity
-                                    , 0);
-                                let prices = await resFindUser.ListProduct.reduce((acc, next) =>
-                                    acc + (next.Price * next.Quantity)
-                                    , 0);
-                                resFindUser.SubTotal = await totals;
-                                resFindUser.SubPrice = await prices;
-                                let CartUpdate = {};
-                                CartUpdate = await resFindUser;
-                                Cart.findOneAndUpdate({ _id: resFindUser._id }, {
-                                    ListProduct: CartUpdate.ListProduct,
-                                    SubTotal: CartUpdate.SubTotal,
-                                    SubPrice: CartUpdate.SubPrice
-
-                                }, function (err, resData) {
-                                    if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-                                    res.json({
-                                        message: "Cập nhật mới sản phẩm vào giỏ hàng thành công",
-
-                                        status: true
-                                    })
-                                });
+                    if(resFindProduct.Quantity>0){
+                        resFindProduct.Quantity = Quantity;
+                        const Total = Quantity * resFindProduct.Price;
+                        Cart.findOne({ UserId: UserId }, async (err, resFindUser) => {
+                            if (err) return res.status(400).json({ message: "Không tìm thấy user", errors: err, status: false });
+                            if (resFindUser) {
+                                const itemIndex = await resFindUser.ListProduct.findIndex(p => p._id == ProductId);
+                                if (itemIndex > -1) {
+                                    resFindUser.ListProduct[itemIndex].Quantity += Quantity;
+                                    let totals = await resFindUser.ListProduct.reduce((acc, next) =>
+                                        acc + next.Quantity
+                                        , 0);
+                                    let prices = await resFindUser.ListProduct.reduce((acc, next) =>
+                                        acc + (next.Price * next.Quantity)
+                                        , 0);
+                                    resFindUser.SubTotal = await totals;
+                                    resFindUser.SubPrice = await prices;
+                                    let CartUpdate = {};
+                                    CartUpdate = await resFindUser;
+                                    Cart.findOneAndUpdate({ _id: resFindUser._id }, {
+                                        ListProduct: CartUpdate.ListProduct,
+                                        SubTotal: CartUpdate.SubTotal,
+                                        SubPrice: CartUpdate.SubPrice
+    
+                                    }, function (err, resData) {
+                                        if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
+                                        res.json({
+                                            message: "Cập nhật mới sản phẩm vào giỏ hàng thành công",
+    
+                                            status: true
+                                        })
+                                    });
+                                } else {
+                                    resFindProduct.Quantity = Quantity;
+                                    // resFindProduct.Quantity += Quantity; 
+                                    resFindUser.ListProduct.push(
+                                        resFindProduct
+                                    );
+                                    let totals = await resFindUser.ListProduct.reduce((acc, next) =>
+                                        acc + next.Quantity
+                                        , 0);
+                                    let prices = await resFindUser.ListProduct.reduce((acc, next) =>
+                                        acc + (next.Price * next.Quantity)
+                                        , 0);
+                                    resFindUser.SubTotal = await totals;
+                                    resFindUser.SubPrice = await prices;
+                                    //product does not exists in cart, add new item
+    
+                                    resFindUser.SubTotal = resFindUser.ListProduct.map(ListProduct => ListProduct.Total).reduce((acc, next) => acc + next);
+                                    Cart.findByIdAndUpdate(resFindUser._id, resFindUser, function (err, resData) {
+                                        if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
+                                        res.json({
+                                            message: "Cập nhật mới sản phẩm vào giỏ hàng thành công",
+                                            data: resData,
+                                            status: true
+                                        })
+                                    });
+                                }
                             } else {
-                                console.log("a", Quantity)
-                                resFindProduct.Quantity = Quantity;
-                                // resFindProduct.Quantity += Quantity; 
-                                resFindUser.ListProduct.push(
+                                SubTotal = Quantity;
+                                SubPrice = Quantity * resFindProduct.Price;
+                                const ListProduct = [];
+                                ListProduct.push(
                                     resFindProduct
                                 );
-                                let totals = await resFindUser.ListProduct.reduce((acc, next) =>
-                                    acc + next.Quantity
-                                    , 0);
-                                let prices = await resFindUser.ListProduct.reduce((acc, next) =>
-                                    acc + (next.Price * next.Quantity)
-                                    , 0);
-                                resFindUser.SubTotal = await totals;
-                                resFindUser.SubPrice = await prices;
-                                console.log(" resFindUser.SubTotal ", resFindUser.SubTotal)
-                                console.log(" resFindUser.SubPrice ", resFindUser.SubPrice)
-                                //product does not exists in cart, add new item
-
-                                resFindUser.SubTotal = resFindUser.ListProduct.map(ListProduct => ListProduct.Total).reduce((acc, next) => acc + next);
-                                Cart.findByIdAndUpdate(resFindUser._id, resFindUser, function (err, resData) {
+                                Cart.create({
+                                    UserId,
+                                    ListProduct,
+                                    Des,
+                                    Title,
+                                    SubTotal: SubTotal,
+                                    SubPrice: SubPrice
+                                }, function (err, resBRC) {
                                     if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
                                     res.json({
-                                        message: "Cập nhật mới sản phẩm vào giỏ hàng thành công",
-                                        data: resData,
+                                        message: "Thêm mới sản phẩm thành công",
+                                        data: resBRC,
                                         status: true
                                     })
                                 });
                             }
-                        } else {
-                            SubTotal = Quantity;
-                            SubPrice = Quantity * resFindProduct.Price;
-                            const ListProduct = [];
-                            ListProduct.push(
-                                resFindProduct
-                            );
-                            Cart.create({
-                                UserId,
-                                ListProduct,
-                                Des,
-                                Title,
-                                SubTotal: SubTotal,
-                                SubPrice: SubPrice
-                            }, function (err, resBRC) {
-                                if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-                                res.json({
-                                    message: "Thêm mới sản phẩm thành công",
-                                    data: resBRC,
-                                    status: true
-                                })
-                            });
-                        }
-                    })
+                        })
+                    }else{
+                        return res.status(400)
+                        .json({
+                            message: "Sản phẩm này đã bán hết",
+                            status: true,
+                            code: 1
+                        })
+                    }
+                   
                 }
             });
             //cart exists for user
@@ -139,7 +146,7 @@ module.exports = {
         let { ProductId, UserId, Quantity } = req.body
         Cart.findOne({ UserId: UserId }, async (err, resUserCart) => {
             if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-            if (!resUserCart) return res.status(400).json({ message: "Không tìm thấy User", data: null, status: false });
+            if (!resUserCart) return res.status(400).json({ message: "Không tìm thấy giỏ hàng của người dùng", data: null, status: false });
             if (resUserCart) {
                 let itemIndex = await resUserCart.ListProduct.findIndex(p => p._id == ProductId);
                 if (itemIndex > -1) {
@@ -163,7 +170,7 @@ module.exports = {
                         })
                     } else {
                         res.json({
-                            message: "Sản phẩm phải có ít nhất 1 sản phẩm",
+                            message: "Số lượng của sản phẩm phải lớn hơn 1",
                             data: null,
                             status: false
                         })
@@ -171,7 +178,7 @@ module.exports = {
 
                 } else {
                     res.json({
-                        message: "Có lỗi xảy ra",
+                        message: "Sản phẩm không tồn tại trong giỏ hàng",
                         // data: resRemove,
                         status: false
                     })
