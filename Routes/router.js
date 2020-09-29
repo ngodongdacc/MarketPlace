@@ -12,7 +12,14 @@ router.use("/category",require('./categoryRouter'));
 router.use("/sub-category",require('./subcategoryRouter'));
 router.use("/order",require('./orderRouter'));
 
+<<<<<<< HEAD
 router.use("/trademark", require('./trademarkRouter'));
 router.use("/brandOrigin", require('./brandOriginRouter'));
 router.use("/origin", require('./originRouter'));
+=======
+router.use("/trademark", require('./trademarkRouter'))
+router.use("/brandOrigin", require('./brandOriginRouter'))
+router.use("/origin", require('./originRouter'))
+router.use("/unit", require('./unitRouter'))
+>>>>>>> Hung
 module.exports = router;
