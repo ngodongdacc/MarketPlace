@@ -3,7 +3,8 @@
 const AddressSchema = require("../Model/address");
 const mongoose = require("mongoose");
 const {success,error_500,error_400} = require("../validator/errors");
-const {isPhone} = require("../validator/validator");
+const {isPhone, IsJsonString} = require("../validator/validator");
+
 module.exports = {
     
     // Thêm địa chỉ mới
@@ -94,11 +95,16 @@ module.exports = {
 
     // xóa địa chỉ 
     remove_address: (req,res) => {
-        let listId = req.query.listId;
-        if(!listId )  return errorr_400(res,"Vui lòng nhập danh sách id", "listId");
+        let listId = req.body.listId;
+        
+        if(!listId )  return error_400(res,"Vui lòng nhập danh sách id", "listId");
         if(listId && !Array.isArray(listId)) return error_400(res,"danh sách id phải là Array", "listId");
+        if(listId && listId.length === 0) return error_400(res,"danh sách id phải là không được rỗng", "listId");
 
-        AddressSchema.deleteMany(listId, (e,r) =>{
+        AddressSchema.deleteMany({
+            _id: {$in : listId},
+            IdUser: req.user._id
+        }, (e,r) =>{
             if(e) return error_500(res,e);
             AddressSchema.find({IdUser: req.user._id},(e,f)=> {
                 if(e) return error_500(res,e);
@@ -106,5 +112,28 @@ module.exports = {
             })
             
         })
+    },
+
+    // Tìm kiếm danh sách người dùng
+    search_address: (req,res) => {
+        let {search, sort} = req.query;
+        let query = {
+            IdUser: req.user._id
+        }
+        if(search && search !== "") query.$text = {$search: search};
+        let limit = req.query.limit ? Number(req.query.limit) : process.env.LIMIT || 20
+        let page = req.query.page ? Number(req.query.page) : 1
+        let skip = (page-1)*limit;
+        if(sort && !IsJsonString(sort)) return error_400(res,"sort phải là dạng json","sort") 
+        if(!sort) sort ={"CreateAt": -1}
+        AddressSchema.find(query)
+                    .skip(skip)
+                    .limit(limit)
+                    .sort(sort)
+                    .exec((e,d) => {
+                        if(e) return error_500(res,e);
+                        success(res,"Danh sách địa chỉ",d)
+                    })
+
     }
 }

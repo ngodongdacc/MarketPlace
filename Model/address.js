@@ -12,6 +12,8 @@ const AddresSchema = new Schema({
     Address: {type: String, required: true},
     NumAdress: {type: String},
     Default: {type: Boolean, default: false},
+    CreateAt: {type: Date, default: Date.now()},
+    UpdateAt: {type: Date, default: Date.now()},
 })
 AddresSchema.index({'$**': 'text'});
 module.exports = mongosse.model("Address",AddresSchema);
