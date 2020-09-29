@@ -3,78 +3,166 @@ const OriginService = require("../Services/originService");
 const async = require("async");
 
 module.exports = {
-    postcreateOrigin: async (req, res, next) => {
-        try {
-            const {countrys} = req.body
+    create_origin: (req, res) => {
+        const origin = req.body
 
-            const newOrigin = new Origin({
-                
-                countrys: req.body.countrys
-            })
+        if(!origin.Country) return res.status(400).json({message: "Vui lòng nhập Country",status: false});
 
-            OriginService.createOrigin(newOrigin, (err, origin) => {
-                if (err) res.status(400).json({ message: "There was an error processing", errors: err, code: 0 });
-                return res.send({
-                    message: "create origin success",
-                    data: {
+        Origin.create(origin, (err, resorigin) => {
+            if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
+            res.json({
+                message: "Tạo một Origin thành công",
+                data: resorigin,
+                status: true
+          
+            })     })
+    },
+     // chỉnh sửa đơn vị tính theo id
+     update_origin: (req, res) => {
+        const origin = req.body
+        const id = req.params.id
+        if (!id) return res.status(400).json({ message: "Vui lòng nhập Id brandOrigin", status: false });
+        if (!origin.Country === "") return res.status(400).json({ message: "Country không được rỗng", status: false });
+        console.log("origin:: ", req.body);
+        Origin.findById(id, (err, resorigin) => {
+            if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
+            if (!resorigin) return res.json({ message: "Không tìm thấy id Xuất xứ", data: null, status: false });
 
-                            countrys: origin.countrys
-                    },
-                    code: 1,
+            Origin.findByIdAndUpdate(resorigin._id, { $set: origin }, {}, (err, resUpdate) => {
+                if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
+                res.json({
+                    message: "Cập nhật một Origin thành công",
+                    data: resUpdate,
                     status: true
                 })
-            });
-        } catch (e) {
-            res.send({
-                message: e.message,
-                errors: e.errors,
-                code: 0
-            }).status(500) && next(e)
-        }
-    },
-    postdeleteOrigin: (req, res) => {
-        const { id } = req.params
-        if (!id) return res.status(400).json({ message: "Id is required", status: false, code: 0 })
-
-        OriginService.findOneOriginByID(id, (err, resorigin) => {
-            if (err) return res.status(400).json({ message: "There was an error processing", errors: err, status: false });
-
-            Origin.findByIdAndRemove(id, {countrys:req.body.countrys}, (err, resRemoveOrigin) => {
-                if (err) return res.status(400).json({ message: "There was an error processing", errors: err, status: false });
-                res.json({
-                    message: "Delete origin success",
-                    data: resRemoveOrigin,
-                    status: true,
-                    code: 1
-                })
             })
         })
     },
 
-    postupdateOrigin: async (req, res, next) => {
-        const originUpdate = { };
+    // Lấy chi tiết đơn vị tính  bằng id
+    get_origin: (req, res)=> {
+        const id = req.params.id
+        if(!id) return res.status(400).json({message: "Vui lòng nhập Id", status:false});
 
-        if (req.body.countrys) originUpdate.countrys = req.body.countrys;
+        Origin.findById(id,(err,resorigin)=>{
+            if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false});
+            if(!resorigin) return res.status(400).json({message: "Không tìm thấy Xuất xứ",data: null,status:false});
+            
+            res.json({
+                message: "Lấy chi tiết một origin thành công",
+                data: resorigin,
+                status: true
+            })     
+         })
+    },
+    // Xóa đớn vị tính bằng id
+    remove_origin: (req, res) => {
+        const id = req.params.id
+        if (!id) return res.status(400).json({ message: "Vui lòng nhập Id", status: false });
 
-        const { id } = req.params
+        Origin.findById(id, (err, resorigin) => {
+            if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
+            if (!resorigin) return res.status(400).json({ message: "Không tìm thấy xuất xứ", data: null, status: false });
 
-        if (!id) return res.status(400).json({ message: "id is required", status: false, code: 0 })
-
-        OriginService.findOneOriginByID(id, (err, resFindOrigin) => {
-            if (err) return res.status(400).json({ message: "There was an error processing", errors: err, status: false });
-
-            Origin.findByIdAndUpdate(id,{countrys:req.body.countrys},(err, resorigin) => {
-                if (err) return res.status(400).json({ message: "There was an error processing", errors: err, status: false });
+            Origin.findByIdAndRemove(resorigin._id, (err, resRemove) => {
+                if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
                 res.json({
-                    message: "update origin success",
-                    data: resorigin,
-                    status: true,
-                    code: 1
+                    message: "Xóa một origin thành công",
+                    data: resRemove,
+                    status: true
                 })
             })
 
         })
 
+    },
+     //Lấy danh sách xuất xứ
+     get_list_origin: (req,res) => {
+        const config = {};
+        
+        config.page = req.query.page ? Number(req.query.page):1 
+        config.limit = req.query.limit ? Number(req.query.limit):20 
+        config.skip = (config.page-1)*config.limit;
+    
+        async.parallel([
+            (cb) => Origin
+                        .find({})
+                        .skip(config.skip)
+                        .limit(config.limit)
+                        .sort({Date: "desc"})
+                        .exec((e,data) => e ? cb(e): cb(null, data)),
+            (cb) => Origin.count().exec((e,data)=> e ? cb(e) : cb(null,data))
+        ], (err,results) => {
+            if(err) if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false });
+            res.json({
+                message: "Lấy danh sách origin thành công",
+                data: {
+                    origin: results[0],
+                    count: results[1],
+                },
+                status: true
+            }) 
+        })
+    },
+    // xóa danh sách xuất xứ
+    remove_list_origin: (req,res) => {
+        const listIdOrigin = req.body.ListId;
+        if(!listIdOrigin || (Array.isArray(listIdOrigin) && listIdOrigin.length === 0)) return res.status(400).json({message: "Vui lòng chọn sản phẩm cần xóa",status:false}); 
+        if(!Array.isArray(listIdOrigin)) return res.status(400).json({message: "ListId phải là array",status:false}); 
+
+        Origin
+            .deleteMany({_id: {$in: listIdOrigin}})
+            .exec((err,resData)=> {
+                if(err) if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false });
+                res.send({
+                    message: `Xóa thành công ${resData.n} sản phẩm`,
+                    data: resData,
+                    status: true
+                })
+            })
+
+    },
+    search_origin: (req, res) => {
+        try {
+            
+        
+        const config = {};
+        config.search = req.query.search 
+        config.Country = req.query.Country
+        config.page = req.query.page ? Number(req.query.page):1 
+        config.limit = req.query.limit ? Number(req.query.limit):20 
+        config.skip = (config.page-1)*config.limit;
+        
+        const query = { Country: { $regex: config.Country, $options: "i" }}
+        async.parallel([
+            (cb) => 
+            Origin.find(query)
+                        .skip()
+                        .limit(config.limit)
+                        .sort({Date: "desc"})
+                        .exec((e,data) => e ? cb(e): cb(null, data)),
+            (cb) => Origin.count(query)
+                            .exec((e,data)=> e ? cb(e) : cb(null,data))
+        ], (err,results) => {
+            if(err) if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false });
+            res.json({
+                message: "Lấy danh sách origin  thành công",
+                data: {
+                    origin: results[0],
+                    count: results[1],
+                },
+                status: true
+            }) 
+        })
+    } catch (error) {
+        console.log(error);
+        res.status(500)
+            .json({
+                message: "lỗi hệ thống", 
+                errors: error,
+                status: 500
+            })
+    }
     },
 
     getProfile : async (req, res) => {

@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
   var Schema = mongoose.Schema;
   var originSchema = new Schema({ 
 
-     countrys: {type: String, required: true}
+     Country: {type: String, required: true},
+     Description: {type: String}
+
   });
   module.exports = mongoose.model("origin",originSchema)

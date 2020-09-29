@@ -1,11 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const originCtr = require("../Controllers/originController");
+const {checkSignIn} = require("../middleware/auth");
 
-router.post('/add', originCtr.postcreateOrigin);
-router.post('/sua/:id', originCtr.postupdateOrigin);
-router.post('/xoa/:id', originCtr.postdeleteOrigin);
-router.get('/lay', originCtr.getProfile);
+router.post('/add',checkSignIn(), originCtr.create_origin);
+router.post('/sua/:id',checkSignIn(), originCtr.update_origin);
+router.post('/xoa/:id',checkSignIn(), originCtr.remove_origin);
+router.get('/lay',checkSignIn(), originCtr.getProfile);
+router.get('/get/:id',checkSignIn(), originCtr.get_origin);
+router.get('/search',checkSignIn(), originCtr.search_origin);
+router.get("/list",checkSignIn(),originCtr.get_list_origin);
+router.post("/list/delete",checkSignIn(),originCtr.remove_list_origin);
 
 
 
