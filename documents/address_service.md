@@ -28,8 +28,8 @@
 * Danh sách routers  
    * [2.1: Thêm địa chỉ người dùng](#21--thêm-địa-chỉ-người-dùng)  
    * [2.2: Cập nhật địa chỉ người dùng](#22--cập-nhật-địa-chỉ-người-dùng)  
-   * [2.3: Xóa danh sách địa chỉ](#23--xóa-danh-sách-địa-chỉ)
-   * [2.4: Tìm kiếm địa chỉ người dùng](#24--tìm-kiếm-địa-chỉ-người-dùng)
+   * [2.3: Xóa danh sách địa chỉ](#23-xóa-danh-sách-địa-chỉ)
+   * [2.4: Tìm kiếm địa chỉ người dùng](#24-tìm-kiếm-địa-chỉ-người-dùng)
   
 ### 2.1  Thêm địa chỉ người dùng
  - Router: **/api/address**  
