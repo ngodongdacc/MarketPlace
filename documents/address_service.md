@@ -3,6 +3,7 @@
 ##### Database type: Mongodb
 ##### Database Name: marketplace
 ##### Conllection type: Address
+##### Postman: https://www.getpostman.com/collections/becc3ddcbc33f90f4285 
 ##### Data structure (Address object)
 
 |Stt|Tên trường| Kiểu dữ liệu | Giá mặc định | Bắt buộc | Mô tả |
