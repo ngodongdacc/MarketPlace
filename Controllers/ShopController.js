@@ -83,7 +83,7 @@ module.exports = {
             async.parallel([
                 (cb) => {
                     // kiểm tra Username
-                    console.log(ShopName)
+              
                     if (ShopName)
                         ShopService.findOneOwnerShop(ShopName, (err, resUser) => {
                             if (err) cb(err)

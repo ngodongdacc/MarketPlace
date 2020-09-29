@@ -8,7 +8,7 @@ const UserService = require("../Services/usersService");
 module.exports = {
     postCart: (req, res, next) => {
         // console.log("request cart:: ", req);
-        const { ProductId, Quantity, UserId, Title, Des,
+        const { ProductId, Quantity, UserId
         } = req.body;
         try {
             Product.findOne({ _id: ProductId }, async (err, resFindProduct) => {
