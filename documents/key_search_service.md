@@ -23,6 +23,10 @@
 
 
 ### 2.1  Từ khóa tìm kiếm nhiều nhất
+- Từ khóa tìm kiếm sẽ được lưu vào khi tìm kiếm sản phẩm
+- (https://github.com/ngodongdacc/MarketPlace/blob/master/documents/product_service.md#15--t%C3%ACm-ki%E1%BA%BFm-s%E1%BA%A3n-ph%E1%BA%A9m-c%E1%BB%A7a-shop)
+
+### 2.1  Từ khóa tìm kiếm nhiều nhất
  - Router: **/api/key-search/count**  
  - Function: **count_search()**  
  - Method: **GET**
