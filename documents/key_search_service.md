@@ -18,15 +18,16 @@
 ### Thông tin service * Tên service: **User**  
 * Source code: ./Controller/keySearchController.js  
 * Danh sách routers  
-   * [2.1: Từ khóa tìm kiếm nhiều nhất](#21--từ-khóa-tìm-kiếm-nhiều-nhất)  
-   * [2.2: Từ khóa người dùng tìm kiếm nhiều nhất](#22--từ-khóa-người-dùng-tìm-kiếm-nhiều-nhất)  
+   * [2.1: Thêm từ khóa tìm kiếm](#21--thêm-từ-khóa-tìm-kiếm)  
+   * [2.2: Từ khóa tìm kiếm nhiều nhất](#22--từ-khóa-tìm-kiếm-nhiều-nhất)  
+   * [2.3: Từ khóa người dùng tìm kiếm nhiều nhất](#23--từ-khóa-người-dùng-tìm-kiếm-nhiều-nhất)  
 
 
-### 2.1  Từ khóa tìm kiếm nhiều nhất
+### 2.1  Thêm từ khóa tìm kiếm
 - Từ khóa tìm kiếm sẽ được lưu vào khi tìm kiếm sản phẩm
-- (https://github.com/ngodongdacc/MarketPlace/blob/master/documents/product_service.md#15--t%C3%ACm-ki%E1%BA%BFm-s%E1%BA%A3n-ph%E1%BA%A9m-c%E1%BB%A7a-shop)
+- Link: https://github.com/ngodongdacc/MarketPlace/blob/master/documents/product_service.md#15--t%C3%ACm-ki%E1%BA%BFm-s%E1%BA%A3n-ph%E1%BA%A9m-c%E1%BB%A7a-shop
 
-### 2.1  Từ khóa tìm kiếm nhiều nhất
+### 2.2  Từ khóa tìm kiếm nhiều nhất
  - Router: **/api/key-search/count**  
  - Function: **count_search()**  
  - Method: **GET**
@@ -48,7 +49,7 @@
     |   message    |    string        | Tin nhắn trả về                                      |  
 
 
-### 2.2  Từ khóa người dùng tìm kiếm nhiều nhất
+### 2.3  Từ khóa người dùng tìm kiếm nhiều nhất
  - Router: **/api/key-search/count-user**  
  - Function: **count_search_user()**  
  - Method: **GET**
