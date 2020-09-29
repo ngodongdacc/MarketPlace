@@ -93,6 +93,10 @@ module.exports = {
             }
         })
     },
+    delete_address: (req,res) => {
+        AddressSchema.findByIdAndRemove(req.params.id)
+                    .exec((e,r)=>e?error_500(res,e):success(res,"Xóa địa chỉ thành công",r));
+    },
 
     // xóa địa chỉ 
     remove_address: (req,res) => {
