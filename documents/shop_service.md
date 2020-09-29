@@ -19,11 +19,9 @@
 |  5  |   PasswordShop    |    String    |              | required |            Mật khẩu của shop            |
 |  6  |     ShopName      |    String    |              | required |              Tên cửa hàng               |
 |  7  |  BusinessLicense  |   Boolean    |     true     | required |      Giấy phép kinh doanh cửa hàng      |
-|  8  | BusinessRegisCode |    Number    |              | required |            Mã số kinh doanh             |
+|  8  | BusinessRegisCode |    Number    |              |          |            Mã số kinh doanh             |
 |  9  |      Country      |    String    |              |          |      Thành phố đăng ký kinh doanh       |
-| 10  | CommodityIndustry |    String    |              | required | Loại nghành hàng hóa đăng ký kinh doanh |
-| 11  |       Title       |    String    |              |          |                 Tiêu đề                 |
-| 12  |        Des        |    String    |              |          |              Mô tả về shop              |
+| 10  | CommodityIndustry |    String    |              |          | Loại nghành hàng hóa đăng ký kinh doanh |
 
 ## 2. Service info
 
@@ -34,7 +32,7 @@
   - [2.1: Đăng ký tài khoản người dùng shop](#21-đăng-ký-tài-khoản-người-dùng-shop)
   - [2.2: Đăng nhập shop](#22-đăng-nhập)
   - [2.3: Cập nhật thông tin tài khoản người dùng shop](#23-cập-nhật-thông-tin-tài-khoản-người-dùng-shop)
-    -- - [2.4: Xóa danh sách người dùng shop](#24-xóa-danh-sách-người-dùng-shop)
+  - [2.4: Xóa danh sách người dùng shop](#24-xóa-danh-sách-người-dùng-shop)
   - [2.5: Tìm kiếm tài khoản người dùng shop ](#25-tìm-kiếm-tài-khoản-người-dùng-shop)
   - [2.6: Lấy thông tin tài khoản người dùng shop ](#26-lấy-thông-tin-tài-khoản-người-dùng-shop)
 
