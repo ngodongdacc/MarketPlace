@@ -2,6 +2,7 @@
 
 const AddressSchema = require("../Model/address");
 const mongoose = require("mongoose");
+const async = require("async");
 const {success,error_500,error_400} = require("../validator/errors");
 const {isPhone, IsJsonString} = require("../validator/validator");
 
@@ -126,14 +127,23 @@ module.exports = {
         let skip = (page-1)*limit;
         if(sort && !IsJsonString(sort)) return error_400(res,"sort phải là dạng json","sort") 
         if(!sort) sort ={"CreateAt": -1}
-        AddressSchema.find(query)
+        async.parallel([
+            (cb) => {
+                AddressSchema.find(query)
                     .skip(skip)
                     .limit(limit)
                     .sort(sort)
-                    .exec((e,d) => {
-                        if(e) return error_500(res,e);
-                        success(res,"Danh sách địa chỉ",d)
-                    })
+                    .exec((e,f) => e?cb(e):cb(null,f))
+            },
+            (cb) => {
+                AddressSchema.count(query)
+                            .exec((e,c) => e?cb(e):cb(null,c))
+            }
+        ],(e, ressults) => {
+            if(e) return error_500(res,e);
+            success(res,"Lấy danh sách địa chỉ", { address: ressults[0], count: ressults[1] })
+        })
+        
 
     }
 }
