@@ -87,7 +87,7 @@
     |   message    |    string        | Tin nhắn trả về                                      |  
   
 ### 2.3 Xóa danh sách địa chỉ  
- - Router: **/api/address/delete/list**  
+ - Router: **/api/address/remove/list**  
  - Function: **remove_address()**  
  - Method: **POST**
  - Paremeter: 

@@ -5,10 +5,11 @@ const addressCtr = require("../Controllers/addressController");
 const {checkSignIn} = require("../middleware/auth")
 const {error_400} = require("../validator/errors")
 
- checkIsRole = (id)=>{
+ check_is_role_or_admin = (id)=>{
     return async (req, res, next) => {
         try {
-            Address.findById(req.params.id)
+            if(req.user.Role === "admin") next()
+            else Address.findById(req.params.id)
                     .exec((e,f)=>{
                         if(e) next(e)
                         if(!f) return error_400(res,`Không tìm thấy địa chỉ ${id}`,"id")
@@ -21,8 +22,9 @@ const {error_400} = require("../validator/errors")
 }}
 
 router.post("/",checkSignIn(), addressCtr.add_address);
-router.post("/update/:id",checkSignIn(),checkIsRole(), addressCtr.update_address);
-router.post("/delete/list",checkSignIn(), addressCtr.remove_address);
+router.post("/update/:id",checkSignIn(),check_is_role_or_admin(), addressCtr.update_address);
+router.post("/delete/:id",checkSignIn(), addressCtr.remove_address);
+router.post("/remove/list",checkSignIn(), addressCtr.remove_address);
 router.get("/search",checkSignIn(), addressCtr.search_address);
 
 module.exports = router;
