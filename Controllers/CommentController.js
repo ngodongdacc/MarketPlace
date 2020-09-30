@@ -1,77 +1,71 @@
 const Comment = require("../Model/comment");
+const Products = require("../Model/product");
 const async = require("async");
 const CommentService = require("../Services/commentService");
+const { success, error_500, error_400 } = require("../validator/errors");
 module.exports = {
-    postComment: (req, res) => {
-        const commentReq = req.body;
-        // const comments=[];
-        const id = commentReq.id;
-        // const id = req.params.id;
+    postComment: async (req, res) => {
+        const IdProduct = req.query.IdProduct;
+        const Content = req.body.Content;
+        if (!Content.length < 0) return error_400(res, "Vui lòng nhập nội dung bình luận", "Content");
+        if (Content === "") return error_400(res, "Vui lòng nhập nội dung bình luận", "Content");
+        const comments = new Comment({
+            IdUser: req.body.IdUser,
+            Content: req.body.Content,
+            IdProduct: IdProduct
+        })
         try {
-            console.log("hê1", id);
-            if (!id) return res.status(400).json({ message: "Vui lòng nhập Id", status: false })
-            Comment.findById(id, (err, resFindCommentOfPost) => {
-                if (err) return res.status(400).json({ message: "Đã có lỗi xảy ra trong quá trình xử lý", errors: err, status: false });
-                if (!resFindCommentOfPost) return res.json({ message: "Không tìm thấy bài đăng của sản phẩm", data: null, status: false });
-                if (resFindCommentOfPost) {
-                    Comment.create(commentReq, (err, resCommentParent) => {
-                        if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-                        res.json({
-                            message: "Tạo đơn hàng thành công !",
-                            data: resCommentParent,
-                            status: true
-                        })
-                    })
-
-                }
-            });
+            if (!IdProduct) return error_400(res, "Vui lòng nhập Id", "ID");
+            Products.findById(IdProduct, (err, resFindProduct) => {
+                if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
+                if (!resFindProduct) return error_400(res, "Không tìm thấy sản phẩm", "Errors");
+                Comment.create(comments, (err, resCommentParent) => {
+                    if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
+                    success(res, "Đã bình luận cho sản phẩm này", resCommentParent)
+                })
+            })
         } catch (e) {
-            res.send({
-                message: e.message,
-                errors: e.errors,
-                code: 0
-            }).status(500) && next(e)
+            error_500(res, e)
         }
 
     },
     reComment_Parent_ForCommentPost: (req, res) => {
         const commentReq = req.body;
         console.log("heeloo: ", commentReq);
-        const id = commentReq.id;
+        const IdProduct = req.query.IdProduct;
+        commentReq.IdProduct = IdProduct;
+        commentReq.IdProduct = Date.now();;
+        commentReq.UpDateAt = Date.now();;
         try {
-            if (!id) return res.status(400).json({ message: "Vui lòng nhập Id", status: false })
-            Comment.findById(id, (err, resFindCommentOfPostSupper) => {
-                if (err) return res.status(400).json({ message: "Đã có lỗi xảy ra trong quá trình xử lý", errors: err, status: false });
-                if (!resFindCommentOfPostSupper) return res.json({ message: "Không tìm thấy bài đăng của sản phẩm", data: null, status: false });
-                if (resFindCommentOfPostSupper) {
-                    console.log("parent_id",commentReq.CommentParentId);
-                    if (resFindCommentOfPostSupper.CommentParentId==0 &&commentReq.CommentParentId == 1) {
-                        let commentRecomments = {};
-                        commentRecomments=commentReq;
-                        console.log("parent_id",commentReq.CommentParentId);
-                        resFindCommentOfPostSupper.ListComments.push(
-                            commentRecomments
-                        );
-                        Comment.findByIdAndUpdate(resFindCommentOfPostSupper._id,resFindCommentOfPostSupper, (err, resData) => {
-                         
-                            if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-                            res.json({
-                                message: "Tạo đơn hàng thành công !",
-                                data: resData,
-                                status: true
-                            })
-                        })
+            if (!IdProduct) return error_400(res, "Vui lòng nhập Id", "ID");
+            Products.findById(IdProduct, (err, resFindProduct) => {
+                if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
+                if (!resFindProduct) return error_400(res, "Không tìm thấy sản phẩm", "Errors");
+                Comment.findById(commentReq.IdComment, (err, resFindCommentOfPostSupper) => {
+                    if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
+                    if (!resFindCommentOfPostSupper) return error_400(res, "Không tìm thấy bình luận của sản phẩm", "Errors");
+                    if (resFindCommentOfPostSupper) {
 
+                        // let commentRecomments = {};
+                        // commentRecomments = commentReq;
+                        // commentRecomments.IdProduct = IdProduct;
+                        // commentRecomments.NewDateAt= Date.now();;
+                        // commentRecomments.UpDateAt= Date.now();;
+                        resFindCommentOfPostSupper.Reply.push(
+                            commentReq
+                        );
+                        Comment.findByIdAndUpdate(resFindCommentOfPostSupper._id, { $set: resFindCommentOfPostSupper }, { new: true })
+                            .exec((e, u) => {
+                                if (e) error_500(res, e)
+                                success(res, "Đã cập nhật câu trả lời cho bình luận này", u)
+                            })
                     }
-                    // const itemIndex = await resFindCommentOfPost.ListComments.findIndex(lc => lc.UserId == ProductId);
-                }
-            });
+                });
+
+
+            })
         } catch (e) {
-            res.send({
-                message: e.message,
-                errors: e.errors,
-                code: 0
-            }).status(500) && next(e)
+            error_500(res, e)
         }
 
     },
