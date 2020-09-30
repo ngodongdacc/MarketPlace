@@ -173,7 +173,7 @@
     |    search     |    string | null |         Từ khóa tìm kiếm      |
     |    page     |    number | 1 |         trang cần xem     |
     |    limit     |    number | 20 |         Số lượng kết quả trả về      |
-    |    sort     |    object | {"Date": -1} |         Trường sắp xếp      |
+    |    sort     |    object | `{"Date": -1}` |         Trường sắp xếp      |
     |    idCategory     |    string | null |         Id của danh mục      |
     |    idCategorySub     |    string | null |         Id của danh mục con      |
     |    minPrice     |    number | 0 |         khoảng giá thấp nhất      |
