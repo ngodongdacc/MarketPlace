@@ -1,4 +1,4 @@
-# I. Shop service
+# I. Cart service
 
 ## 1. Database info
 
@@ -6,33 +6,28 @@
 
 ##### Database Name: marketplace
 
-##### Conllection type: Shops
+##### Conllection type: Carts
 
-##### Data structure (Shop object)
+##### Data structure (Cart object)
 
-| Stt |    Tên trường     | Kiểu dữ liệu | Giá mặc định | Bắt buộc |                  Mô tả                  |
-| :-: | :---------------: | :----------: | :----------: | :------: | :-------------------------------------: |
-|  1  |       \_id        |   ObjectId   |    random    | required |             Id của cửa hàng             |
-|  2  |  StoreOwnername   |    String    |              | required |            Tên chủ cửa hàng             |
-|  3  |       Phone       |    String    |              | required |              Số điện thoại              |
-|  4  |    EmailOwner     |    String    |              | required |             Email của shop              |
-|  5  |   PasswordShop    |    String    |              | required |            Mật khẩu của shop            |
-|  6  |     ShopName      |    String    |              | required |              Tên cửa hàng               |
-|  7  |  BusinessLicense  |   Boolean    |     true     | required |      Giấy phép kinh doanh cửa hàng      |
-|  8  | BusinessRegisCode |    Number    |              |          |            Mã số kinh doanh             |
-|  9  |      Country      |    String    |              |          |      Thành phố đăng ký kinh doanh       |
-| 10  | CommodityIndustry |    String    |              |          | Loại nghành hàng hóa đăng ký kinh doanh |
+| Stt | Tên trường  | Kiểu dữ liệu | Giá mặc định | Bắt buộc |           Mô tả           |
+| :-: | :---------: | :----------: | :----------: | :------: | :-----------------------: |
+|  1  |    \_id     |   ObjectId   |    random    | required |      Id của cửa hàng      |
+|  2  | ListProduct |    Array     |      []      |          |    Danh sách sản phẩm     |
+|  3  |  SubTotal   |    Number    |      0       |          |  Tổng số lượng sản phẩm   |
+|  4  |   UserId    |   ObjectId   |     true     | required |     Id của khách hàng     |
+|  5  |  SubPrice   |    Number    |      0       |          | Tổng tiền tất cả sản phẩm |
 
 ## 2. Service info
 
-### Thông tin service \* Tên service: **Shop**
+### Thông tin service \* Tên service: **Cart**
 
-- Source code: ./Controller/ShopController.js
+- Source code: ./Controller/CartController.js
 - Danh sách routers
   - [2.1: Đăng ký tài khoản người dùng shop](#21-đăng-ký-tài-khoản-người-dùng-shop)
   - [2.2: Đăng nhập shop](#22-đăng-nhập)
   - [2.3: Cập nhật thông tin tài khoản người dùng shop](#23-cập-nhật-thông-tin-tài-khoản-người-dùng-shop)
-  - [2.4: Xóa danh sách người dùng shop](#24-xóa-danh-sách-người-dùng-shop)
+    -- - [2.4: Xóa danh sách người dùng shop](#24-xóa-danh-sách-người-dùng-shop)
   - [2.5: Tìm kiếm tài khoản người dùng shop ](#25-tìm-kiếm-tài-khoản-người-dùng-shop)
   - [2.6: Lấy thông tin tài khoản người dùng shop ](#26-lấy-thông-tin-tài-khoản-người-dùng-shop)
 

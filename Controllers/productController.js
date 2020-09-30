@@ -4,20 +4,33 @@ const Products = require("../Model/product");
 const keySevice = require("../Services/keySearchService");
 const EscapeRegExp = require("escape-string-regexp");
 
+// validator
+const { error_400, error_500, success } = require("../validator/errors");
 const { IsJsonString } = require("../validator/validator");
+
 module.exports = {
     create_product: (req, res) => {
         const product = req.body
         // product.Image = req.file.path
         // console.log(req.file.path);
-        if (!product.IdUser) return res.status(400).json({ message: "Vui lòng nhập IdUser", status: false });
-        if (!product.IdShop) return res.status(400).json({ message: "Vui lòng nhập IdShop", status: false });
-        if (!product.IdCategory) return res.status(400).json({ message: "Vui lòng nhập IdCategory", status: false });
-        if (!product.IdCategorySub) return res.status(400).json({ message: "Vui lòng nhập IdCategorySub", status: false });
-        if (!product.Name) return res.status(400).json({ message: "Vui lòng nhập Name", status: false });
+        if (!product.IdUser || product.IdUser === "") 
+            return error_400(res,"Vui lòng nhập id người dùng", "product.IdUser");
+
+        if (!product.IdShop || product.IdShop == "") 
+            return error_400(res,"Vui lòng nhập id của shop", "product.IdShop");
+
+        if (!product.IdCategory || product.IdCategory === "") 
+            return error_400(res,"Vui lòng nhập id của danh mục cha", 
+                                                "product.IdCategory");
+
+        if (!product.IdCategorySub || product.IdCategorySub === "") 
+            return error_400(res,"Vui lòng nhập id của danh mục con", 
+                                                    "product.IdCategorySub");
+        if (!product.Name || product.Name === "") 
+            return error_400(res,"Vui lòng nhập tên của sản phẩm", "product.Name");
 
         Products.create(product, (err, resProduct) => {
-            if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
+            if (err) return error_500(res,err)
             res.json({
                 message: "Tạo sản phẩm thành công",
                 data: resProduct,
@@ -31,20 +44,25 @@ module.exports = {
         const product = req.body
         product.DateUpdate = Date.now();
         const id = req.params.id
-        if (!id) return res.status(400).json({ message: "Vui lòng nhập Id sản phẩm", status: false });
-        if (product.Name === "") return res.status(400).json({ message: "Tên sản phẩm không được rỗng", status: false });
-        console.log("product:: ", req.body);
-        Products.findById(id, (err, resProduct) => {
-            if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-            if (!resProduct) return res.json({ message: "Không tìm thấy id sản phẩm", data: null, status: false });
+        
+        if (!id) return error_400(res,"Vui lòng nhập Id sản phẩm", "id");
 
-            Products.findByIdAndUpdate(resProduct._id, { $set: product }, {}, (err, resUpdate) => {
-                if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-                res.json({
-                    message: "Cập nhật sản phẩm thành công",
-                    data: resUpdate,
-                    status: true
-                })
+        if (product.Name && product.Name === "") 
+            return error_400(res,"Tên sản phẩm không được rỗng", "product.Name");
+        
+        Products.findById(id, (err, resProduct) => {
+            if (err) return error_500(res,err)
+            if (!resProduct) 
+                return error_400(res,"Không tìm thấy id sản phẩm"+id,"id");
+
+            Products.findByIdAndUpdate(resProduct._id,product, {new: true})
+                .exec((err, resUpdate) => {
+                    if (err) return error_500(res,err);
+                    res.json({
+                        message: "Cập nhật sản phẩm thành công",
+                        data: resUpdate,
+                        status: true
+                    })
             })
         })
     },
@@ -247,7 +265,6 @@ module.exports = {
                 cb(null, query)
             },
             (query, cb) => {
-                console.log("query:: ", query.$and[0]);
                 async.parallel([
                     (cb) => Products
                         .aggregate([

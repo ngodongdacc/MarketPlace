@@ -9,13 +9,12 @@ var CartSchema = new Schema({
     },
     UserId: {
         type: mongoose.Schema.Types.ObjectId,
+        required:true
     },
     // cookieId: { type: String, default:"" },
-    Status: { type: Boolean, default: true },
-    Des: { type: String, default: "" },
-    Title: { type: String },
     SubPrice:{
-        type: Number
+        type: Number,
+        default: 0
     }
 }, {
     timestamps: true

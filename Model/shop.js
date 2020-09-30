@@ -7,12 +7,10 @@ var ShopSchema = new Schema({
     EmailOwner: { type: String, required: true }, // Email Shop
     PasswordShop: { type: String, required: true },
     ShopName: { type: String , required: true}, // Tên cửa hàng
-    BusinessLicense: { type: Boolean, default: true }, // Giấy phép kinh doanh cửa hàng
-    BusinessRegisCode: { type: Number, required: true }, //Mã số kinh doanh
+    BusinessLicense: { type: Boolean, required: true, default: true }, // Giấy phép kinh doanh cửa hàng
+    BusinessRegisCode: { type: Number }, //Mã số kinh doanh
     Country: { type: String }, //Thành phố đăng ký kinh doanh
-    CommodityIndustry: { type: String ,required:true}, // Nghành hàng hóa đăng ký kinh doanh
-    Title: { type: String},
-    Des: { type: String },
+    CommodityIndustry: { type: String}, // Nghành hàng hóa đăng ký kinh doanh
 }, {
     timestamps: true
 });
