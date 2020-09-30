@@ -636,20 +636,20 @@ module.exports = {
   },
   updateStatusOrder: function updateStatusOrder(req, res) {
     var order, id;
-    return regeneratorRuntime.async(function updateStatusOrder$(_context9) {
+    return regeneratorRuntime.async(function updateStatusOrder$(_context8) {
       while (1) {
-        switch (_context9.prev = _context9.next) {
+        switch (_context8.prev = _context8.next) {
           case 0:
             order = req.body;
             order.DateUpdate = Date.now();
             id = req.params.id;
 
             if (id) {
-              _context9.next = 5;
+              _context8.next = 5;
               break;
             }
 
-            return _context9.abrupt("return", res.status(400).json({
+            return _context8.abrupt("return", res.status(400).json({
               message: "Vui lòng nhập Id",
               status: false
             }));
@@ -666,100 +666,62 @@ module.exports = {
                 data: null,
                 status: false
               });
-              Cart.findOne({
-                _id: resOrder.IdCart
-              }, function _callee3(err, resCart) {
-                return regeneratorRuntime.async(function _callee3$(_context8) {
-                  while (1) {
-                    switch (_context8.prev = _context8.next) {
-                      case 0:
-                        if (!err) {
-                          _context8.next = 2;
-                          break;
-                        }
-
-                        return _context8.abrupt("return", res.status(400).json({
-                          message: "OOP Lỗi Rồi",
-                          errors: err,
-                          status: false
-                        }));
-
-                      case 2:
-                        if (resCart) {
-                          _context8.next = 4;
-                          break;
-                        }
-
-                        return _context8.abrupt("return", res.json({
-                          message: "Không tìm thấy ID CART",
-                          data: null,
-                          status: false
-                        }));
-
-                      case 4:
-                        Order.findByIdAndUpdate(resOrder._id, {
-                          $set: order,
-                          "new": true
-                        }, {}, function (err, resUpdate) {
-                          if (err) {
-                            return res.status(400).json({
-                              message: "Có lỗi trong quá trình xử lý",
-                              errors: err,
-                              status: false
-                            });
-                          } else if (resUpdate.Status == 1) {
-                            res.json({
-                              message: "Đơn hàng đã xác nhận ",
-                              data: resUpdate,
-                              status: true
-                            });
-                          } else if (resUpdate.Status == 2) {
-                            res.json({
-                              message: "Đang giao hàng",
-                              data: resUpdate,
-                              status: true
-                            });
-                          } else if (resUpdate.Status == 3) {
-                            res.json({
-                              message: "Đã giao hàng",
-                              data: resUpdate,
-                              status: true
-                            });
-                          } else if (resUpdate.Status == 4) {
-                            if (resUpdate.Reason == "") {
-                              return res.status(400).json({
-                                message: "Vui lòng điền lý do bạn huỷ đơn hàng",
-                                status: false,
-                                code: 0
-                              });
-                            } else {
-                              res.json({
-                                message: "Huỷ đơn hàng",
-                                data: resUpdate,
-                                status: true
-                              });
-                            }
-                          } else {
-                            res.json({
-                              message: "Đơn hàng đang chờ xác nhận!",
-                              data: resUpdate,
-                              status: true
-                            });
-                          }
-                        });
-
-                      case 5:
-                      case "end":
-                        return _context8.stop();
-                    }
+              Order.findByIdAndUpdate(resOrder._id, {
+                $set: order
+              }, {
+                "new": true
+              }, function (err, resUpdate) {
+                if (err) {
+                  return res.status(400).json({
+                    message: "Có lỗi trong quá trình xử lý",
+                    errors: err,
+                    status: false
+                  });
+                } else if (resUpdate.Status == 1) {
+                  res.json({
+                    message: "Đơn hàng đã xác nhận ",
+                    data: resUpdate,
+                    status: true
+                  });
+                } else if (resUpdate.Status == 2) {
+                  res.json({
+                    message: "Đang giao hàng",
+                    data: resUpdate,
+                    status: true
+                  });
+                } else if (resUpdate.Status == 3) {
+                  res.json({
+                    message: "Đã giao hàng",
+                    data: resUpdate,
+                    status: true
+                  });
+                } else if (resUpdate.Status == 4) {
+                  if (resUpdate.Reason == "") {
+                    return res.status(400).json({
+                      message: "Vui lòng điền lý do bạn huỷ đơn hàng",
+                      status: false,
+                      code: 0
+                    });
+                  } else {
+                    res.json({
+                      message: "Huỷ đơn hàng",
+                      data: resUpdate,
+                      status: true
+                    });
                   }
-                });
+                } else {
+                  res.json({
+                    message: "Đơn hàng đang chờ xác nhận!",
+                    data: resUpdate,
+                    status: true
+                  });
+                }
               });
             });
 
           case 6:
           case "end":
-            return _context9.stop();
+            return _context8.stop();
         }
       }
     });

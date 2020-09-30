@@ -287,10 +287,7 @@ module.exports = {
         Order.findById(id,(err, resOrder) => {
             if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false});
             if(!resOrder) return res.json({message: "Không tìm thấy id đơn hàng",data: null,status:false});
-            Cart.findOne({_id: resOrder.IdCart},async(err, resCart) => {
-                if (err) return res.status(400).json({ message: "OOP Lỗi Rồi", errors: err, status: false });
-                if(!resCart) return res.json({message: "Không tìm thấy ID CART", data: null, status: false});
-                Order.findByIdAndUpdate(resOrder._id, {$set: order,new: true},{},(err, resUpdate) => {
+                 Order.findByIdAndUpdate(resOrder._id, {$set: order},{ new: true},(err, resUpdate) => {
                     if(err) {
                         return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false});
                     }else if(resUpdate.Status == 1) {
@@ -330,7 +327,6 @@ module.exports = {
                         })
                     }
                  })
-            })
          })
     }
 
