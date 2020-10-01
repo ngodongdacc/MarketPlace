@@ -10,86 +10,35 @@
 
 ##### Data structure (Comment object)
 
-| Stt |    Tên trường     | Kiểu dữ liệu | Giá mặc định | Bắt buộc |                  Mô tả                  |
-| :-: | :---------------: | :----------: | :----------: | :------: | :-------------------------------------: |
-|  1  |       \_id        |   ObjectId   |    random    | required |             Id của bình luận             |
-|  2  |  StoreOwnername   |    String    |              | required |            Tên chủ cửa hàng             |
-|  3  |       Phone       |    String    |              | required |              Số điện thoại              |
-|  4  |    EmailOwner     |    String    |              | required |             Email của shop              |
-|  5  |   PasswordShop    |    String    |              | required |            Mật khẩu của shop            |
-|  6  |     ShopName      |    String    |              | required |              Tên cửa hàng               |
-|  7  |  BusinessLicense  |   Boolean    |     true     | required |      Giấy phép kinh doanh cửa hàng      |
-|  8  | BusinessRegisCode |    Number    |              |          |            Mã số kinh doanh             |
-|  9  |      Country      |    String    |              |          |      Thành phố đăng ký kinh doanh       |
-| 10  | CommodityIndustry |    String    |              |          | Loại nghành hàng hóa đăng ký kinh doanh |
+| Stt | Tên trường | Kiểu dữ liệu | Giá mặc định | Bắt buộc |           Mô tả           |
+| :-: | :--------: | :----------: | :----------: | :------: | :-----------------------: |
+|  1  |    \_id    |   ObjectId   |    random    | required |      Id của comment       |
+|  2  |  Content   |    String    |              | required | Tên của nội dung comment  |
+|  3  |   Reply    |    Array     |      []      |          | Danh dách comment trả lời |
+|  4  | NewDateAt  |     Date     |  Date.now()  | required |         Ngày tạo          |
+|  5  |  UpDateAt  |     Date     |  Date.now()  |          |       Ngày cập nhật       |
+|  6  |   IdUser   |   ObjectId   |              | required |   Id tài khoản comment    |
+|  7  | IdProduct  |   ObjectId   |              | required |    Id sản phẩm comment    |
 
 ## 2. Service info
 
-### Thông tin service \* Tên service: **Shop**
+### Thông tin service \* Tên service: **Comment**
 
-- Source code: ./Controller/ShopController.js
+- Source code: ./Controller/CommentController.js
 - Danh sách routers
-  - [2.1: Đăng ký tài khoản người dùng shop](#21-đăng-ký-tài-khoản-người-dùng-shop)
-  - [2.2: Đăng nhập shop](#22-đăng-nhập)
-  - [2.3: Cập nhật thông tin tài khoản người dùng shop](#23-cập-nhật-thông-tin-tài-khoản-người-dùng-shop)
-  - [2.4: Xóa danh sách người dùng shop](#24-xóa-danh-sách-người-dùng-shop)
-  - [2.5: Tìm kiếm tài khoản người dùng shop ](#25-tìm-kiếm-tài-khoản-người-dùng-shop)
-  - [2.6: Lấy thông tin tài khoản người dùng shop ](#26-lấy-thông-tin-tài-khoản-người-dùng-shop)
+  - [2.1: Thêm comment mới](#21-Thêm-comment-mới)
+  - [2.2: Cập nhật comment Parent](#22-Cập-nhật-comment)
+  - [2.3: Lấy chi tiết Comment](#23-Lấy-chi-tiết-Comment)
+  - [2.4: Xóa Comment Parent](#24-Xóa-Comment)
+  - [2.5: Trả lời Comment ](#25-Trả-lời-Comment)
+  - [2.6: Lấy danh sách Comment của sản phẩm ](#26-Lấy-danh-sách-Comment-của-sản-phẩm)
+  - [2.7: Cập nhật comment Super](#27-Cập-nhật-comment-Super)
+  - [2.8: Xóa Comment Super](#28-Xóa-Comment-Super)
 
-### 2.1 Đăng ký tài khoản người dùng shop
+### 2.1 Thêm comment mới
 
-- Router: **/api/shop/add**
-- Function: **postshop()**
-- Method: **POST**
-- Paremeter:
-- Body:
-
-  |    Tên Trường     | Kiểu dữ liệu |                   Mô tả                   |
-  | :---------------: | :----------: | :---------------------------------------: |
-  |  StoreOwnername   |    String    |            (Tên chủ cửa hàng)             |
-  |       Phone       |    String    |              (Số điện thoại)              |
-  |    EmailOwner     |    String    |             (Email của shop)              |
-  |   PasswordShop    |    String    |            (Mật khẩu của shop)            |
-  |     ShopName      |    String    |              (Tên cửa hàng )              |
-  |  BusinessLicense  |   Boolean    |      (Giấy phép kinh doanh cửa hàng)      |
-  | BusinessRegisCode |    String    |            (Mã số kinh doanh)             |
-  |      Country      |    String    |      (Thành phố đăng ký kinh doanh)       |
-  | CommodityIndustry |    String    | (Loại nghành hàng hóa đăng ký kinh doanh) |
-
-- Dữ liệu trả về
-
-  | Tên Trường | Kiểu dữ liệu |                    Mô tả                    |
-  | :--------: | :----------: | :-----------------------------------------: |
-  |    data    |    object    | [ Shop object](#data-structure-shop-object) |
-  |   status   |   boolean    |      true: thành công, false: thất bại      |
-  |  message   |    string    |               Tin nhắn trả về               |
-
-### 2.2 Đăng nhập
-
-- Router: **/api/shop/login**
-- Function: **post_login()**
-- Method: **POST**
-- Paremeter:
-
-- Body:
-
-  | Tên Trường | Kiểu dữ liệu |                  Mô tả                   |
-  | :--------: | :----------: | :--------------------------------------: |
-  |   Email    |    String    | Tên đăng nhập (Email hoặc số điện thoại) |
-  |  Password  |    String    |            Mật khẩu đăng nhập            |
-
-- Dữ liệu trả về
-
-  | Tên Trường | Kiểu dữ liệu |                        Mô tả                        |
-  | :--------: | :----------: | :-------------------------------------------------: |
-  |    data    |    object    | [ Shop object](#data-structure-shop-object) + Token |
-  |   status   |   boolean    |         true - thành công, false - thất bại         |
-  |  message   |    string    |                   Tin nhắn trả về                   |
-
-### 2.3 Cập nhật thông tin tài khoản người dùng shop
-
-- Router: **/api/shop/update/:id**
-- Function: **updateShop()**
+- Router: **/api/comment/comment**
+- Function: **postComment()**
 - Method: **POST**
 - header:
 
@@ -99,32 +48,30 @@
 
 - Paremeter:
 
-  | Tên Trường | Kiểu dữ liệu |    Mô tả    |
-  | :--------: | :----------: | :---------: |
-  |     id     |    String    | id của Shop |
+  | Tên Trường | Kiểu dữ liệu |        Mô tả        |
+  | :--------: | :----------: | :-----------------: |
+  | IdProduct  |   ObjectId   | Id sản phẩm comment |
 
 - Body:
 
-|   Tên Trường   | Kiểu dữ liệu |        Mô tả        |
-| :------------: | :----------: | :-----------------: |
-| StoreOwnername |    String    | (Tên chủ cửa hàng)  |
-|     Phone      |    String    |   (Số điện thoại)   |
-|   EmailOwner   |    String    |  (Email của shop)   |
-|  PasswordShop  |    String    | (Mật khẩu của shop) |
-|    ShopName    |    String    |   (Tên cửa hàng )   |
+  | Tên Trường | Kiểu dữ liệu |          Mô tả           |
+  | :--------: | :----------: | :----------------------: |
+  |  Content   |    String    | Tên của nội dung comment |
+  |   IdUser   |   ObjectId   |   Id tài khoản comment   |
+  | IdProduct  |   ObjectId   |   Id sản phẩm comment    |
 
 - Dữ liệu trả về
 
-  | Tên Trường | Kiểu dữ liệu |                    Mô tả                    |
-  | :--------: | :----------: | :-----------------------------------------: |
-  |    data    |    object    | [ Shop object](#data-structure-shop-object) |
-  |   status   |   boolean    |      true - Thành công; false - Có lỗi      |
-  |  message   |    string    |               Tin nhắn trả về               |
+  | Tên Trường | Kiểu dữ liệu |                       Mô tả                       |
+  | :--------: | :----------: | :-----------------------------------------------: |
+  |    data    |    object    | [ Comment object](#data-structure-comment-object) |
+  |   status   |   boolean    |         true: thành công, false: thất bại         |
+  |  message   |    string    |                  Tin nhắn trả về                  |
 
-### 2.4 Xóa danh sách người dùng shop
+### 2.2 Cập nhật comment Parent
 
-- Router: **/api/shop/delete/list-shop**
-- Function: **delete_listShop()**
+- Router: **/api/comment/update-commentp**
+- Function: **updateComment_Parent()**
 - Method: **POST**
 - header:
 
@@ -132,23 +79,77 @@
   | :-----------: | :----------: | :-------------: |
   | Authorization |    string    | Token đăng nhập |
 
-- Body:
+- Paremeter:
 
-  | Tên Trường | Kiểu dữ liệu |         Mô tả         |
-  | :--------: | :----------: | :-------------------: |
-  |   listId   |    array     | Danh sách id của User |
+  | Tên Trường | Kiểu dữ liệu |          Mô tả           |
+  | :--------: | :----------: | :----------------------: |
+  |  Content   |    String    | Tên của nội dung comment |
+  |   IdUser   |   ObjectId   |   Id tài khoản comment   |
+  | IdProduct  |   ObjectId   |   Id sản phẩm comment    |
+  | IdComment  |   ObjectId   | Id comment của sản phẩm  |
 
 - Dữ liệu trả về
 
-  | Tên Trường | Kiểu dữ liệu |               Mô tả               |
-  | :--------: | :----------: | :-------------------------------: |
-  |    data    |    object    |   Số lượng shop xóa thành công    |
-  |   status   |   boolean    | true - Thành công; false - Có lỗi |
-  |  message   |    string    |          Tin nhắn trả về          |
+  | Tên Trường | Kiểu dữ liệu |                       Mô tả                       |
+  | :--------: | :----------: | :-----------------------------------------------: |
+  |    data    |    object    | [ Comment object](#data-structure-comment-object) |
+  |   status   |   boolean    |         true: thành công, false: thất bại         |
+  |  message   |    string    |                  Tin nhắn trả về                  |
 
-### 2.5 Tìm kiếm tài khoản người dùng shop
+### 2.3 Lấy chi tiết Comment
 
-- Router: **/api/shop/search**
+- Router: **/api/comment/comment-details**
+- Function: **get_Comment_Detail()**
+- Method: **GET**
+- header:
+
+  |  Tên Trường   | Kiểu dữ liệu |      Mô tả      |
+  | :-----------: | :----------: | :-------------: |
+  | Authorization |    string    | Token đăng nhập |
+
+- Paremeter:
+
+  | Tên Trường | Kiểu dữ liệu |          Mô tả          |
+  | :--------: | :----------: | :---------------------: |
+  | IdProduct  |   ObjectId   |   Id sản phẩm comment   |
+  | IdComment  |   ObjectId   | Id comment của sản phẩm |
+
+- Dữ liệu trả về
+
+  | Tên Trường | Kiểu dữ liệu |                       Mô tả                       |
+  | :--------: | :----------: | :-----------------------------------------------: |
+  |    data    |    object    | [ Comment object](#data-structure-comment-object) |
+  |   status   |   boolean    |         true: thành công, false: thất bại         |
+  |  message   |    string    |                  Tin nhắn trả về                  |
+
+### 2.4 Xóa Comment Parent
+
+- Router: **/api/comment/delete-commentp**
+- Function: **deleteComment_Parent()**
+- Method: **GET**
+- header:
+
+  |  Tên Trường   | Kiểu dữ liệu |      Mô tả      |
+  | :-----------: | :----------: | :-------------: |
+  | Authorization |    string    | Token đăng nhập |
+
+- Paremeter:
+  | Tên Trường | Kiểu dữ liệu | Mô tả |
+  | :--------: | :----------: | :----------------------: |
+  | IdProduct | ObjectId | Id sản phẩm comment |
+  | IdComment | ObjectId | Id comment của sản phẩm |
+
+- Dữ liệu trả về
+
+  | Tên Trường | Kiểu dữ liệu |                       Mô tả                       |
+  | :--------: | :----------: | :-----------------------------------------------: |
+  |    data    |    object    | [ Comment object](#data-structure-comment-object) |
+  |   status   |   boolean    |         true: thành công, false: thất bại         |
+  |  message   |    string    |                  Tin nhắn trả về                  |
+
+### 2.5 Trả lời Comment
+
+- Router: **/api/comment/recomment**
 - Function: **searchShop()**
 - Method: **POST**
 - header:
@@ -158,28 +159,87 @@
   | Authorization |    string    | Token đăng nhập |
 
 - Paremeter:
-  | Tên Trường | Kiểu dữ liệu | mặc định | Mô tả |  
-   |:----------: |:------------:|:------------: |:--------------------------------: |  
-   | ShopName | string | null | Từ khóa tìm kiếm |
-  | Country | string | null | Từ khóa tìm kiếm |
-  | CommodityIndustry | string | null | Từ khóa tìm kiếm |
-  | StoreOwnername | string | null | Từ khóa tìm kiếm |
-  | page | number | 1 | trang cần xem |
-  | limit | number | 20 | Số lượng kết quả trả về |
-  | sort | object | {"ShopName": desc} | Trường sắp xếp |
+
+  | Tên Trường | Kiểu dữ liệu |        Mô tả        |
+  | :--------: | :----------: | :-----------------: |
+  | IdProduct  |   ObjectId   | Id sản phẩm comment |
+
+- Body:
+
+  | Tên Trường | Kiểu dữ liệu |            Mô tả            |
+  | :--------: | :----------: | :-------------------------: |
+  |  Content   |    String    | Tên của nội dung re-comment |
+  |   IdUser   |   ObjectId   |    Id tài khoản comment     |
+  | IdComment  |   ObjectId   |   Id comment của sản phẩm   |
 
 - Dữ liệu trả về
 
-  | Tên Trường | Kiểu dữ liệu |               Mô tả               |
-  | :--------: | :----------: | :-------------------------------: |
-  |    data    |    object    |    Danh sách sản phấm tìm thấy    |
-  |   status   |   boolean    | true - Thành công; false - Có lỗi |
-  |  message   |    string    |          Tin nhắn trả về          |
+  | Tên Trường | Kiểu dữ liệu |                       Mô tả                       |
+  | :--------: | :----------: | :-----------------------------------------------: |
+  |    data    |    object    | [ Comment object](#data-structure-comment-object) |
+  |   status   |   boolean    |         true: thành công, false: thất bại         |
+  |  message   |    string    |                  Tin nhắn trả về                  |
 
-### 2.6 Lấy thông tin tài khoản người dùng shop
+  ### 2.6 Lấy danh sách Comment của sản phẩm
 
-- Router: **/api/shop/shop-details/:id**
-- Function: **shop_details_forIdOwnerShop()**
+- Router: **/api/comment/comment-product**
+- Function: **searchShop()**
+- Method: **POST**
+- header:
+
+  |  Tên Trường   | Kiểu dữ liệu |      Mô tả      |
+  | :-----------: | :----------: | :-------------: |
+  | Authorization |    string    | Token đăng nhập |
+
+- Paremeter:
+
+  | Tên Trường | Kiểu dữ liệu |                  Mô tả                  |
+  | :--------: | :----------: | :-------------------------------------: |
+  | IdProduct  |   ObjectId   |           Id sản phẩm comment           |
+  |   limit    |    String    | Giới hạn bao nhiêu commnet trên 1 trang |
+  |    page    |   ObjectId   |      Số trang comment của sản phẩm      |
+
+- Dữ liệu trả về
+
+  | Tên Trường | Kiểu dữ liệu |                       Mô tả                       |
+  | :--------: | :----------: | :-----------------------------------------------: |
+  |    data    |    object    | [ Comment object](#data-structure-comment-object) |
+  |   status   |   boolean    |         true: thành công, false: thất bại         |
+  |  message   |    string    |                  Tin nhắn trả về                  |
+
+  ### 2.7 Cập nhật comment Super
+
+- Router: **/api/comment/update-comments**
+- Function: **updateComment_Super()**
+- Method: **POST**
+- header:
+
+  |  Tên Trường   | Kiểu dữ liệu |      Mô tả      |
+  | :-----------: | :----------: | :-------------: |
+  | Authorization |    string    | Token đăng nhập |
+
+- Paremeter:
+
+  |   Tên Trường    | Kiểu dữ liệu |             Mô tả              |
+  | :-------------: | :----------: | :----------------------------: |
+  |     Content     |    String    |    Tên của nội dung comment    |
+  |     IdUser      |   ObjectId   |      Id tài khoản comment      |
+  |    IdProduct    |   ObjectId   |      Id sản phẩm comment       |
+  |    IdComment    |   ObjectId   | Id comment parent của sản phẩm |
+  | IdCommentSupper |   ObjectId   | Id comment reply của sản phẩm  |
+
+- Dữ liệu trả về
+
+  | Tên Trường | Kiểu dữ liệu |                       Mô tả                       |
+  | :--------: | :----------: | :-----------------------------------------------: |
+  |    data    |    object    | [ Comment object](#data-structure-comment-object) |
+  |   status   |   boolean    |         true: thành công, false: thất bại         |
+  |  message   |    string    |                  Tin nhắn trả về                  |
+
+### 2.8 Xóa Comment Super
+
+- Router: **/api/comment/delete-comments**
+- Function: **deleteComment_Super()**
 - Method: **GET**
 - header:
 
@@ -188,13 +248,15 @@
   | Authorization |    string    | Token đăng nhập |
 
 - Paremeter:
-  | Tên Trường | Kiểu dữ liệu | mặc định | Mô tả |  
-   |:----------: |:------------:|:------------: |:--------------------------------: |  
-   | search | string | null | id của shop |
+  | Tên Trường | Kiểu dữ liệu | Mô tả |
+  | :--------: | :----------: | :----------------------: |
+  | IdProduct | ObjectId | Id sản phẩm comment |
+  | IdCommentParent | ObjectId | Id comment parent của sản phẩm |
+  | IdCommentSup | ObjectId | Id comment reply của sản phẩm |
 - Dữ liệu trả về
 
-  | Tên Trường | Kiểu dữ liệu |                    Mô tả                    |
-  | :--------: | :----------: | :-----------------------------------------: |
-  |    data    |    object    | [ Shop object](#data-structure-shop-object) |
-  |   status   |   boolean    |      true - Thành công; false - Có lỗi      |
-  |  message   |    string    |               Tin nhắn trả về               |
+  | Tên Trường | Kiểu dữ liệu |                       Mô tả                       |
+  | :--------: | :----------: | :-----------------------------------------------: |
+  |    data    |    object    | [ Comment object](#data-structure-comment-object) |
+  |   status   |   boolean    |         true: thành công, false: thất bại         |
+  |  message   |    string    |                  Tin nhắn trả về                  |

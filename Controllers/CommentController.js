@@ -45,6 +45,8 @@ module.exports = {
         var UpDateAt = new Date();
         commentReq.NewDateAt = NewDateAt
         commentReq.UpDateAt = UpDateAt
+        if (!commentReq.Content.length < 0) return error_400(res, "Vui lòng nhập nội dung bình luận", "Content");
+        if (commentReq.Content === "") return error_400(res, "Vui lòng nhập nội dung bình luận", "Content");
         try {
             if (!IdProduct) return error_400(res, "Vui lòng nhập Id", "IdProduct");
             Products.findById(IdProduct, (err, resFindProduct) => {
@@ -78,6 +80,8 @@ module.exports = {
     updateComment_Parent: async (req, res) => {
         const commentReq = req.query;
         var UpDateAt = new Date();
+        if (!commentReq.Content.length < 0) return error_400(res, "Vui lòng nhập nội dung bình luận", "Content");
+        if (commentReq.Content === "") return error_400(res, "Vui lòng nhập nội dung bình luận", "Content");
         try {
             if (!commentReq.IdProduct) return error_400(res, "Vui lòng nhập Id", "IdProduct");
             Products.findById(commentReq.IdProduct, (err, resFindProduct) => {
@@ -110,6 +114,8 @@ module.exports = {
     updateComment_Super: async (req, res) => {
         const commentReq = req.query;
         var UpDateAt = new Date();
+        if (!commentReq.Content.length < 0) return error_400(res, "Vui lòng nhập nội dung bình luận", "Content");
+        if (commentReq.Content === "") return error_400(res, "Vui lòng nhập nội dung bình luận", "Content");
         try {
             if (!commentReq.IdProduct) return error_400(res, "Vui lòng nhập Id", "IdProduct");
             Products.findById(commentReq.IdProduct, (err, resFindProduct) => {
@@ -151,11 +157,16 @@ module.exports = {
             Products.findById(IdProduct, (err, resFindProduct) => {
                 if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
                 if (!resFindProduct) return error_400(res, "Không tìm thấy bình luận này", "Errors");
-                Comment.findByIdAndDelete(IdComment, (err, resFindComment) => {
+                Comment.findById(IdComment, (err, resFindData) => {
                     if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
-                    if (!resFindComment) return error_400(res, "Không tìm thấy bình luận của sản phẩm", "Errors");
-                    success(res, "Đã xóa câu trả lời cho bình luận này", resFindComment)
-                });
+                    if (!resFindData) return error_400(res, "Không tìm thấy bình luận của sản phẩm", "Errors");
+                    Comment.findByIdAndDelete(resFindData._id, (err, resFindComment) => {
+                        if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
+                        if (!resFindComment) return error_400(res, "Không tìm thấy bình luận của sản phẩm", "Errors");
+                        success(res, "Đã xóa câu trả lời cho bình luận này", resFindComment)
+                    });
+                })
+                
             })
         } catch (e) {
             error_500(res, e)
@@ -174,11 +185,17 @@ module.exports = {
                 Comment.findById(IdCommentParent, (err, resFindComment) => {
                     if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
                     if (!resFindComment) return error_400(res, "Không tìm thấy bình luận này", "Errors");
-                    resFindComment.Reply.findIndex(cmt => cmt.IdComment == IdCommentSup) !== -1 && resFindComment.Reply.splice(resFindComment.Reply.findIndex(cmt => cmt.IdComment == IdCommentSup), 1)
-                    Comment.findByIdAndUpdate(resFindComment._id, resFindComment, (err, resRemove) => {
-                        if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
-                        success(res, "Bình luận này đã được xóa", resRemove)
-                    })
+                    const itemIndex = resFindComment.Reply.findIndex(cmt => cmt.IdComment == IdCommentSup);
+                    if (itemIndex > -1) {
+                        resFindComment.Reply.findIndex(cmt => cmt.IdComment == IdCommentSup) !== -1 && resFindComment.Reply.splice(resFindComment.Reply.findIndex(cmt => cmt.IdComment == IdCommentSup), 1)
+                        Comment.findByIdAndUpdate(resFindComment._id, resFindComment, (err, resRemove) => {
+                            if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
+                            success(res, "Bình luận này đã được xóa", resRemove)
+                        })
+                    }else{
+                        error_400(res, "Bình luận này không còn tồn tại", "Errors");
+                    }
+                   
                 });
             })
         } catch (e) {
