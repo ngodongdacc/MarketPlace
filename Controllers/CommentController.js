@@ -1,5 +1,6 @@
 const Comment = require("../Model/comment");
 const Products = require("../Model/product");
+const Users = require("../Model/users");
 const async = require("async");
 const { mongo, Mongoose } = require("mongoose");
 const mongoose = require("mongoose");
@@ -9,22 +10,28 @@ module.exports = {
     postComment: async (req, res) => {
         const IdProduct = req.query.IdProduct;
         const Content = req.body.Content;
+        const IdUser = req.body.IdUser;
         if (!Content.length < 0) return error_400(res, "Vui lòng nhập nội dung bình luận", "Content");
         if (Content === "") return error_400(res, "Vui lòng nhập nội dung bình luận", "Content");
         const comments = new Comment({
-            IdUser: req.body.IdUser,
-            Content: req.body.Content,
+            IdUser: IdUser,
+            Content: Content,
             IdProduct: IdProduct
         })
         try {
             if (!IdProduct) return error_400(res, "Vui lòng nhập Id", "ID");
             Products.findById(IdProduct, (err, resFindProduct) => {
                 if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
-                if (!resFindProduct) return error_400(res, "Không tìm thấy sản phẩm", "Errors");
-                Comment.create(comments, (err, resCommentParent) => {
+                if (!resFindProduct) return error_400(res, "Không tìm thấy sản phẩm", "IdProduct");
+                Users.findById(IdUser, (err, resFindUser) => {
                     if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
-                    success(res, "Đã bình luận cho sản phẩm này", resCommentParent)
+                    if (!resFindUser) return error_400(res, "Tài khoản không tồn tại trong hệ thống", "IdUser");
+                    Comment.create(comments, (err, resCommentParent) => {
+                        if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
+                        success(res, "Đã bình luận cho sản phẩm này", resCommentParent)
+                    })
                 })
+
             })
         } catch (e) {
             error_500(res, e)
@@ -43,21 +50,26 @@ module.exports = {
             Products.findById(IdProduct, (err, resFindProduct) => {
                 if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
                 if (!resFindProduct) return error_400(res, "Không tìm thấy sản phẩm", "Errors");
-                Comment.findById(commentReq.IdComment, (err, resFindCommentOfPostSupper) => {
+                Users.findById(commentReq.IdUser, (err, resFindUser) => {
                     if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
-                    if (!resFindCommentOfPostSupper) return error_400(res, "Không tìm thấy bình luận của sản phẩm", "Errors");
-                    if (resFindCommentOfPostSupper) {
-                        commentReq.IdComment = new mongoose.Types.ObjectId;
-                        resFindCommentOfPostSupper.Reply.push(
-                            commentReq
-                        );
-                        Comment.findByIdAndUpdate(resFindCommentOfPostSupper._id, { $set: resFindCommentOfPostSupper }, { new: true })
-                            .exec((e, u) => {
-                                if (e) error_500(res, e)
-                                success(res, "Đã cập nhật câu trả lời cho bình luận này", u)
-                            })
-                    }
-                });
+                    if (!resFindUser) return error_400(res, "Tài khoản không tồn tại trong hệ thống", "IdUser");
+                    Comment.findById(commentReq.IdComment, (err, resFindCommentOfPostSupper) => {
+                        if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
+                        if (!resFindCommentOfPostSupper) return error_400(res, "Không tìm thấy bình luận của sản phẩm", "Errors");
+                        if (resFindCommentOfPostSupper) {
+                            commentReq.IdComment = new mongoose.Types.ObjectId;
+                            resFindCommentOfPostSupper.Reply.push(
+                                commentReq
+                            );
+                            Comment.findByIdAndUpdate(resFindCommentOfPostSupper._id, { $set: resFindCommentOfPostSupper }, { new: true })
+                                .exec((e, u) => {
+                                    if (e) error_500(res, e)
+                                    success(res, "Đã cập nhật câu trả lời cho bình luận này", u)
+                                })
+                        }
+                    });
+                })
+
             })
         } catch (e) {
             error_500(res, e)
@@ -71,19 +83,23 @@ module.exports = {
             Products.findById(commentReq.IdProduct, (err, resFindProduct) => {
                 if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
                 if (!resFindProduct) return error_400(res, "Không tìm thấy sản phẩm", "Errors");
-                Comment.findById(commentReq.IdComment, (err, resFindData) => {
+                Users.findById(commentReq.IdUser, (err, resFindUser) => {
                     if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
-                    if (!resFindData) return error_400(res, "Không tìm thấy bình luận của sản phẩm", "Errors");
-                    Comment.findByIdAndUpdate(resFindData._id, {
-                        UpDateAt: UpDateAt,
-                        Content: commentReq.Content
-                    }, { new: true })
-                        .exec((e, u) => {
-                            if (e) error_500(res, e)
-                            success(res, "Đã câu trả lời mới", u)
-                        })
+                    if (!resFindUser) return error_400(res, "Tài khoản không tồn tại trong hệ thống", "IdUser");
+                    Comment.findById(commentReq.IdComment, (err, resFindData) => {
+                        if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
+                        if (!resFindData) return error_400(res, "Không tìm thấy bình luận của sản phẩm", "Errors");
+                        Comment.findByIdAndUpdate(resFindData._id, {
+                            UpDateAt: UpDateAt,
+                            Content: commentReq.Content
+                        }, { new: true })
+                            .exec((e, u) => {
+                                if (e) error_500(res, e)
+                                success(res, "Đã câu trả lời mới", u)
+                            })
 
-                });
+                    });
+                })
             })
         } catch (e) {
             error_500(res, e)
@@ -91,7 +107,7 @@ module.exports = {
 
     }
     ,
-    updateComment_Supper: async (req, res) => {
+    updateComment_Super: async (req, res) => {
         const commentReq = req.query;
         var UpDateAt = new Date();
         try {
@@ -99,30 +115,33 @@ module.exports = {
             Products.findById(commentReq.IdProduct, (err, resFindProduct) => {
                 if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
                 if (!resFindProduct) return error_400(res, "Không tìm thấy sản phẩm", "Errors");
-                Comment.findById(commentReq.IdComment, (err, resFindData) => {
+                Users.findById(commentReq.IdUser, (err, resFindUser) => {
                     if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
-                    if (!resFindData) return error_400(res, "Không tìm thấy bình luận của sản phẩm", "Errors");
-                    const itemIndex = resFindData.Reply.findIndex(cmt => cmt.IdComment == commentReq.IdCommentSupper);
-                    if (itemIndex > -1) {
-                        resFindData.Reply[itemIndex].UpDateAt = UpDateAt;
-                        resFindData.Reply[itemIndex].Content = commentReq.Content;
-                        Comment.findByIdAndUpdate(resFindData._id, {
-                            Reply: resFindData.Reply
-                        }, { new: true })
-                            .exec((e, u) => {
-                                if (e) error_500(res, e)
-                                success(res, "Đã câu trả lời mới", u)
-                            })
-                    } else {
-                        error_400(res, "Không tìm thấy bình luận của sản phẩm", "IdCommentSupper");
-                    }
-                });
+                    if (!resFindUser) return error_400(res, "Tài khoản không tồn tại trong hệ thống", "IdUser");
+                    Comment.findById(commentReq.IdComment, (err, resFindData) => {
+                        if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
+                        if (!resFindData) return error_400(res, "Không tìm thấy bình luận của sản phẩm", "Errors");
+                        const itemIndex = resFindData.Reply.findIndex(cmt => cmt.IdComment == commentReq.IdCommentSupper);
+                        if (itemIndex > -1) {
+                            resFindData.Reply[itemIndex].UpDateAt = UpDateAt;
+                            resFindData.Reply[itemIndex].Content = commentReq.Content;
+                            Comment.findByIdAndUpdate(resFindData._id, {
+                                Reply: resFindData.Reply
+                            }, { new: true })
+                                .exec((e, u) => {
+                                    if (e) error_500(res, e)
+                                    success(res, "Đã câu trả lời mới", u)
+                                })
+                        } else {
+                            error_400(res, "Không tìm thấy bình luận của sản phẩm", "IdCommentSupper");
+                        }
+                    });
+                })
+
             })
         } catch (e) {
             error_500(res, e)
         }
-
-
     },
     deleteComment_Parent: async (req, res) => {
         const IdProduct = req.query.IdProduct;
@@ -143,7 +162,7 @@ module.exports = {
         }
     }
     ,
-    deleteComment_Supper: async (req, res) => {
+    deleteComment_Super: async (req, res) => {
         const IdProduct = req.query.IdProduct;
         const IdCommentParent = req.query.IdCommentParent;
         const IdCommentSup = req.query.IdCommentSup;

@@ -135,7 +135,7 @@
 
   | Tên Trường | Kiểu dữ liệu |         Mô tả         |
   | :--------: | :----------: | :-------------------: |
-  |   listId   |    array     | Danh sách id của User |
+  |   ListId   |    array     |Danh sách [_id:("id của shop") ] |
 
 - Dữ liệu trả về
 
