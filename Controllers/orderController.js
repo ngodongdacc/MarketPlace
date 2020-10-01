@@ -99,7 +99,7 @@ module.exports = {
             if(resOrder.Status=== 1 || resOrder.Status=== 2 || resOrder.Status=== 3 || resOrder.Status=== 4) return res.status(400).json({ message: "Không thể update đơn hàng trong khi đã đang giao hàng và xác thực đơn hàng!", status: false, code: 0});
             if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false});
             if(!resOrder) return res.json({message: "Không tìm thấy id đơn hàng",data: null,status:false});
-                Order.findByIdAndUpdate(resOrder._id, {$set: order,new: true},{},(err, resUpdate) => {
+                Order.findByIdAndUpdate(resOrder._id, {$set: order},{new: true},(err, resUpdate) => {
                     if(err) {
                         return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false});
                     }else{
@@ -287,10 +287,7 @@ module.exports = {
         Order.findById(id,(err, resOrder) => {
             if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false});
             if(!resOrder) return res.json({message: "Không tìm thấy id đơn hàng",data: null,status:false});
-            Cart.findOne({_id: resOrder.IdCart},async(err, resCart) => {
-                if (err) return res.status(400).json({ message: "OOP Lỗi Rồi", errors: err, status: false });
-                if(!resCart) return res.json({message: "Không tìm thấy ID CART", data: null, status: false});
-                Order.findByIdAndUpdate(resOrder._id, {$set: order,new: true},{},(err, resUpdate) => {
+                 Order.findByIdAndUpdate(resOrder._id, {$set: order},{ new: true},(err, resUpdate) => {
                     if(err) {
                         return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false});
                     }else if(resUpdate.Status == 1) {
@@ -312,16 +309,6 @@ module.exports = {
                             status: true
                         })
                       
-                    }else if(resUpdate.Status == 4) {
-                        if(resUpdate.Reason == "") {
-                            return res.status(400).json({ message: "Vui lòng điền lý do bạn huỷ đơn hàng", status: false, code: 0})
-                        }else{
-                            res.json({
-                                message: "Huỷ đơn hàng",
-                                data: resUpdate,
-                                status: true
-                            })
-                        }
                     }else {
                         res.json({
                             message: "Đơn hàng đang chờ xác nhận!",
@@ -330,8 +317,38 @@ module.exports = {
                         })
                     }
                  })
-            })
          })
-    }
+    },
+    cancelOrder: async(req, res) => {
+        const order = req.body
+        order.DateUpdate = Date.now();
+        const id = req.params.id
+        if(!id) return res.status(400).json({message: "Vui lòng nhập Id", status:false})
+        Order.findById(id,(err, resOrder) => {
+            if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false});
+            if(!resOrder) return res.json({message: "Không tìm thấy id đơn hàng",data: null,status:false});
+                 Order.findByIdAndUpdate(resOrder._id, {$set: order},{ new: true},(err, resUpdate) => {
+                    if(err) {
+                        return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false});
+                    }else if(resUpdate.Status !== 4) {
+                        if(resUpdate.Reason == "") {
+                            return res.status(400).json({ message: "Vui lòng điền lý do bạn huỷ đơn hàng", status: false, code: 0})
+                        }
+                        res.status(400).json({
+                            message: "Trạng thái huỷ phải bắt buộc phải bằng 4",
+                            data: null,
+                            status: false
+                        })
+                    }else {
+                        res.json({
+                            message: "Huỷ đơn hàng thành công!",
+                            data: resUpdate,
+                            status: true
+                        })
+                    }
+                 })
+         })
+    },
 
 }
+
