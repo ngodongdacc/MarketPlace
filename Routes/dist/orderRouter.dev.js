@@ -7,8 +7,7 @@ var router = express.Router();
 var orderController = require("../Controllers/orderController");
 
 var _require = require("../middleware/auth"),
-    checkSignIn = _require.checkSignIn; // const {} = require("../validator/order/validatorOrder")
-
+    checkSignIn = _require.checkSignIn;
 
 router.post("/create", checkSignIn(), orderController.createOrder);
 router.post("/update/:id", orderController.updateOrder);

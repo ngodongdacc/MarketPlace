@@ -115,12 +115,9 @@ module.exports = {
     getOrder: async(req, res) => {
         const id = req.params.id
         if(!id) return res.status(400).json({message: "Vui lòng nhập Id", status:false});
-
-
         Order.findById(id, (err,resOrder) => {
             if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lứ, vui lòng thử lại", er: err, status: false});
             if(!resOrder) return res.status(400).json({message: "Không tim thấy đơn hàng !", data: null, status: false});
-
             res.json({
                 message: "Lấy chi tiết đơn hàng thành công",
                 data: resOrder,
