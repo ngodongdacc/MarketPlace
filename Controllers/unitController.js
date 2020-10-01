@@ -1,22 +1,55 @@
 const async = require("async");
 const Units = require("../Model/unit");
+
 const UnitService = require("../Services/unitService");
 
 module.exports = {
-    create_unit: (req, res) => {
-        const unit = req.body
+    create_unit:async (req, res, next) => {
+        try {
+            const { Name } = req.body
+            if (!Name)
+                return res.status(400) // kiểm tra name
+                    .json({
+                        message: "Please enter your Name",
+                        status: false,
+                        code: 0
+                    })
+          
+            const  unit = req.body
+            async.parallel([
+                (cb) => {// kiểm tra name
+                    if (Name)
+                    UnitService.findName(Name, (err, resNameUnit) => {
+                            if (err) cb(err)
+                            else if (!resNameUnit) cb(null, true);
+                            else cb(null, false);
+                        })
+                    else cb(null, true)
+                },
+               
+            ], (err, results) => {
+                if (err) return res.status(400).json({ message: "There was an error processing", errors: err });
+                if (!results[0]) return res.status(400).json({ message: "Tên đã tồn tại", status: false, code: 0 });
 
-        if(!unit.IdCategory) return res.status(400).json({message: "Vui lòng nhập IdCategory",status: false});
-        if(!unit.Name) return res.status(400).json({ message: "Vui lòng nhập Name", status: false });
+                Units.create(origin, (err, resUint) => {
+                    if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
+                    res.json({
+                        message: "Tạo một đơn vị thành công",
+                        data: resUint,
+                        status: true
+                    })
+                })
+               
+            });
 
-        Units.create(unit, (err, resUint) => {
-            if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-            res.json({
-                message: "Tạo một Unit thành công",
-                data: resUint,
-                status: true
-            })
-        })
+        } catch (e) {
+            res.send({
+                message: e.message,
+                errors: e.errors,
+                code: 0
+            }).status(500) && next(e)
+        }
+
     },
     // chỉnh sửa đơn vị tính theo id
     update_unit: (req, res) => {
