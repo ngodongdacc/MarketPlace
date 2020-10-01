@@ -1,130 +1,107 @@
-# I. Category service
+# I. SubCategrou service
 ## 1. Database info
 ##### Database type: Mongodb
 ##### Database Name: marketplace
-##### Conllection type: Category
-##### Data structure (Category object)
+##### Conllection type: SubCategrou
+##### Data structure (SubCategrou object)
 
 |Stt|Tên trường| Kiểu dữ liệu | Giá mặc định | Bắt buộc | Mô tả |
 |:------------------:|:------------------:  |:------------:    |:----------------:    |:--------:    |:--------------------------------------------------:  |  
-|1| Icon               | String  |  |  | Đường dẫn từ Icon |
-|2| Title              | String    |   | required | Tiêu đề của danh mục |
-|3| Description            | String  |  |  | Mô tả danh muc | 
+|1| IdCategory               | ObjectId  |  |  | ID Categroy |
+|2| Title              | String    |   | required | Tiêu đề của danh mục con con |
+|3| Name            | String  |  |  | Tên danh mục con con | 
 
 ## 2. Service info  
-### Thông tin category * Tên category: **Category**  
-* Source code: ./Controller/categoryController.js  
+### Thông tin SubCategrou * Tên SubCategrou: **SubCategrou**  
+* Source code: ./Controller/SubcategoryController.js  
 * Danh sách routers  
-   * [2.1: Thêm danh mục mới](#11--thêm-danh-mục-mới)  
-   * [2.2: Cập nhật danh mục ](#12--cập-nhật-danh-mục )  
-   * [2.3: Xóa danh mục ](#13--xóa-danh-mục)
-   * [2.4: Lấy chi tiết danh mục của người dùng ](#16--lấy-chi-tiết-danh-mục-của-người-dùng)
-   * [2.5: Tìm kiếm danh mục ](#15--tìm-kiếm-danh-mục)
+   * [2.1: Thêm danh mục con mới](#11--thêm-danh-mục-con-mới)  
+   * [2.2: Cập nhật danh mục con ](#12--cập-nhật-danh-mục-con )  
+   * [2.3: Xóa danh mục con ](#13--xóa-danh-mục-con)
+   * [2.4: Lấy chi tiết danh mục con của người dùng ](#16--lấy-chi-tiết-danh-mục-con-của-người-dùng)
+ 
   
-  ### 2.1  Thêm danh mục mới  
- - Router: **/api/category**  
- - Function: **createCategory()**  
+  ### 2.1  Thêm danh mục con mới  
+ - Router: **/api/SubCategrou**  
+ - Function: **createSubCategory()**  
  - Method: **POST**
  - Paremeter: 
  - Body:
 
     | Tên Trường  | Kiểu dữ liệu     |               Mô tả                  |  
     |:----------:  |:------------:    |:--------------------------------:    |  
-    |    body     |    object |         [ Category object](#data-structure-category-object)      |
+    |    body     |    object |         [ SubCategrou object](#data-structure-SubCategrou-object)      |
 
 - Dữ liệu trả về
 
     | Tên Trường   | Kiểu dữ liệu     |                        Mô tả                         |  
     |:----------:  |:------------:    |:---------------------------------------------------: |  
-    |   data      |    object        | [ Category object](#data-structure-category-object)|  
+    |   data      |    object        | [ SubCategrou object](#data-structure-SubCategrou-object)|  
     |   status     |    boolean         | true: thành công, false: thất bại                          |  
     |   message    |    string        | Tin nhắn trả về                                      |  
   
-  ### 2.2  Cập nhật danh mục
+  ### 2.2  Cập nhật danh mục con
  - Router: **/api/update/:id**  
- - Function: **updateCategory()**  
+ - Function: **updateSubCategory()**  
  - Method: **POST**
  - Paremeter: 
    
     | Tên Trường  | Kiểu dữ liệu     |               Mô tả                  |  
     |:----------:  |:------------:    |:--------------------------------:    |  
-    |    id     |    String  |         id của category      |
+    |    id     |    String  |         id của SubCategrou      |
 
  - Body:
 
     | Tên Trường  | Kiểu dữ liệu     |               Mô tả                  |  
     |:----------:  |:------------:    |:--------------------------------:    |  
-    |    body     |    object |         [ Category object](#data-structure-category-object)      |
+    |    body     |    object |         [ SubCategrou object](#data-structure-SubCategrou-object)      |
 
 - Dữ liệu trả về
 
     | Tên Trường   | Kiểu dữ liệu     |                        Mô tả                         |  
     |:----------:  |:------------:    |:---------------------------------------------------: |  
-    |   data      |    object        | [ Category object](#data-structure-category-object)    |  
+    |   data      |    object        | [ SubCategrou object](#data-structure-SubCategrou-object)    |  
     |   status     |    boolean         | true - thành công, false - thất bại                           |  
     |   message    |    string        | Tin nhắn trả về                                      |  
   
     
-### 2.3  Xóa danh mục   
+### 2.3  Xóa danh mục con   
  - Router: **/api/delete/:id**  
- - Function: **deleteCategory()**  
+ - Function: **deleteSubCategory()**  
  - Method: **POST**
  - Paremeter: 
         
     | Tên Trường  | Kiểu dữ liệu     |               Mô tả                  |  
     |:----------:  |:------------:    |:--------------------------------:    |  
-    |    id     |    String  |         id của Category      |
+    |    id     |    String  |         id của SubCategrou      |
 
  - Body:
 
     | Tên Trường  | Kiểu dữ liệu     |               Mô tả                  |  
     |:----------:  |:------------:    |:--------------------------------:    |  
-    |    body     |    object |         [ Category object](#data-structure-Category-object)      |
+    |    body     |    object |         [ SubCategrou object](#data-structure-SubCategrou-object)      |
 
 - Dữ liệu trả về
 
     | Tên Trường   | Kiểu dữ liệu     |                        Mô tả                         |  
     |:----------:  |:------------:    |:---------------------------------------------------: |  
-    |   data      |    object        | [ Category object](#data-structure-Category-object)  + token    |  
+    |   data      |    object        | [ SubCategrou object](#data-structure-SubCategrou-object)  + token    |  
     |   status     |    boolean         | true - Thành công; false - Có lỗi                           |  
     |   message    |    string        | Tin nhắn trả về                                      |  
 
 ### 2.4  Lấy chi tiết danh muc của người dùng  
- - Router: **/api/category**  
- - Function: **get_category()**  
+ - Router: **/api/SubCategrou**  
+ - Function: **get_Subcategory()**  
  - Method: **GET**
  - Paremeter:
     | Tên Trường  | Kiểu dữ liệu     |              Mô tả                  |  
     |:----------:  |:------------:   |:--------------------------------:    |  
-    |    id     |    string |          id của category      |
+    |    id     |    string |          id của SubCategrou      |
 
 - Dữ liệu trả về
 
     | Tên Trường   | Kiểu dữ liệu     |                        Mô tả                         |  
     |:----------:  |:------------:    |:---------------------------------------------------: |  
-    |   data      |    object        |  Chi tiết category   |  
-    |   status     |    boolean         | true - Thành công; false - Có lỗi                           |  
-    |   message    |    string        | Tin nhắn trả về                                      |  
-
-### 1.5  Tìm kiếm danh muc   
- - Router: **/api/category**  
- - Function: **searchCategory()**  
- - Method: **GET**
- - Description: Từ khóa tìm kiếm sẽ được lưu vào từ khóa tìm kiếm
- - Paremeter: 
-    | Tên Trường  | Kiểu dữ liệu     | mặc định |               Mô tả                  |  
-    |:----------:  |:------------:|:------------:    |:--------------------------------:    |  
-    |    search     |    string | null |         Từ khóa tìm kiếm      |
-    |    page     |    number | 1 |         trang cần xem     |
-    |    limit     |    number | 20 |         Số lượng kết quả trả về      |
-    |    sort     |    object | `{"Date": -1}` |         Trường sắp xếp      |
-    |    idCategory     |    string | null |         Id của danh mục      |  |
-
-
-- Dữ liệu trả về
-
-    | Tên Trường   | Kiểu dữ liệu     |                        Mô tả                         |  
-    |:----------:  |:------------:    |:---------------------------------------------------: |  
-    |   data      |    object        |  Danh sách sản phấm tìm thấy   |  
+    |   data      |    object        |  Chi tiết SubCategrou   |  
     |   status     |    boolean         | true - Thành công; false - Có lỗi                           |  
     |   message    |    string        | Tin nhắn trả về                                      |  
