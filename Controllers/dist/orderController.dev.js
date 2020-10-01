@@ -250,9 +250,10 @@ module.exports = {
         status: false
       });
       Order.findByIdAndUpdate(resOrder._id, {
-        $set: order,
+        $set: order
+      }, {
         "new": true
-      }, {}, function (err, resUpdate) {
+      }, function (err, resUpdate) {
         if (err) {
           return res.status(400).json({
             message: "Có lỗi trong quá trình xử lý",
@@ -695,20 +696,6 @@ module.exports = {
                     data: resUpdate,
                     status: true
                   });
-                } else if (resUpdate.Status == 4) {
-                  if (resUpdate.Reason == "") {
-                    return res.status(400).json({
-                      message: "Vui lòng điền lý do bạn huỷ đơn hàng",
-                      status: false,
-                      code: 0
-                    });
-                  } else {
-                    res.json({
-                      message: "Huỷ đơn hàng",
-                      data: resUpdate,
-                      status: true
-                    });
-                  }
                 } else {
                   res.json({
                     message: "Đơn hàng đang chờ xác nhận!",
@@ -722,6 +709,80 @@ module.exports = {
           case 6:
           case "end":
             return _context8.stop();
+        }
+      }
+    });
+  },
+  cancelOrder: function cancelOrder(req, res) {
+    var order, id;
+    return regeneratorRuntime.async(function cancelOrder$(_context9) {
+      while (1) {
+        switch (_context9.prev = _context9.next) {
+          case 0:
+            order = req.body;
+            order.DateUpdate = Date.now();
+            id = req.params.id;
+
+            if (id) {
+              _context9.next = 5;
+              break;
+            }
+
+            return _context9.abrupt("return", res.status(400).json({
+              message: "Vui lòng nhập Id",
+              status: false
+            }));
+
+          case 5:
+            Order.findById(id, function (err, resOrder) {
+              if (err) return res.status(400).json({
+                message: "Có lỗi trong quá trình xử lý",
+                errors: err,
+                status: false
+              });
+              if (!resOrder) return res.json({
+                message: "Không tìm thấy id đơn hàng",
+                data: null,
+                status: false
+              });
+              Order.findByIdAndUpdate(resOrder._id, {
+                $set: order
+              }, {
+                "new": true
+              }, function (err, resUpdate) {
+                if (err) {
+                  return res.status(400).json({
+                    message: "Có lỗi trong quá trình xử lý",
+                    errors: err,
+                    status: false
+                  });
+                } else if (resUpdate.Status !== 4) {
+                  if (resUpdate.Reason == "") {
+                    return res.status(400).json({
+                      message: "Vui lòng điền lý do bạn huỷ đơn hàng",
+                      status: false,
+                      code: 0
+                    });
+                  }
+
+                  res.status(400).json({
+                    message: "Trạng thái huỷ phải bắt buộc phải bằng 4",
+                    data: null,
+                    status: false
+                  });
+                } else {
+                  res.json({
+                    message: "Huỷ đơn hàng thành công!",
+                    data: resUpdate,
+                    status: true
+                  });
+                }
+              });
+            });
+
+          case 6:
+          case "end":
+            return _context9.stop();
         }
       }
     });
