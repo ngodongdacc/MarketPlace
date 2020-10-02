@@ -131,40 +131,16 @@ module.exports = {
         })
     },
     updateShop: async (req, res, next) => {
-        var shopUpdate = {};
-        if (req.body.ShopName) shopUpdate.ShopName = req.body.ShopName;
-        if (req.body.StoreOwnername) shopUpdate.StoreOwnername = req.body.StoreOwnername;
-        if (req.body.Phone) shopUpdate.Phone = req.body.Phone;
-        if (req.body.PasswordShop) shopUpdate.PasswordShop = req.body.PasswordShop;
-        if (req.body.BusinessRegisCode) shopUpdate.BusinessRegisCode = req.body.BusinessRegisCode;
-        if (req.body.Country) shopUpdate.Country = req.body.Country;
-        if (req.body.CommodityIndustry) shopUpdate.CommodityIndustry = req.body.CommodityIndustry;
+        var shopUpdate = req.body;
         var id = req.params.id;
         if (!id) return res.status(400).json({ message: "ID Shop is required", status: false, code: 0 })
-        const { Phone, EmailOwner, PasswordShop, ShopName, StoreOwnername, BusinessRegisCode, Country, CommodityIndustry } = req.body
-        if (!ShopName)
-            return error_400(res, "Vui lòng nhập tên cửa hàng", "Name");
-        if (!StoreOwnername)
-            return error_400(res, "Vui lòng nhập tên chủ cửa hàng", "Store Owner Name");
-
-        if (!PasswordShop.lenth <= 0) {
-            if (PasswordShop.length < 5)  // Kiểm tra password
-                return error_400(res, "Mật khẩu phải lớn hơn 5 ký tự", "Password");
-        }
-        if (!Phone)  // Kiểm tra password
-            return error_400(res, "Vui lòng nhập số điện thoại", "Phone");
-        if (!BusinessRegisCode)  // Kiểm tra password
-            return error_400(res, "Vui lòng nhập mã số kinh doanh", "BusinessRegisCode");
-        if (!Country)  // Kiểm tra password
-            return error_400(res, "Vui lòng nhập địa chỉ kinh doanh", "Country");
-        if (!CommodityIndustry)  // Kiểm tra password
-            return error_400(res, "Vui lòng nhập tên nghành hàng hóa đăng ký kinh doanh", "CommodityIndustry");
-        if (shopUpdate.StoreOwnername === "") return error_400(res, "Vui lòng nhập tên chủ cửa hàng", "Store Owner Name");
-        if (shopUpdate.Phone === "") return error_400(res, "Vui lòng nhập số điện thoại", "Phone");
+        if (shopUpdate.PasswordShop === "") return error_400(res, "Vui lòng nhập mật khẩu", "PasswordShop");
         if (shopUpdate.ShopName === "") return error_400(res, "Vui lòng nhập tên cửa hàng", "Name");
+        if (shopUpdate.StoreOwnername === "") return error_400(res, "Vui lòng nhập tên chủ cửa hàng", "StoreOwnerName");
+        if (shopUpdate.BusinessRegisCode === "") return error_400(res, "Vui lòng nhập mã số kinh doanh", "BusinessRegisCode");
+        if (shopUpdate.Country === "") return error_400(res, "Vui lòng nhập địa chỉ kinh doanh", "Country");
+        if (shopUpdate.CommodityIndustry === "") return error_400(res, "Vui lòng tên nghành hàng hóa đăng ký kinh doanh", "CommodityIndustry");
         if (shopUpdate.Phone && !isPhone(shopUpdate.Phone)) return error_400(res, "Số điện thoại không đúng định dạng", "Phone");
-
-
         Shop.findById(id, (err, resFindShop) => {
             if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
             if (!resFindShop) return error_400(res, "Không tìm thấy cửa hàng", "Errors");
@@ -180,7 +156,7 @@ module.exports = {
                 },
                 (cb) => {
                     // kiểm tra Shop Name
-                    if (ShopName)
+                    if (shopUpdate.ShopName)
                         ShopService.findOneOwnerShop(ShopName, (err, resUpdateUser) => {
                             if (err) cb(err)
                             else if (!resUpdateUser || (resUpdateUser && resUpdateUser._id.toString() === id)) cb(null, true);
