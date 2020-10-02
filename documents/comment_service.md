@@ -27,9 +27,9 @@
 - Source code: ./Controller/CommentController.js
 - Danh sách routers
   - [2.1: Thêm comment mới](#21-Thêm-comment-mới)
-  - [2.2: Cập nhật comment Parent](#22-Cập-nhật-comment)
+  - [2.2: Cập nhật comment Parent](#22-cập-nhật-comment-parent)
   - [2.3: Lấy chi tiết Comment](#23-Lấy-chi-tiết-Comment)
-  - [2.4: Xóa Comment Parent](#24-Xóa-Comment)
+  - [2.4: Xóa Comment Parent](#24-xóa-comment-parent)
   - [2.5: Trả lời Comment ](#25-Trả-lời-Comment)
   - [2.6: Lấy danh sách Comment của sản phẩm ](#26-Lấy-danh-sách-Comment-của-sản-phẩm)
   - [2.7: Cập nhật comment Super](#27-Cập-nhật-comment-Super)
