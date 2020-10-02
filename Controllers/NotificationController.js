@@ -127,7 +127,7 @@ module.exports = {
                     Comment.findById(commentReq.IdComment, (err, resFindData) => {
                         if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
                         if (!resFindData) return error_400(res, "Không tìm thấy bình luận của sản phẩm", "Errors");
-                        const itemIndex = resFindData.Reply.findIndex(cmt => cmt.IdComment == commentReq.IdCommentSuper);
+                        const itemIndex = resFindData.Reply.findIndex(cmt => cmt.IdComment == commentReq.IdCommentSupper);
                         if (itemIndex > -1) {
                             resFindData.Reply[itemIndex].UpDateAt = UpDateAt;
                             resFindData.Reply[itemIndex].Content = commentReq.Content;
@@ -139,7 +139,7 @@ module.exports = {
                                     success(res, "Đã câu trả lời mới", u)
                                 })
                         } else {
-                            error_400(res, "Không tìm thấy bình luận của sản phẩm", "IdCommentSuper");
+                            error_400(res, "Không tìm thấy bình luận của sản phẩm", "IdCommentSupper");
                         }
                     });
                 })

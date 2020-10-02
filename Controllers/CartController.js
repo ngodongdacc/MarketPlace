@@ -60,7 +60,7 @@ module.exports = {
                                     resFindUser.SubPrice = await prices;
                                     //product does not exists in cart, add new item
                                     resFindUser.SubTotal = resFindUser.ListProduct.map(ListProduct => ListProduct.Total).reduce((acc, next) => acc + next);
-                                    Cart.findByIdAndUpdate(resFindUser._id, { $set: resFindUser },{ new: true }, function (err, resData) {
+                                    Cart.findByIdAndUpdate(resFindUser._id, { $set: resFindUser }, { new: true }, function (err, resData) {
                                         if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
                                         success(res, "Cập nhật mới sản phẩm vào giỏ hàng thành công", resData)
                                     });
@@ -110,9 +110,10 @@ module.exports = {
                     , 0);
                 resFindUser.SubTotal = await totals;
                 resFindUser.SubPrice = await prices;
-                Cart.findByIdAndUpdate(resFindUser._id, resFindUser, (err, resRemove) => {
+                Cart.findByIdAndUpdate(resFindUser._id, {$set: resFindUser}, { new: true }, (err, resRemove) => {
                     if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
-                    success(res, "Xóa sản phẩm thành công", resRemove)
+                    if (resRemove)
+                        success(res, "Xóa sản phẩm thành công", resRemove)
                 })
             }
         })
@@ -121,8 +122,8 @@ module.exports = {
         let { ProductId, UserId, Quantity } = req.body
         Cart.findOne({ UserId: UserId }, async (err, resUserCart) => {
             if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
-            if (!resUserCart)  return error_400(res, "Không tìm thấy giỏ hàng của người dùng", "UserId");
-              if (resUserCart) {
+            if (!resUserCart) return error_400(res, "Không tìm thấy giỏ hàng của người dùng", "UserId");
+            if (resUserCart) {
                 let itemIndex = await resUserCart.ListProduct.findIndex(p => p._id == ProductId);
                 if (itemIndex > -1) {
                     if (resUserCart.ListProduct[itemIndex].Quantity > Quantity) {
@@ -135,9 +136,12 @@ module.exports = {
                             , 0);
                         resUserCart.SubTotal = await totals;
                         resUserCart.SubPrice = await prices;
-                        Cart.findByIdAndUpdate(resUserCart._id, resUserCart, (err, resRemove) => {
+                        Cart.findByIdAndUpdate(resUserCart._id, {$set: resUserCart}, { new: true }, (err, resRemove) => {
                             if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
                             success(res, "Xóa sản phẩm thành công", resRemove)
+                            // CartService.updateListCart(resUserCart.UserId,async function (err, resUpdateList) {
+                            //      success(res, "Lấy danh sách sản phẩm thành công", resUpdateList)
+                            // })
                         })
                     } else {
                         error_400(res, "Số lượng của sản phẩm phải lớn hơn 1", "ProductId");

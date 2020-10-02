@@ -8,6 +8,13 @@ const createCart = async (userId,listproduct, cb) => {
     throw e
   }
 }
+const updateListCart = async (userId, cb) => {
+  try {
+     Cart.findById(userId, cb);
+  } catch (e) {
+    throw e
+  }
+}
 
 const updateCart = async (cart, cb) => {
   try {
@@ -58,6 +65,6 @@ const getCartById = async (id,cb) => {
 }
 
 module.exports = {
-  createCart, updateCart, deleteCart, getCart, findCart,findCartUserId, getCartById
+  createCart, updateCart, deleteCart, getCart, findCart,findCartUserId, getCartById,updateListCart
 
 }

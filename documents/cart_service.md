@@ -26,7 +26,7 @@
 - Danh sách routers
   - [2.1: Lấy giỏ hàng của người dùng](#21-Lấy-giỏ-hàng-của-người-dùng)
   - [2.2: Thêm số lượng sản phẩm và sản phẩm vào giỏ hàng](#22-Thêm-số-lượng-sản-phẩm-và-sản-phẩm-vào-giỏ-hàng)
-  - [2.3: Giảm số lượng 1 sản phẩm có trong giỏ hàng](#23-Thêm-số-lượng-sản-phẩm-và-sản-phẩm-vào-giỏ-hàng)
+  - [2.3: Giảm số lượng 1 sản phẩm có trong giỏ hàng](#23-giảm-số-lượng-1-sản-phẩm-có-trong-giỏ-hàng)
   - [2.4: Xóa 1 sản phẩm khỏi giỏ hàng](#24-Xóa-1-sản-phẩm-khỏi-giỏ-hàng)
   - [2.5: Xóa tất cả sản phẩm khỏi giỏ hàng ](#25-Xóa-tất-cả-sản-phẩm-khỏi-giỏ-hàng)
 
