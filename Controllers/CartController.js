@@ -5,17 +5,6 @@ const CartService = require("../Services/cartService");
 const mongoose = require("mongoose");
 const UserService = require("../Services/usersService");
 const { success, error_500, error_400 } = require("../validator/errors");
-
-
-// function updateListCart(UserId,res,req) {
-//     Cart.findOne({UserId:UserId}, async (err, resUpdateList) => {
-//         if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
-//         if (!resUpdateList) return error_400(res, "Không tìm thấy giỏ hàng của người dùng", "UserId");
-//         success(res, "Lấy danh sách giỏ hàng thành công", resUpdateList)
-
-//     })
-// }
-
 module.exports = {
     postCart: (req, res, next) => {
         // console.log("request cart:: ", req);
