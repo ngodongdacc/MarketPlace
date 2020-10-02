@@ -1,19 +1,14 @@
 const express = require('express');
 const router = express.Router();
-
+const {checkSignIn} = require("../middleware/auth")
 const commentCtr = require("../Controllers/CommentController");
 
-
-router.post('/comment/recomment', commentCtr.reComment_Parent_ForCommentPost);
-router.get('/comment/recomment', commentCtr.reComment_Parent_ForCommentPost);
-router.get('/comment/comment-foruser/:id', commentCtr.getListComments);
-router.post('/comment/:id', commentCtr.postComment);
-// router.post('/add', commentCtr.postCart);
-// router.post('/update', commentCtr.postCart);
-// router.post('/delete', commentCtr.deleteCart);
-// router.post('/delete-quantity', commentCtr.delete_Quantity_OfCart);
-// router.get('/deleteAllProduct/:id', commentCtr.delete_All_ForUser);
-// router.get('/get', cartCtr.getCart);
-// router.get('/', cartCtr.showCartForUser);
-// router.post('/search', cartCtr.searchCart);
+router.post('/comment',checkSignIn(), commentCtr.postComment);
+router.post('/recomment',checkSignIn(), commentCtr.reComment_Parent_ForCommentPost);
+router.get('/comment-product', checkSignIn(),commentCtr.getListCommentForProduct);
+router.get('/comment-details', checkSignIn(),commentCtr.get_Comment_Detail);
+router.get('/delete-commentp', checkSignIn(),commentCtr.deleteComment_Parent);
+router.get('/delete-comments', checkSignIn(),commentCtr.deleteComment_Super);
+router.post('/update-commentp', checkSignIn(),commentCtr.updateComment_Parent);
+router.post('/update-comments', checkSignIn(),commentCtr.updateComment_Super);
 module.exports = router

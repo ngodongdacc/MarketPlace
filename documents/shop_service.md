@@ -44,17 +44,14 @@
 - Paremeter:
 - Body:
 
-  |    Tên Trường     | Kiểu dữ liệu |                   Mô tả                   |
-  | :---------------: | :----------: | :---------------------------------------: |
-  |  StoreOwnername   |    String    |            (Tên chủ cửa hàng)             |
-  |       Phone       |    String    |              (Số điện thoại)              |
-  |    EmailOwner     |    String    |             (Email của shop)              |
-  |   PasswordShop    |    String    |            (Mật khẩu của shop)            |
-  |     ShopName      |    String    |              (Tên cửa hàng )              |
-  |  BusinessLicense  |   Boolean    |      (Giấy phép kinh doanh cửa hàng)      |
-  | BusinessRegisCode |    String    |            (Mã số kinh doanh)             |
-  |      Country      |    String    |      (Thành phố đăng ký kinh doanh)       |
-  | CommodityIndustry |    String    | (Loại nghành hàng hóa đăng ký kinh doanh) |
+  |    Tên Trường     | Kiểu dữ liệu |        Mô tả        |
+  | :---------------: | :----------: | :-----------------: |
+  |  StoreOwnername   |    String    | (Tên chủ cửa hàng)  |
+  |       Phone       |    String    |   (Số điện thoại)   |
+  |    EmailOwner     |    String    |  (Email của shop)   |
+  |   PasswordShop    |    String    | (Mật khẩu của shop) |
+  |     ShopName      |    String    |   (Tên cửa hàng )   |
+  | BusinessRegisCode |    String    | (Mã số kinh doanh)  |
 
 - Dữ liệu trả về
 
@@ -105,13 +102,15 @@
 
 - Body:
 
-|   Tên Trường   | Kiểu dữ liệu |        Mô tả        |
-| :------------: | :----------: | :-----------------: |
-| StoreOwnername |    String    | (Tên chủ cửa hàng)  |
-|     Phone      |    String    |   (Số điện thoại)   |
-|   EmailOwner   |    String    |  (Email của shop)   |
-|  PasswordShop  |    String    | (Mật khẩu của shop) |
-|    ShopName    |    String    |   (Tên cửa hàng )   |
+|    Tên Trường     | Kiểu dữ liệu |                   Mô tả                   |
+| :---------------: | :----------: | :---------------------------------------: |
+|  StoreOwnername   |    String    |            (Tên chủ cửa hàng)             |
+|       Phone       |    String    |              (Số điện thoại)              |
+|    EmailOwner     |    String    |             (Email của shop)              |
+|   PasswordShop    |    String    |            (Mật khẩu của shop)            |
+|     ShopName      |    String    |              (Tên cửa hàng )              |
+|      Country      |    String    |      (Thành phố đăng ký kinh doanh)       |
+| CommodityIndustry |    String    | (Loại nghành hàng hóa đăng ký kinh doanh) |
 
 - Dữ liệu trả về
 
@@ -136,7 +135,7 @@
 
   | Tên Trường | Kiểu dữ liệu |         Mô tả         |
   | :--------: | :----------: | :-------------------: |
-  |   listId   |    array     | Danh sách id của User |
+  |   ListId   |    array     |Danh sách [_id:("id của shop") ] |
 
 - Dữ liệu trả về
 

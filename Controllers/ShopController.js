@@ -23,6 +23,8 @@ module.exports = {
                 return error_400(res, "Vui lòng nhập mật khẩu", "Password");
             if (Phone && !isPhone(Phone))
                 return error_400(res, "Vui lòng nhập đúng định dạng số điện thoại", "Phone");
+            if (!BusinessRegisCode)  // Kiểm tra password
+                return error_400(res, "Vui lòng nhập mã số kinh doanh", "BusinessRegisCode");
             const newOwnerShop = new Shop({
                 StoreOwnername: req.body.StoreOwnername,
                 Phone: req.body.Phone,
@@ -30,9 +32,6 @@ module.exports = {
                 PasswordShop: req.body.PasswordShop,
                 ShopName: req.body.ShopName,
                 BusinessRegisCode: req.body.BusinessRegisCode,
-                BusinessLicense: req.body.BusinessLicense ? req.body.BusinessLicense : [1],
-                Country: req.body.Country,
-                CommodityIndustry: req.body.CommodityIndustry,
             })
             async.parallel([
                 (cb) => {
@@ -143,9 +142,12 @@ module.exports = {
         if (req.body.Phone) shopUpdate.Phone = req.body.Phone;
         if (req.body.EmailOwner) shopUpdate.EmailOwner = req.body.EmailOwner;
         if (req.body.PasswordShop) shopUpdate.PasswordShop = req.body.PasswordShop;
+        if (req.body.BusinessRegisCode) shopUpdate.BusinessRegisCode = req.body.BusinessRegisCode;
+        if (req.body.Country) shopUpdate.Country = req.body.Country;
+        if (req.body.CommodityIndustry) shopUpdate.CommodityIndustry = req.body.CommodityIndustry;
         var id = req.params.id;
         if (!id) return res.status(400).json({ message: "ID Shop is required", status: false, code: 0 })
-        const { Phone, EmailOwner, PasswordShop, ShopName, StoreOwnername } = req.body
+        const { Phone, EmailOwner, PasswordShop, ShopName, StoreOwnername, BusinessRegisCode, Country, CommodityIndustry } = req.body
         if (!ShopName)
             return error_400(res, "Vui lòng nhập tên cửa hàng", "Name");
         if (!StoreOwnername)
@@ -160,12 +162,19 @@ module.exports = {
             return error_400(res, "Vui lòng nhập mật khẩu", "Password");
         if (!Phone)  // Kiểm tra password
             return error_400(res, "Vui lòng nhập số điện thoại", "Phone");
-
+        if (!BusinessRegisCode)  // Kiểm tra password
+            return error_400(res, "Vui lòng nhập mã số kinh doanh", "BusinessRegisCode");
+        if (!Country)  // Kiểm tra password
+            return error_400(res, "Vui lòng nhập địa chỉ kinh doanh", "Country");
+        if (!CommodityIndustry)  // Kiểm tra password
+            return error_400(res, "Vui lòng nhập tên nghành hàng hóa đăng ký kinh doanh", "CommodityIndustry");
         if (shopUpdate.StoreOwnername === "") return error_400(res, "Vui lòng nhập tên chủ cửa hàng", "Store Owner Name");
         if (shopUpdate.EmailOwner === "") return error_400(res, "Vui lòng nhập Email", "Email");
         if (shopUpdate.Phone === "") return error_400(res, "Vui lòng nhập số điện thoại", "Phone");
         if (shopUpdate.ShopName === "") return error_400(res, "Vui lòng nhập tên cửa hàng", "Name");
         if (shopUpdate.Phone && !isPhone(shopUpdate.Phone)) return error_400(res, "Số điện thoại không đúng định dạng", "Phone");
+
+
         Shop.findById(id, (err, resFindShop) => {
             if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
             if (!resFindShop) return error_400(res, "Không tìm thấy cửa hàng", "Errors");
@@ -270,8 +279,8 @@ module.exports = {
                 .exec((e, data) => e ? cb(e) : cb(null, data)),
             (cb) => Shop.count().exec((e, data) => e ? cb(e) : cb(null, data))
         ], (err, results) => {
-            if (err) if (err) 
-            return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
+            if (err) if (err)
+                return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
             res.json({
                 message: "Lấy danh sách cửa hàng thành công",
                 data: {
@@ -320,7 +329,7 @@ module.exports = {
                 })
             })
         } catch (error) {
-            error_500(res,e);
+            error_500(res, e);
         }
     },
     shop_details_forIdOwnerShop: (req, res) => {

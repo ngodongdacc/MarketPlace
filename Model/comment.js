@@ -2,33 +2,17 @@ const mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var CommentSchema = new Schema({
-    ListComments: {
-        type: Array, default: []
+    Content: { type: String, required: true },
+    Reply: {
+        type: Array, default: [] // Danh dách comment trả lời
     },
-    UserId: {
-        type: mongoose.Schema.Types.ObjectId, required: true
+    NewDateAt: { type: Date, default: Date.now }, // Ngày tạo
+    UpDateAt: { type: Date, default: Date.now }, // Ngày cập nhật
+    IdUser: {
+        type: mongoose.Types.ObjectId, required: true // Id tài khoản comment
     },
-    CommentPostID: { type: String },
-    CommentParentId: { type: Number, default: 0 },
-    CommentPuthor: { type: Number },
-    CommentAuthorEmail: { type: String },
-    CommentAuthorUrl: { type: String },
-    CommentAuthorIP: { type: String },
-    CommentCreateDate: { type: Date, default: Date.now }, // ngày tạo 
-    CommentUpdateDate: { type: Date, default: Date.now }, // ngày cập nhật
-    CommentContent: { type: String },
-    CommentKarma: { type: String },
-    CommentApproved: { type: String },
-    CommentAgent: { type: String },
-    CommentType: { type: Number },
-    CommentLike: { type: Number, default: 0 },
-    CommentDisLike: { type: Number, default: 0 },
-    // cookieId: { type: String, default:"" },
-    Status: { type: Number, default: true },
-    Des: { type: String, default: "" },
-    Title: { type: String },
-
-}, {
-    timestamps: true
+    IdProduct: {
+        type: mongoose.Types.ObjectId, required: true // Id sản phẩm comment
+    },
 });
-module.exports = mongoose.model("Comments", CommentSchema)
+module.exports = mongoose.model("Comments", CommentSchema); 
