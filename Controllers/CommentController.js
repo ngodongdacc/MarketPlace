@@ -248,16 +248,35 @@ module.exports = {
             config.page = req.query.page ? Number(req.query.page) : 1
             config.limit = req.query.limit ? Number(req.query.limit) : 20
             config.skip = (config.page - 1) * config.limit;
-            if (!config.IdProduct) return error_400(res, "Vui lòng nhập Id", "IdProduct");
+
+            if (!config.IdProduct) 
+                return error_400(res, "Vui lòng nhập Id", "IdProduct");
+
             Products.findById(config.IdProduct, (err, resFindProduct) => {
-                if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
-                if (!resFindProduct) return error_400(res, "Không tìm thấy sản phẩm", "Errors");
+                if (err) 
+                    return error_500(res,err);
+                
+                if (!resFindProduct) 
+                    return error_400(res, "Không tìm thấy sản phẩm", "Errors");
+
                 const query = {
                     IdProduct: new mongoose.mongo.ObjectId(config.IdProduct)
                 }
+                console.log("test");
                 async.parallel([
                     (cb) =>
-                        Comment.find(query)
+                        Comment.aggregate([
+                            { $match: query },
+                            {
+                                $lookup: // user
+                                {
+                                    from: "users",
+                                    localField: "IdUser",
+                                    foreignField: "_id",
+                                    as: "UserName",
+                                },
+                            }])
+                            
                             .skip(config.skip)
                             .limit(config.limit)
                             .sort({ NewDateAt: "desc" })
@@ -265,14 +284,27 @@ module.exports = {
                     (cb) => Comment.count(query)
                         .exec((e, resDataSearch) => e ? cb(e) : cb(null, resDataSearch))
                 ], (err, results) => {
-                    if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
-                    res.json({
-                        message: "Lấy danh sách bình luận thành công",
-                        data: {
-                            comment: results[0],
-                            count: results[1],
-                        },
-                        status: true
+                    if (err) return error_500(res, err);
+                    async.waterfall([
+                        cb => {
+                            results[0] = results[0].map(el => {
+                                if(el.UserName && el.UserName[0] 
+                                                    && el.UserName[0].FullName) 
+                                el.UserName = el.UserName[0].FullName
+
+                                else el.UserName = "Khách hàng";
+                                return el
+                            } )
+                            cb(null,results)
+                        }
+                    ], (e,results) => {
+                        if(e) error_500(res,e)
+
+                        success(res,"Lấy danh sách bình luận thành công",
+                            {
+                                comment: results[0],
+                                count: results[1],
+                            })
                     })
                 })
             })
