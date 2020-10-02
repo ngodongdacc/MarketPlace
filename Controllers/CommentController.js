@@ -139,7 +139,7 @@ module.exports = {
                                     success(res, "Đã câu trả lời mới", u)
                                 })
                         } else {
-                            error_400(res, "Không tìm thấy bình luận của sản phẩm", "IdCommentSuper");
+                          return  error_400(res, "Không tìm thấy bình luận của sản phẩm", "IdCommentSuper");
                         }
                     });
                 })
@@ -193,7 +193,7 @@ module.exports = {
                             success(res, "Bình luận này đã được xóa", resRemove)
                         })
                     }else{
-                        error_400(res, "Bình luận này không còn tồn tại", "Errors");
+                     return   error_400(res, "Bình luận này không còn tồn tại", "Errors");
                     }
                    
                 });
@@ -224,19 +224,16 @@ module.exports = {
                         .exec((e, resDataSearch) => e ? cb(e) : cb(null, resDataSearch))
                 ], (err, results) => {
                     if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
-                    res.json({
-                        message: "Lấy danh sách bình luận thành công",
-                        data: {
+                    success(res,
+                        "Lấy danh sách bình luận thành công",
+                        {
                             comment: results[0],
-                            count: results[1],
-                        },
-                        status: true
-                    })
+                            count: results[1]
+                        })
                 })
             })
 
         } catch (e) {
-            console.log(e)
             error_500(res, e);
         }
     },
@@ -266,19 +263,11 @@ module.exports = {
                         .exec((e, resDataSearch) => e ? cb(e) : cb(null, resDataSearch))
                 ], (err, results) => {
                     if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
-                    res.json({
-                        message: "Lấy danh sách bình luận thành công",
-                        data: {
-                            comment: results[0],
-                            count: results[1],
-                        },
-                        status: true
-                    })
+                    success(res, "Lấy danh sách bình luận thành công", results)
                 })
             })
 
         } catch (e) {
-            console.log(e)
             error_500(res, e);
         }
 

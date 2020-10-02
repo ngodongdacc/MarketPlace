@@ -97,23 +97,21 @@ module.exports = {
         }
         async.parallel([
             (cb) => Shop.findOne({ EmailOwner: userLogin.EmailOwner }, (e, user) => e ? cb(e) : cb(null, user)),
-            (cb) => Shop.findOne({ PasswordShop: userLogin.PasswordShop }, (e, user) => e ? cb(e) : cb(null, user))
         ], (err, results) => {
             if (err)
                 return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
-            if (!results[0] && !results[1])
+            if (!results[0])
                 return error_400(res, "Email hoặc mật khẩu không đúng", "Email & Password");
             var shopTrue = results[0]
-            if (!shopTrue) shopTrue = results[1];
 
             ShopService.comparePassword(userLogin.PasswordShop, shopTrue.PasswordShop, (err, isMath) => {
-                if (err)
-                    return error_400(res, "Tên đăng nhập hoặc mật khẩu không đúng", "Email & Password");
+                if (err) return error_400(res, "Tên đăng nhập hoặc mật khẩu không đúng", "Email & Password");
                 if (isMath) {
-                    var token = jwt.sign(shopTrue.toJSON(), process.env.secretKey || "QTData-MarketPlace", { expiresIn: process.env.TimeToken || 60000000 });
-                    return res.json({
-                        message: "Đăng nhập thành công",
-                        data: {
+                    var token = jwt.sign(shopTrue.toJSON(), process.env.secretKey,
+                        { expiresIn: process.env.TimeToken || 60000000 });
+                    success(res,
+                        "Đăng nhập thành công",
+                        {
                             shop: {
                                 StoreOwnername: shopTrue.StoreOwnername,
                                 EmailOwner: shopTrue.EmailOwner,
@@ -125,10 +123,7 @@ module.exports = {
                                 IdShop: shopTrue._id
                             },
                             token: "Bearer " + token
-                        },
-                        code: 1,
-                        status: true
-                    })
+                        })
                 } else {
                     return error_400(res, "Email hoặc mật khẩu không đúng", "Emasil & Password");
                 }
@@ -281,14 +276,12 @@ module.exports = {
         ], (err, results) => {
             if (err) if (err)
                 return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
-            res.json({
-                message: "Lấy danh sách cửa hàng thành công",
-                data: {
+            success(res,
+                "Lấy danh sách cửa hàng thành công",
+                {
                     shop: results[0],
-                    count: results[1],
-                },
-                status: true
-            })
+                    count: results[1]
+                })
         })
     },
     searchShop: async (req, res) => { // Tìm kiếm theo điều kiện yêu cầu: Id, tên, địa chỉ, nghành hàng
@@ -319,14 +312,12 @@ module.exports = {
                     .exec((e, resDataSearch) => e ? cb(e) : cb(null, resDataSearch))
             ], (err, results) => {
                 if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
-                res.json({
-                    message: "Lấy danh sách sản phẩm thành công",
-                    data: {
+                success(res,
+                    "Lấy danh sách cửa hàng thành công",
+                    {
                         shop: results[0],
-                        count: results[1],
-                    },
-                    status: true
-                })
+                        count: results[1]
+                    })
             })
         } catch (error) {
             error_500(res, e);
