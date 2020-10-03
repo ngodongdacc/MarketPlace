@@ -8,10 +8,10 @@ module.exports = {
                 .exec(async (e,k) => {
                     if(e) cb(e); 
                     if(k){
-                        if(key.idUser){
+                        if(key.idUser && key.idUser !== ""){  // Nếu truyền idUser
                             let index = await k.ListIdUser.findIndex(u => u.IdUser == key.idUser);    
-                            if(index===-1) k.ListIdUser.push(key.idUser)
-                            else ++k.ListIdUser[index].Counts
+                            if(index===-1) k.ListIdUser.push({IdUser: key.idUser, Counts: 1})  // nếu IdUser đã tìm từ khóa
+                            else ++k.ListIdUser[index].Counts // IdUser chưa tìm từ khóa
                         }
 
                         KeySearchs

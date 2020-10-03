@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
     LastName: {type: String, default:""}, // Họ
     FirstName:   {type: String , default:""}, // Tên
     FullName:   {type: String , default:""}, // Họ và Tên
-    Address:   {type: Array , default:""}, // địa chỉ
+    Address:   {type: Array , default:[]}, // địa chỉ
     Gender:   {type: Number }, // giới tính 
     Birthday:   {type: Date }, // Ngày sinh 
     Email:   {type: String , required: true,unique: true}, // Email

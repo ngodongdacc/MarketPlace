@@ -19,11 +19,9 @@
 |  5  |   PasswordShop    |    String    |              | required |            Mật khẩu của shop            |
 |  6  |     ShopName      |    String    |              | required |              Tên cửa hàng               |
 |  7  |  BusinessLicense  |   Boolean    |     true     | required |      Giấy phép kinh doanh cửa hàng      |
-|  8  | BusinessRegisCode |    Number    |              | required |            Mã số kinh doanh             |
+|  8  | BusinessRegisCode |    Number    |              |          |            Mã số kinh doanh             |
 |  9  |      Country      |    String    |              |          |      Thành phố đăng ký kinh doanh       |
-| 10  | CommodityIndustry |    String    |              | required | Loại nghành hàng hóa đăng ký kinh doanh |
-| 11  |       Title       |    String    |              |          |                 Tiêu đề                 |
-| 12  |        Des        |    String    |              |          |              Mô tả về shop              |
+| 10  | CommodityIndustry |    String    |              |          | Loại nghành hàng hóa đăng ký kinh doanh |
 
 ## 2. Service info
 
@@ -34,7 +32,7 @@
   - [2.1: Đăng ký tài khoản người dùng shop](#21-đăng-ký-tài-khoản-người-dùng-shop)
   - [2.2: Đăng nhập shop](#22-đăng-nhập)
   - [2.3: Cập nhật thông tin tài khoản người dùng shop](#23-cập-nhật-thông-tin-tài-khoản-người-dùng-shop)
-    -- - [2.4: Xóa danh sách người dùng shop](#24-xóa-danh-sách-người-dùng-shop)
+  - [2.4: Xóa danh sách người dùng shop](#24-xóa-danh-sách-người-dùng-shop)
   - [2.5: Tìm kiếm tài khoản người dùng shop ](#25-tìm-kiếm-tài-khoản-người-dùng-shop)
   - [2.6: Lấy thông tin tài khoản người dùng shop ](#26-lấy-thông-tin-tài-khoản-người-dùng-shop)
 
@@ -46,24 +44,14 @@
 - Paremeter:
 - Body:
 
-  | Tên Trường | Kiểu dữ liệu |                    Mô tả                    |
-  | :--------: | :----------: | :-----------------------------------------: |
-  |    body    |    object    | [ Shop object](#data-structure-shop-object) |
-
-- Mô tả nhập dữ liệu:
-
-{
-"StoreOwnername": "(Tên chủ cửa hàng)",
-"Phone": "(Số điện thoại)",
-"EmailOwner": "(Email của shop)",
-"PasswordShop": "(Mật khẩu của shop)",
-"ShopName": "(Tên cửa hàng )",
-"BusinessLicense": (Giấy phép kinh doanh cửa hàng),
-"BusinessRegisCode": (Mã số kinh doanh),
-"Country": "(Thành phố đăng ký kinh doanh)",
-"CommodityIndustry": "(Loại nghành hàng hóa đăng ký kinh doanh)",
-"Des" :"(Mô tả về shop)"
-}
+  |    Tên Trường     | Kiểu dữ liệu |        Mô tả        |
+  | :---------------: | :----------: | :-----------------: |
+  |  StoreOwnername   |    String    | (Tên chủ cửa hàng)  |
+  |       Phone       |    String    |   (Số điện thoại)   |
+  |    EmailOwner     |    String    |  (Email của shop)   |
+  |   PasswordShop    |    String    | (Mật khẩu của shop) |
+  |     ShopName      |    String    |   (Tên cửa hàng )   |
+  | BusinessRegisCode |    String    | (Mã số kinh doanh)  |
 
 - Dữ liệu trả về
 
@@ -87,13 +75,6 @@
   |   Email    |    String    | Tên đăng nhập (Email hoặc số điện thoại) |
   |  Password  |    String    |            Mật khẩu đăng nhập            |
 
-- Mô tả nhập dữ liệu:
-
-{
-"EmailOwner": "(Email của shop)",
-"PasswordShop": "(Mật khẩu của shop)",
-}
-
 - Dữ liệu trả về
 
   | Tên Trường | Kiểu dữ liệu |                        Mô tả                        |
@@ -107,11 +88,12 @@
 - Router: **/api/shop/update/:id**
 - Function: **updateShop()**
 - Method: **POST**
-- header: // chưa làm đc
+- header:
 
   |  Tên Trường   | Kiểu dữ liệu |      Mô tả      |
   | :-----------: | :----------: | :-------------: |
   | Authorization |    string    | Token đăng nhập |
+
 - Paremeter:
 
   | Tên Trường | Kiểu dữ liệu |    Mô tả    |
@@ -120,9 +102,15 @@
 
 - Body:
 
-  | Tên Trường | Kiểu dữ liệu |                    Mô tả                    |
-  | :--------: | :----------: | :-----------------------------------------: |
-  |    body    |    object    | [ Shop object](#data-structure-shop-object) |
+|    Tên Trường     | Kiểu dữ liệu |                   Mô tả                   |
+| :---------------: | :----------: | :---------------------------------------: |
+|  StoreOwnername   |    String    |            (Tên chủ cửa hàng)             |
+|       Phone       |    String    |              (Số điện thoại)              |
+|    EmailOwner     |    String    |             (Email của shop)              |
+|   PasswordShop    |    String    |            (Mật khẩu của shop)            |
+|     ShopName      |    String    |              (Tên cửa hàng )              |
+|      Country      |    String    |      (Thành phố đăng ký kinh doanh)       |
+| CommodityIndustry |    String    | (Loại nghành hàng hóa đăng ký kinh doanh) |
 
 - Dữ liệu trả về
 
@@ -137,7 +125,7 @@
 - Router: **/api/shop/delete/list-shop**
 - Function: **delete_listShop()**
 - Method: **POST**
-- header: // chưa làm đc
+- header:
 
   |  Tên Trường   | Kiểu dữ liệu |      Mô tả      |
   | :-----------: | :----------: | :-------------: |
@@ -147,7 +135,7 @@
 
   | Tên Trường | Kiểu dữ liệu |         Mô tả         |
   | :--------: | :----------: | :-------------------: |
-  |   listId   |    array     | Danh sách id của User |
+  |   ListId   |    array     |Danh sách [_id:("id của shop") ] |
 
 - Dữ liệu trả về
 
@@ -162,11 +150,12 @@
 - Router: **/api/shop/search**
 - Function: **searchShop()**
 - Method: **POST**
-- header: // chưa làm đc
+- header:
 
   |  Tên Trường   | Kiểu dữ liệu |      Mô tả      |
   | :-----------: | :----------: | :-------------: |
   | Authorization |    string    | Token đăng nhập |
+
 - Paremeter:
   | Tên Trường | Kiểu dữ liệu | mặc định | Mô tả |  
    |:----------: |:------------:|:------------: |:--------------------------------: |  
@@ -196,6 +185,7 @@
   |  Tên Trường   | Kiểu dữ liệu |      Mô tả      |
   | :-----------: | :----------: | :-------------: |
   | Authorization |    string    | Token đăng nhập |
+
 - Paremeter:
   | Tên Trường | Kiểu dữ liệu | mặc định | Mô tả |  
    |:----------: |:------------:|:------------: |:--------------------------------: |  

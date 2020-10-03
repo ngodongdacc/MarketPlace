@@ -4,71 +4,27 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { isEmail, isPhone } = require("../validator/validator");
 const ShopService = require("../Services/shopService");
-
+const { success, error_500, error_400 } = require("../validator/errors");
 module.exports = {
-    postshop:async (req, res, next) => {
+    postshop: async (req, res, next) => {
         try {
             const { Phone, EmailOwner, PasswordShop, ShopName, BusinessRegisCode } = req.body
             if (!ShopName)
-                return res.status(400) // kiểm tra Usename
-                    .json({
-                        message: "Please enter your Shop name",
-                        status: false,
-                        code: 0
-                    })
-            if (Phone && !isPhone(Phone)) return res.status(400).json({ message: "Số điện thoại không đúng định dạng", status: false, code: 0 });
-
+                return error_400(res, "Vui lòng nhập tên cửa hàng", "ShopName");
+            if (Phone && !isPhone(Phone))
+                return error_400(res, "Số điện thoại không đúng định dạng", "Phone");
             if (PasswordShop.length < 5)  // Kiểm tra password
-                return res.status(400)
-                    .json({
-                        message: "Password must be greater than 5 characters in length",
-                        status: false,
-                        code: 0
-                    })
-            if (!BusinessRegisCode)
-                return res.status(400) // kiểm tra Usename
-                    .json({
-                        message: "Please enter your Business Registration Code",
-                        status: false,
-                        code: 0
-                    })
-            if (Phone.length < 9)  // Kiểm tra so dien thoai
-                return res.status(400)
-                    .json({
-                        message: "Phone Number must be greater than 9 characters in length",
-                        status: false,
-                        code: 0
-                    })
-            if (Phone.length > 11)  // Kiểm tra so dien thoai
-                return res.status(400)
-                    .json({
-                        message: "Phone Number must be greater less than 10 characters long",
-                        status: false,
-                        code: 0
-                    })
-            if (!EmailOwner)
-                return res.status(400) // Kiểm tra Email
-                    .json({
-                        message: "Please enter your Email",
-                        status: false,
-                        code: 0
-                    })
-            if (!isEmail(EmailOwner))
-                return res.status(400) // Kiểm tra Email
-                    .json({
-                        message: "Email not format",
-                        status: false,
-                        code: 0
-                    })
-
+                return error_400(res, "Mật khẩu phải lớn hơn 5 ký tự", "Password");
+            if (!EmailOwner) // Kiểm tra Email
+                return error_400(res, "Vui lòng nhập email", "Email");
+            if (!isEmail(EmailOwner)) // Kiểm tra Email
+                return error_400(res, "Vui lòng nhập đúng định dạng email", "Email");
             if (!PasswordShop)  // Kiểm tra password
-                return res.status(400)
-                    .json({
-                        message: "Please enter your Password",
-                        status: false,
-                        code: 0
-                    })
-            if (Phone && !isPhone(Phone)) return res.status(400).json({ message: "Số điện thoại không đúng định dạng", status: false, code: 0 });
+                return error_400(res, "Vui lòng nhập mật khẩu", "Password");
+            if (Phone && !isPhone(Phone))
+                return error_400(res, "Vui lòng nhập đúng định dạng số điện thoại", "Phone");
+            if (!BusinessRegisCode)  // Kiểm tra password
+                return error_400(res, "Vui lòng nhập mã số kinh doanh", "BusinessRegisCode");
             const newOwnerShop = new Shop({
                 StoreOwnername: req.body.StoreOwnername,
                 Phone: req.body.Phone,
@@ -76,14 +32,10 @@ module.exports = {
                 PasswordShop: req.body.PasswordShop,
                 ShopName: req.body.ShopName,
                 BusinessRegisCode: req.body.BusinessRegisCode,
-                BusinessLicense: req.body.BusinessLicense ? req.body.BusinessLicense : [1],
-                Country: req.body.Country,
-                CommodityIndustry: req.body.CommodityIndustry,
             })
             async.parallel([
                 (cb) => {
                     // kiểm tra Username
-                    console.log(ShopName)
                     if (ShopName)
                         ShopService.findOneOwnerShop(ShopName, (err, resUser) => {
                             if (err) cb(err)
@@ -101,15 +53,7 @@ module.exports = {
                         })
                     else cb(null, true)
                 },
-                (cb) => {// kiểm tra Email
-                    if (BusinessRegisCode)
-                        ShopService.findBusinessRegisCode(BusinessRegisCode, (err, resBRC) => {
-                            if (err) cb(err)
-                            else if (!resBRC) cb(null, true);
-                            else cb(null, false);
-                        })
-                    else cb(null, true)
-                },
+
                 (cb) => {// kiểm tra Phone
                     if (Phone)
                         ShopService.findPhone(Phone, (err, resPhone) => {
@@ -120,67 +64,33 @@ module.exports = {
                     else cb(null, true);
                 }
             ], (err, results) => {
-                if (err) return res.status(400).json({ message: "There was an error processing", errors: err });
-                if (!results[0]) return res.status(400).json({ message: "Shop Name already exists", status: false, code: 0 });
-                if (!results[1]) return res.status(400).json({ message: "Email already exists", status: false, code: 0 });
-                if (!results[2]) return res.status(400).json({ message: "Business Registration Code already exists", status: false, code: 0 });
-                if (!results[3]) return res.status(400).json({ message: "Phone Number already exists", status: false, code: 0 });
-
+                if (err) return error_400(res, "Đã có lỗi xảy ra trong quá trình xử lý", "Errors");
+                if (!results[0])
+                    return error_400(res, "Tên cửa hàng đã tồn tại", "Name");
+                if (!results[1])
+                    return error_400(res, "Email đã tồn tại", "Email");
+                if (!results[2])
+                    return error_400(res, "Số điện thoại đã tồn tại", "Phone");
                 ShopService.createShop(newOwnerShop, (err, user) => {
-                    if (err) res.status(400).json({ message: "There was an error processing", errors: err, code: 0 });
-                    return res.send({
-                        message: "create account shop success",
-                        data: {
-                            StoreOwnername: user.StoreOwnername,
-                            Phone: user.Phone,
-                            EmailOwner: user.EmailOwner,
-                            BusinessLicense: user.BusinessLicense,
-                            ShopName: user.ShopName,
-                            BusinessRegisCode: user.BusinessRegisCode,
-                            Country: user.Country,
-                            CommodityIndustry: user.CommodityIndustry,
-                        },
-                        code: 1,
-                        status: true
-                    })
+                    if (err) error_400(res, "Đã có lỗi xảy ra trong quá trình xử lý", "Errors");
+                    delete user.PasswordShop;
+                    return success(res, "Tạo cửa hàng thành công", user);
                 });
-
             });
-
         } catch (e) {
-            res.send({
-                message: e.message,
-                errors: e.errors,
-                code: 0
-            }).status(500) && next(e)
+            error_500(res, e)
         }
-
     },
     // Đăng nhập
     post_login: (req, res) => {
         const { Email, Password } = req.body
-
         if (!Email) // kiểm tra Username
-            return res.status(400)
-                .json({
-                    message: "Vui lòng nhập Email",
-                    status: false,
-                    code: 0
-                })
+            return error_400(res, "Vui lòng nhập Email", "Email");
         if (!isEmail(Email))
-            return res.status(400) // Kiểm tra Email
-                .json({
-                    message: "Email không đúng định dạng",
-                    status: false,
-                    code: 0
-                })
+            return error_400(res, "Email không đúng định dạng", "Email");
+
         if (!Password)  // Kiểm tra password
-            return res.status(400)
-                .json({
-                    message: "Vui lòng nhập mật khẩu",
-                    status: false,
-                    code: 0
-                })
+            return error_400(res, "Vui lòng nhập mật khẩu", "Password");
         const userLogin = {
             EmailOwner: Email,
             PasswordShop: Password,
@@ -190,17 +100,15 @@ module.exports = {
             (cb) => Shop.findOne({ PasswordShop: userLogin.PasswordShop }, (e, user) => e ? cb(e) : cb(null, user))
         ], (err, results) => {
             if (err)
-                return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-
+                return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
             if (!results[0] && !results[1])
-                return res.status(400).json({ message: "Email hoặc mật khẩu không đúng", status: false });
-
+                return error_400(res, "Email hoặc mật khẩu không đúng", "Email & Password");
             var shopTrue = results[0]
             if (!shopTrue) shopTrue = results[1];
 
             ShopService.comparePassword(userLogin.PasswordShop, shopTrue.PasswordShop, (err, isMath) => {
                 if (err)
-                    return res.status(400).json({ message: "Tên đăng nhập hoặc mật khẩu không đúng", status: false, errors: "compare" });
+                    return error_400(res, "Tên đăng nhập hoặc mật khẩu không đúng", "Email & Password");
                 if (isMath) {
                     var token = jwt.sign(shopTrue.toJSON(), process.env.secretKey || "QTData-MarketPlace", { expiresIn: process.env.TimeToken || 60000000 });
                     return res.json({
@@ -222,99 +130,60 @@ module.exports = {
                         status: true
                     })
                 } else {
-                    return res.json({
-                        message: "Email hoặc mật khẩu không đúng",
-                        data: null,
-                        code: 0,
-                        status: false
-                    }).status(400)
+                    return error_400(res, "Email hoặc mật khẩu không đúng", "Emasil & Password");
                 }
             })
         })
     },
-    updateShop: async(req, res, next) => {
+    updateShop: async (req, res, next) => {
         var shopUpdate = {};
         if (req.body.ShopName) shopUpdate.ShopName = req.body.ShopName;
         if (req.body.StoreOwnername) shopUpdate.StoreOwnername = req.body.StoreOwnername;
         if (req.body.Phone) shopUpdate.Phone = req.body.Phone;
         if (req.body.EmailOwner) shopUpdate.EmailOwner = req.body.EmailOwner;
         if (req.body.PasswordShop) shopUpdate.PasswordShop = req.body.PasswordShop;
+        if (req.body.BusinessRegisCode) shopUpdate.BusinessRegisCode = req.body.BusinessRegisCode;
+        if (req.body.Country) shopUpdate.Country = req.body.Country;
+        if (req.body.CommodityIndustry) shopUpdate.CommodityIndustry = req.body.CommodityIndustry;
         var id = req.params.id;
         if (!id) return res.status(400).json({ message: "ID Shop is required", status: false, code: 0 })
-        const { Phone, EmailOwner, PasswordShop, ShopName, StoreOwnername } = req.body
+        const { Phone, EmailOwner, PasswordShop, ShopName, StoreOwnername, BusinessRegisCode, Country, CommodityIndustry } = req.body
         if (!ShopName)
-            return res.status(400) // kiểm tra Usename
-                .json({
-                    message: "Please enter your Shop name",
-                    status: false,
-                    code: 0
-                })
+            return error_400(res, "Vui lòng nhập tên cửa hàng", "Name");
         if (!StoreOwnername)
-            return res.status(400) // kiểm tra StoreOwnername
-                .json({
-                    message: "Please enter your Store Owner name",
-                    status: false,
-                    code: 0
-                })
+            return error_400(res, "Vui lòng nhập tên chủ cửa hàng", "Store Owner Name");
         if (PasswordShop.length < 5)  // Kiểm tra password
-            return res.status(400)
-                .json({
-                    message: "Password must be greater than 4 characters in length",
-                    status: false,
-                    code: 0
-                })
-        if (Phone.length < 9)  // Kiểm tra so dien thoai
-            return res.status(400)
-                .json({
-                    message: "Phone Number must be greater than 9 characters in length",
-                    status: false,
-                    code: 0
-                })
-        if (Phone.length > 11)  // Kiểm tra so dien thoai
-            return res.status(400)
-                .json({
-                    message: "Phone Number must be greater less than 10 characters long",
-                    status: false,
-                    code: 0
-                })
+            return error_400(res, "Mật khẩu phải lớn hơn 5 ký tự", "Password");
         if (!EmailOwner)
-            return res.status(400) // Kiểm tra Email
-                .json({
-                    message: "Please enter your Email",
-                    status: false,
-                    code: 0
-                })
+            return error_400(res, "Vui lòng nhập Email", "Email");
         if (!isEmail(EmailOwner))
-            return res.status(400) // Kiểm tra Email
-                .json({
-                    message: "Email not format",
-                    status: false,
-                    code: 0
-                })
-
+            return error_400(res, "Vui lòng nhập đúng định dạng email", "Email");
         if (!PasswordShop)  // Kiểm tra password
-            return res.status(400)
-                .json({
-                    message: "Please enter your Password",
-                    status: false,
-                    code: 0
-                })
+            return error_400(res, "Vui lòng nhập mật khẩu", "Password");
+        if (!Phone)  // Kiểm tra password
+            return error_400(res, "Vui lòng nhập số điện thoại", "Phone");
+        if (!BusinessRegisCode)  // Kiểm tra password
+            return error_400(res, "Vui lòng nhập mã số kinh doanh", "BusinessRegisCode");
+        if (!Country)  // Kiểm tra password
+            return error_400(res, "Vui lòng nhập địa chỉ kinh doanh", "Country");
+        if (!CommodityIndustry)  // Kiểm tra password
+            return error_400(res, "Vui lòng nhập tên nghành hàng hóa đăng ký kinh doanh", "CommodityIndustry");
+        if (shopUpdate.StoreOwnername === "") return error_400(res, "Vui lòng nhập tên chủ cửa hàng", "Store Owner Name");
+        if (shopUpdate.EmailOwner === "") return error_400(res, "Vui lòng nhập Email", "Email");
+        if (shopUpdate.Phone === "") return error_400(res, "Vui lòng nhập số điện thoại", "Phone");
+        if (shopUpdate.ShopName === "") return error_400(res, "Vui lòng nhập tên cửa hàng", "Name");
+        if (shopUpdate.Phone && !isPhone(shopUpdate.Phone)) return error_400(res, "Số điện thoại không đúng định dạng", "Phone");
 
-        if (shopUpdate.StoreOwnername === "") return res.status(400).json({ message: "StoreOwnername not null", status: false, code: 0 });
-        if (shopUpdate.EmailOwner === "") return res.status(400).json({ message: "Email not null", status: false, code: 0 });
-        if (shopUpdate.Phone === "") return res.status(400).json({ message: "Phone Number not null", status: false, code: 0 });
-        if (shopUpdate.ShopName === "") return res.status(400).json({ message: "Shop Name not null", status: false, code: 0 });
-        if (shopUpdate.Phone && !isPhone(shopUpdate.Phone)) return res.status(400).json({ message: "Số điện thoại không đúng định dạng", status: false, code: 0 });
+
         Shop.findById(id, (err, resFindShop) => {
-            if (err) return res.status(400).json({ message: "There was an error processing", errors: err, status: false });
-            if (!resFindShop) return res.status(400).json({ message: "not find shop", data: null, status: false });
-
+            if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
+            if (!resFindShop) return error_400(res, "Không tìm thấy cửa hàng", "Errors");
             async.parallel([
                 (cb) => {// kiểm tra Email
-                    if (shopUpdate.Email)
-                        ShopService.findEmail(shopUpdate.Email, (err, resEmailUser) => {
+                    if (shopUpdate.EmailOwner)
+                        ShopService.findEmail(shopUpdate.EmailOwner, (err, resEmailUser) => {
                             if (err) cb(err)
-                            else if (!resEmailUser || (resEmailUser && resEmailUser._id.toString()) === id) cb(null, true);
+                            else if (!resEmailUser || (resEmailUser && resEmailUser._id.toString() === id)) cb(null, true);
                             else cb(null, false);
                         })
                     else cb(null, true)
@@ -327,36 +196,38 @@ module.exports = {
                             else cb(null, false);
                         });
                     else cb(null, true);
+                },
+                (cb) => {
+                    // kiểm tra Shop Name
+                    if (ShopName)
+                        ShopService.findOneOwnerShop(ShopName, (err, resUpdateUser) => {
+                            if (err) cb(err)
+                            else if (!resUpdateUser || (resUpdateUser && resUpdateUser._id.toString() === id)) cb(null, true);
+                            else cb(null, false)
+                        })
+                    else cb(null, true)
                 }
             ], (err, results) => {
-                if (err) return res.status(400).json({ message: "There was an error processing", errors: err, status: false });
-                if (!results[0]) return res.status(400).json({ message: "Email already exists", status: false, code: 0 });
-                if (!results[1]) return res.status(400).json({ message: "Phone already exists", status: false, code: 0 });
+                if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
+                if (!results[0]) return error_400(res, "Email đã tồn tại", "Email");
+                if (!results[1]) return error_400(res, "Số điện thoại đã tồn tại", "Email");
+                if (!results[2]) return error_400(res, "Tên cửa hàng đã tồn tại", "Name");
                 if (shopUpdate.PasswordShop) {
                     bcrypt.genSalt(10, function (err, salt) {
                         bcrypt.hash(shopUpdate.PasswordShop, salt, async function (err, hash) {
                             shopUpdate.PasswordShop = hash;
-                            Shop.findByIdAndUpdate(id,{$set:shopUpdate,new:true },{} , (err, resShop) => {
-                                if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
+                            Shop.findByIdAndUpdate(id, { $set: shopUpdate }, { new: true }, (err, resShop) => {
+                                if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
                                 delete resShop.PasswordShop;
-                                res.json({
-                                    message: "Cập nhật thành công",
-                                    data: resShop,
-                                    status: true,
-                                    code: 1
-                                });
+                                success(res, "Cập nhật cửa hàng thành công", resShop)
                             })
                         });
                     });
                 } else {
-                    ShopService.updateShop(id, shopUpdate, (err, resShop) => {
-                        if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-                        res.json({
-                            message: "Cập nhật thành công",
-                            data: resShop,
-                            status: true,
-                            code: 1
-                        });
+                    ShopService.findByIdAndUpdate(id, { $set: shopUpdate }, { new: true }, (err, resShop) => {
+                        if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
+                        delete resShop.PasswordShop;
+                        success(res, "Cập nhật cửa hàng thành công", resShop)
                     })
 
                 }
@@ -366,19 +237,13 @@ module.exports = {
     }
     , deleteShop: (req, res) => {
         const id = req.params.id
-        if (!id) return res.status(400).json({ message: "id is required", status: false, code: 0 })
+        if (!id) return error_400(res, "ID không hợp lệ", "ID");
         ShopService.findOneUserByID(id, (err, resData) => {
-            if (err) return res.status(400).json({ message: "There was an error processing", errors: err, status: false });
-            if (!resData) return res.status(400).json({ message: "Not find OwnetShop", errors: err, status: false });
-
-            ShopService.deleteShop(resData._id, (err, resRemoveCate) => {
-                if (err) return res.status(400).json({ message: "There was an error processing", errors: err, status: false });
-                res.json({
-                    message: "Delete ownershop success",
-                    data: resRemoveCate,
-                    status: true,
-                    code: 1
-                })
+            if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
+            if (!resData) return error_400(res, "Không tìm thấy cửa hàng", "Errors");
+            ShopService.deleteShop(resData._id, (err, resRemoveShop) => {
+                if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
+                success(res, "Xóa cửa hàng thành công", resRemoveShop)
             })
         })
     },
@@ -389,16 +254,12 @@ module.exports = {
         Shop.findOne({ _id: ListIdOwnerShop }, async (err, resDataShop) => {
             if (err) return res.status(400).json({ message: "Cửa hàng này không còn tồn tại", errors: err, status: false });
             if (!resDataShop) {
-                return res.json({ message: "Không tìm thấy Id Shop", data: resDataShop, status: false })
+                return error_400(res, "Không tìm thấy cửa hàng", "Errors");
             } else {
                 Shop.deleteMany({ _id: { $in: ListIdOwnerShop } })
                     .exec((err, resData) => {
-                        if (err) if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-                        res.send({
-                            message: `Xóa thành công ${resData.n} cửa hàng`,
-                            data: resData,
-                            status: true
-                        })
+                        if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
+                        success(res, `Xóa thành công ${resData.n} cửa hàng`, resData)
                     })
             }
 
@@ -418,7 +279,8 @@ module.exports = {
                 .exec((e, data) => e ? cb(e) : cb(null, data)),
             (cb) => Shop.count().exec((e, data) => e ? cb(e) : cb(null, data))
         ], (err, results) => {
-            if (err) if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
+            if (err) if (err)
+                return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
             res.json({
                 message: "Lấy danh sách cửa hàng thành công",
                 data: {
@@ -429,7 +291,7 @@ module.exports = {
             })
         })
     },
-    searchShop: async(req, res) => { // Tìm kiếm theo điều kiện yêu cầu: Id, tên, địa chỉ, nghành hàng
+    searchShop: async (req, res) => { // Tìm kiếm theo điều kiện yêu cầu: Id, tên, địa chỉ, nghành hàng
         try {
             const config = {};
             config.Country = req.query.Country
@@ -456,7 +318,7 @@ module.exports = {
                 (cb) => Shop.count(query)
                     .exec((e, resDataSearch) => e ? cb(e) : cb(null, resDataSearch))
             ], (err, results) => {
-                if (err) if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
+                if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
                 res.json({
                     message: "Lấy danh sách sản phẩm thành công",
                     data: {
@@ -467,38 +329,19 @@ module.exports = {
                 })
             })
         } catch (error) {
-            console.log(error);
-            res.status(500)
-                .json({
-                    message: "lỗi hệ thống",
-                    errors: error,
-                    status: 500
-                })
+            error_500(res, e);
         }
     },
     shop_details_forIdOwnerShop: (req, res) => {
         const search = req.query.search;
-        if (!search)  // Kiểm tra so dien thoai
-            return res.status(400)
-                .json({
-                    message: "Id Shop is required",
-                    status: false,
-                    code: 0
-                })
+        if (!search)
+            return error_400(res, "ID không hợp lệ", "ID");
 
         Shop.findById({ _id: search }, (err, resShopDetail) => {
             if (err) {
-                return res.send({
-                    message: "get Comment failse",
-                    errors: err,
-                    status: false,
-                }).status(400)
+                return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
             }
-            res.send({
-                message: "get succsess",
-                data: resShopDetail,
-                status: true
-            })
+            success(res, "Lấy thông tin cửa hàng thành công", resShopDetail)
         })
     }
 }

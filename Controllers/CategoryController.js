@@ -171,12 +171,11 @@ module.exports = {
          })     
     },
     get_detail_category : async ( req, res) => {
-        console.log("id", req.query);
-        if(!req.query.Id) return res.status(400).json({message: "Vui lòng nhập vào Id danh mục"})
+        if(!req.params.id) return res.status(400).json({message: "Vui lòng nhập vào Id danh mục"})
         category
             .aggregate([
                 {
-                    $match : { "_id" : new mongoose.Types.ObjectId(req.query.Id) } 
+                    $match : { "_id" : new mongoose.Types.ObjectId(req.params.id) } 
                 },
                 {
                     $lookup:

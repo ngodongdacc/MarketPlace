@@ -10,10 +10,14 @@ module.exports = {
     
     // Thêm địa chỉ mới
     add_address: (req,res) => {
-        let {FullName,Phone,Company,NumAdress,Default,City,District,Wards, Address} = req.body
+        let {FullName, Phone, Company, NumAdress,
+            Default, City, District, Wards, Address} = req.body
         
-        if(!City || City === "") return error_400(res,"Vui lòng nhập vào thành phố","City");
-        if(!District || District === "") return error_400(res,"Vui lòng nhập vào quận huyện","District");
+        if(!City || City === "") 
+            return error_400(res,"Vui lòng nhập vào thành phố","City");
+
+        if(!District || District === "") 
+            return error_400(res,"Vui lòng nhập vào quận huyện","District");
         if(!Wards || Wards === "") return error_400(res,"Vui lòng nhập vào phường xã","Wards");
         if(!Address || Address === "") return error_400(res,"Vui lòng nhập vào địa chỉ","Address");
 

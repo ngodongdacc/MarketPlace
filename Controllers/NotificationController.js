@@ -127,7 +127,7 @@ module.exports = {
                     Comment.findById(commentReq.IdComment, (err, resFindData) => {
                         if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
                         if (!resFindData) return error_400(res, "Không tìm thấy bình luận của sản phẩm", "Errors");
-                        const itemIndex = resFindData.Reply.findIndex(cmt => cmt.IdComment == commentReq.IdCommentSuper);
+                        const itemIndex = resFindData.Reply.findIndex(cmt => cmt.IdComment == commentReq.IdCommentSupper);
                         if (itemIndex > -1) {
                             resFindData.Reply[itemIndex].UpDateAt = UpDateAt;
                             resFindData.Reply[itemIndex].Content = commentReq.Content;
@@ -139,7 +139,7 @@ module.exports = {
                                     success(res, "Đã câu trả lời mới", u)
                                 })
                         } else {
-                            error_400(res, "Không tìm thấy bình luận của sản phẩm", "IdCommentSuper");
+                            error_400(res, "Không tìm thấy bình luận của sản phẩm", "IdCommentSupper");
                         }
                     });
                 })
@@ -248,35 +248,16 @@ module.exports = {
             config.page = req.query.page ? Number(req.query.page) : 1
             config.limit = req.query.limit ? Number(req.query.limit) : 20
             config.skip = (config.page - 1) * config.limit;
-
-            if (!config.IdProduct) 
-                return error_400(res, "Vui lòng nhập Id", "IdProduct");
-
+            if (!config.IdProduct) return error_400(res, "Vui lòng nhập Id", "IdProduct");
             Products.findById(config.IdProduct, (err, resFindProduct) => {
-                if (err) 
-                    return error_500(res,err);
-                
-                if (!resFindProduct) 
-                    return error_400(res, "Không tìm thấy sản phẩm", "Errors");
-
+                if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
+                if (!resFindProduct) return error_400(res, "Không tìm thấy sản phẩm", "Errors");
                 const query = {
                     IdProduct: new mongoose.mongo.ObjectId(config.IdProduct)
                 }
-                console.log("test");
                 async.parallel([
                     (cb) =>
-                        Comment.aggregate([
-                            { $match: query },
-                            {
-                                $lookup: // user
-                                {
-                                    from: "users",
-                                    localField: "IdUser",
-                                    foreignField: "_id",
-                                    as: "UserName",
-                                },
-                            }])
-                            
+                        Comment.find(query)
                             .skip(config.skip)
                             .limit(config.limit)
                             .sort({ NewDateAt: "desc" })
@@ -284,27 +265,14 @@ module.exports = {
                     (cb) => Comment.count(query)
                         .exec((e, resDataSearch) => e ? cb(e) : cb(null, resDataSearch))
                 ], (err, results) => {
-                    if (err) return error_500(res, err);
-                    async.waterfall([
-                        cb => {
-                            results[0] = results[0].map(el => {
-                                if(el.UserName && el.UserName[0] 
-                                                    && el.UserName[0].FullName) 
-                                el.UserName = el.UserName[0].FullName
-
-                                else el.UserName = "Khách hàng";
-                                return el
-                            } )
-                            cb(null,results)
-                        }
-                    ], (e,results) => {
-                        if(e) error_500(res,e)
-
-                        success(res,"Lấy danh sách bình luận thành công",
-                            {
-                                comment: results[0],
-                                count: results[1],
-                            })
+                    if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
+                    res.json({
+                        message: "Lấy danh sách bình luận thành công",
+                        data: {
+                            comment: results[0],
+                            count: results[1],
+                        },
+                        status: true
                     })
                 })
             })
