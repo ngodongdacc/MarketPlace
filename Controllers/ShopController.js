@@ -134,7 +134,10 @@ module.exports = {
         var shopUpdate = req.body;
         var id = req.params.id;
         if (!id) return res.status(400).json({ message: "ID Shop is required", status: false, code: 0 })
-        if (shopUpdate.PasswordShop === "") return error_400(res, "Vui lòng nhập mật khẩu", "PasswordShop");
+        if (shopUpdate.PasswordShop === "") {
+            if (shopUpdate.PasswordShop.length <= 5)  // Kiểm tra password
+                return error_400(res, "Mật khẩu phải lớn hơn 5 ký tự", "Password");
+        }
         if (shopUpdate.ShopName === "") return error_400(res, "Vui lòng nhập tên cửa hàng", "Name");
         if (shopUpdate.StoreOwnername === "") return error_400(res, "Vui lòng nhập tên chủ cửa hàng", "StoreOwnerName");
         if (shopUpdate.BusinessRegisCode === "") return error_400(res, "Vui lòng nhập mã số kinh doanh", "BusinessRegisCode");
@@ -157,7 +160,7 @@ module.exports = {
                 (cb) => {
                     // kiểm tra Shop Name
                     if (shopUpdate.ShopName)
-                        ShopService.findOneOwnerShop(ShopName, (err, resUpdateUser) => {
+                        ShopService.findOneOwnerShop(shopUpdate.ShopName, (err, resUpdateUser) => {
                             if (err) cb(err)
                             else if (!resUpdateUser || (resUpdateUser && resUpdateUser._id.toString() === id)) cb(null, true);
                             else cb(null, false)
