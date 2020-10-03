@@ -32,7 +32,8 @@
    * [2.3: Cập nhật thông tin tài khoản người dùng ](#23--cập-nhật-thông-tin-tài-khoản-người-dùng)
    * [2.4: Xóa danh sách người dùng](#24--xóa-danh-sách-người-dùng)
    * [2.5: Tìm kiếm tài khoản người dùng ](#25--tìm-kiếm-tài-khoản-người-dùng)
-   * [2.6: Lấy thông tin tài khoản người dùng ](#26--lấy-thông-tin-tài-khoản-người-dùng)
+   * [2.6: Lấy thông tin tài khoản](#26--lấy-thông-tin-tài-khoản)
+   * [2.7: Lấy thông tin tài khoản người](#27--lấy-thông-tin-tài-khoản-người-dùng)
    
   
 ### 2.1  Đăng ký tài khoản người dùng
@@ -140,11 +141,35 @@
     |   status     |    boolean         | true - Thành công; false - Có lỗi                           |  
     |   message    |    string        | Tin nhắn trả về                                      |  
 
-### 2.6  Lấy thông tin tài khoản người dùng  
+### 2.6  Lấy thông tin tài khoản 
  - Router: **/api/users/profile**  
  - Function: **get_profile()**  
  - Method: **GET**
  - Paremeter
+ - header:
+
+    | Tên Trường  | Kiểu dữ liệu     |              Mô tả                  |  
+    |:----------:  |:------------:   |:--------------------------------:    |  
+    |    Authorization     |    string |          Token đăng nhập      |
+
+- Dữ liệu trả về
+
+    | Tên Trường   | Kiểu dữ liệu     |                        Mô tả                         |  
+    |:----------:  |:------------:    |:---------------------------------------------------: |  
+    |   data      |    object        |  [ User object](#data-structure-User-object)   |  
+    |   status     |    boolean         | true - Thành công; false - Có lỗi                           |  
+    |   message    |    string        | Tin nhắn trả về                                      |  
+
+### 2.7  Lấy thông tin tài khoản người dùng
+ - Router: **/api/users/profile/:id**  
+ - Function: **get_profile_id()**  
+ - Method: **GET**
+ - Paremeter
+    
+    | Tên Trường  | Kiểu dữ liệu     |              Mô tả                  |  
+    |:----------:  |:------------:   |:--------------------------------:    |  
+    |    id     |    string (ObjectId) |          id của tài khoản khoản người dùng      |
+
  - header:
 
     | Tên Trường  | Kiểu dữ liệu     |              Mô tả                  |  

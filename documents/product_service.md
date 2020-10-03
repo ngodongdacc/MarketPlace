@@ -166,17 +166,19 @@
  - Router: **/api/product/search**  
  - Function: **search_product()**  
  - Method: **GET**
+ - Description: Từ khóa tìm kiếm sẽ được lưu vào từ khóa tìm kiếm
  - Paremeter: 
     | Tên Trường  | Kiểu dữ liệu     | mặc định |               Mô tả                  |  
     |:----------:  |:------------:|:------------:    |:--------------------------------:    |  
     |    search     |    string | null |         Từ khóa tìm kiếm      |
     |    page     |    number | 1 |         trang cần xem     |
     |    limit     |    number | 20 |         Số lượng kết quả trả về      |
-    |    sort     |    object | {"Date": -1} |         Trường sắp xếp      |
+    |    sort     |    object | `{"Date": -1}` |         Trường sắp xếp      |
     |    idCategory     |    string | null |         Id của danh mục      |
     |    idCategorySub     |    string | null |         Id của danh mục con      |
     |    minPrice     |    number | 0 |         khoảng giá thấp nhất      |
     |    maxPrice     |    number | 100.000.000.000 |         khoảng giá cao nhất      |
+    |    idUser     |    ObjectId | null |         Nếu truyền vào idUser thì từ khóa sẽ được lưu vào lịch sử tìm kiếm của user    |
 
 - Dữ liệu trả về
 

@@ -1,37 +1,38 @@
-const BrandOrigin = require("../Model/brandOrigin");
-const BrandOriginService = require("../Services/brandOriginService");
 const async = require("async");
+const Units = require("../Model/unit");
+const UnitService = require("../Services/unitService");
 
 module.exports = {
-    create_brandOrigin: (req, res) => {
-        const brandOrigin = req.body
+    create_unit: (req, res) => {
+        const unit = req.body
 
-        if(!brandOrigin.Country) return res.status(400).json({message: "Vui lòng nhập Country",status: false});
+        if(!unit.IdCategory) return res.status(400).json({message: "Vui lòng nhập IdCategory",status: false});
+        if(!unit.Name) return res.status(400).json({ message: "Vui lòng nhập Name", status: false });
 
-        BrandOrigin.create(brandOrigin, (err, resbrandOrigin) => {
+        Units.create(unit, (err, resUint) => {
             if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
             res.json({
-                message: "Tạo một brandOrigin thành công",
-                data: resbrandOrigin,
+                message: "Tạo một Unit thành công",
+                data: resUint,
                 status: true
             })
         })
     },
     // chỉnh sửa đơn vị tính theo id
-    update_brandOrigin: (req, res) => {
-        const brandOrigin = req.body
+    update_unit: (req, res) => {
+        const unit = req.body
         const id = req.params.id
-        if (!id) return res.status(400).json({ message: "Vui lòng nhập Id brandOrigin", status: false });
-        if (!brandOrigin.Country === "") return res.status(400).json({ message: "Country không được rỗng", status: false });
-        console.log("brandOrigin:: ", req.body);
-        BrandOrigin.findById(id, (err, resbrandOrigin) => {
+        if (!id) return res.status(400).json({ message: "Vui lòng nhập Id unit", status: false });
+        if (unit.Name === "") return res.status(400).json({ message: "Tên units không được rỗng", status: false });
+        console.log("unit:: ", req.body);
+        Units.findById(id, (err, resUint) => {
             if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-            if (!resbrandOrigin) return res.json({ message: "Không tìm thấy id Xuất xứ", data: null, status: false });
+            if (!resUint) return res.json({ message: "Không tìm thấy id sản phẩm", data: null, status: false });
 
-            BrandOrigin.findByIdAndUpdate(resbrandOrigin._id, { $set: brandOrigin }, {}, (err, resUpdate) => {
+            Units.findByIdAndUpdate(resUint._id, { $set: unit }, {}, (err, resUpdate) => {
                 if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
                 res.json({
-                    message: "Cập nhật một brandOrigin thành công",
+                    message: "Cập nhật một Units thành công",
                     data: resUpdate,
                     status: true
                 })
@@ -39,44 +40,51 @@ module.exports = {
         })
     },
     // Lấy chi tiết đơn vị tính  bằng id
-    get_brandOrigin: (req, res)=> {
+    get_unit: (req, res)=> {
         const id = req.params.id
         if(!id) return res.status(400).json({message: "Vui lòng nhập Id", status:false});
 
-        BrandOrigin.findById(id,(err,resbrandOrigin)=>{
+        Units.findById(id,(err,resUint)=>{
             if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false});
-            if(!resbrandOrigin) return res.status(400).json({message: "Không tìm thấy Xuất xứ",data: null,status:false});
+            if(!resUint) return res.status(400).json({message: "Không tìm thấy đơn vị tính",data: null,status:false});
             
             res.json({
-                message: "Lấy chi tiết xuất xứ thành công",
-                data: resbrandOrigin,
+                message: "Lấy chi tiết đơn vị tính thành công",
+                data: resUint,
                 status: true
             })
         })
     },
-     // Xóa đớn vị tính bằng id
-     remove_brandOrigin: (req, res) => {
+    get_units: async (req, res) => {
+        try{
+            const unit = await Units.find()
+            
+            res.json(unit)
+        }catch(err){
+            res.send('Error ' + err)
+        }
+    },
+    // Xóa đớn vị tính bằng id
+    remove_unit: (req, res) => {
         const id = req.params.id
         if (!id) return res.status(400).json({ message: "Vui lòng nhập Id", status: false });
 
-        BrandOrigin.findById(id, (err, resbrandOrigin) => {
+        Units.findById(id, (err, resUint) => {
             if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-            if (!resbrandOrigin) return res.status(400).json({ message: "Không tìm thấy xuất xứ", data: null, status: false });
+            if (!resUint) return res.status(400).json({ message: "Không tìm thấy Units", data: null, status: false });
 
-            BrandOrigin.findByIdAndRemove(resbrandOrigin._id, (err, resRemove) => {
+            Units.findByIdAndRemove(resUint._id, (err, resRemove) => {
                 if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
                 res.json({
-                    message: "Xóa một xuất xứ thành công",
+                    message: "Xóa một units thành công",
                     data: resRemove,
                     status: true
                 })
             })
-
         })
-
     },
-     //Lấy danh sách xuất xứ
-     get_list_brandOrigin: (req,res) => {
+    //Lấy danh sách đơn vị tính
+    get_list_unit: (req,res) => {
         const config = {};
         
         config.page = req.query.page ? Number(req.query.page):1 
@@ -84,19 +92,19 @@ module.exports = {
         config.skip = (config.page-1)*config.limit;
     
         async.parallel([
-            (cb) => BrandOrigin
+            (cb) => Units
                         .find({})
                         .skip(config.skip)
                         .limit(config.limit)
                         .sort({Date: "desc"})
                         .exec((e,data) => e ? cb(e): cb(null, data)),
-            (cb) => BrandOrigin.count().exec((e,data)=> e ? cb(e) : cb(null,data))
+            (cb) => Units.count().exec((e,data)=> e ? cb(e) : cb(null,data))
         ], (err,results) => {
             if(err) if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false });
             res.json({
-                message: "Lấy danh sách xuất xứ thành công",
+                message: "Lấy danh sách đơn vị tính thành công",
                 data: {
-                    brandOrigin: results[0],
+                    unit: results[0],
                     count: results[1],
                 },
                 status: true
@@ -104,13 +112,13 @@ module.exports = {
         })
     },
     // xóa danh sách xuất xứ
-    remove_list_brandOrigin: (req,res) => {
-        const listIdBrandOrigin = req.body.ListId;
-        if(!listIdBrandOrigin || (Array.isArray(listIdBrandOrigin) && listIdBrandOrigin.length === 0)) return res.status(400).json({message: "Vui lòng chọn sản phẩm cần xóa",status:false}); 
-        if(!Array.isArray(listIdBrandOrigin)) return res.status(400).json({message: "ListId phải là array",status:false}); 
+    remove_list_unit: (req,res) => {
+        const listIdUnit = req.body.ListId;
+        if(!listIdUnit || (Array.isArray(listIdUnit) && listIdUnit.length === 0)) return res.status(400).json({message: "Vui lòng chọn sản phẩm cần xóa",status:false}); 
+        if(!Array.isArray(listIdUnit)) return res.status(400).json({message: "ListId phải là array",status:false}); 
 
-        BrandOrigin
-            .deleteMany({_id: {$in: listIdBrandOrigin}})
+        Units
+            .deleteMany({_id: {$in: listIdUnit}})
             .exec((err,resData)=> {
                 if(err) if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false });
                 res.send({
@@ -121,34 +129,33 @@ module.exports = {
             })
 
     },
-    search_brandOrigin: (req, res) => {
+    search_unit: (req, res) => {
         try {
             
         
         const config = {};
         config.search = req.query.search 
-        config.Country = req.query.Country
+        config.Name = req.query.Name
         config.page = req.query.page ? Number(req.query.page):1 
         config.limit = req.query.limit ? Number(req.query.limit):20 
         config.skip = (config.page-1)*config.limit;
         
-       
-        const query = {Country: {$regex: config.Country, $options:"i"}}
+        const query = { Name: { $regex: config.Name, $options: "i" }}
         async.parallel([
             (cb) => 
-            BrandOrigin.find(query)
+            Units.find(query)
                         .skip()
                         .limit(config.limit)
                         .sort({Date: "desc"})
                         .exec((e,data) => e ? cb(e): cb(null, data)),
-            (cb) => BrandOrigin.count(query)
+            (cb) => Units.count(query)
                             .exec((e,data)=> e ? cb(e) : cb(null,data))
         ], (err,results) => {
             if(err) if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false });
             res.json({
                 message: "Lấy danh sách Xuất xứ  thành công",
                 data: {
-                    brandOrigin: results[0],
+                    unit: results[0],
                     count: results[1],
                 },
                 status: true
@@ -164,14 +171,5 @@ module.exports = {
             })
     }
     },
-
-    getProfile: async (req, res) => {
-        try {
-            const brandOrigin = await BrandOrigin.find()
-            res.json(brandOrigin)
-        } catch (err) {
-            res.send('Error ' + err)
-        }
-    },
-
+    
 }

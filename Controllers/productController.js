@@ -4,82 +4,91 @@ const Products = require("../Model/product");
 const keySevice = require("../Services/keySearchService");
 const EscapeRegExp = require("escape-string-regexp");
 
+// validator
+const { error_400, error_500, success } = require("../validator/errors");
 const { IsJsonString } = require("../validator/validator");
+
 module.exports = {
     create_product: (req, res) => {
         const product = req.body
         // product.Image = req.file.path
         // console.log(req.file.path);
-        if (!product.IdUser) return res.status(400).json({ message: "Vui lòng nhập IdUser", status: false });
-        if (!product.IdShop) return res.status(400).json({ message: "Vui lòng nhập IdShop", status: false });
-        if (!product.IdCategory) return res.status(400).json({ message: "Vui lòng nhập IdCategory", status: false });
-        if (!product.IdCategorySub) return res.status(400).json({ message: "Vui lòng nhập IdCategorySub", status: false });
-        if (!product.Name) return res.status(400).json({ message: "Vui lòng nhập Name", status: false });
+        if (!product.IdUser || product.IdUser === "")
+            return error_400(res, "Vui lòng nhập id người dùng", "product.IdUser");
+
+        if (!product.IdShop || product.IdShop == "")
+            return error_400(res, "Vui lòng nhập id của shop", "product.IdShop");
+
+        if (!product.IdCategory || product.IdCategory === "")
+            return error_400(res, "Vui lòng nhập id của danh mục cha",
+                "product.IdCategory");
+
+        if (!product.IdCategorySub || product.IdCategorySub === "")
+            return error_400(res, "Vui lòng nhập id của danh mục con",
+                "product.IdCategorySub");
+
+        if (!product.Name || product.Name === "")
+            return error_400(res, "Vui lòng nhập tên của sản phẩm", "product.Name");
 
         Products.create(product, (err, resProduct) => {
-            if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-            res.json({
-                message: "Tạo sản phẩm thành công",
-                data: resProduct,
-                status: true
-            })
+            if (err) return error_500(res, err)
+
+            success(res, "Tạo sản phẩm thành công", resProduct)
         })
     },
 
     // Cập nhật sản phẩm
     update_product: (req, res) => {
+
         const product = req.body
         product.DateUpdate = Date.now();
         const id = req.params.id
-        if (!id) return res.status(400).json({ message: "Vui lòng nhập Id sản phẩm", status: false });
-        if (product.Name === "") return res.status(400).json({ message: "Tên sản phẩm không được rỗng", status: false });
-        console.log("product:: ", req.body);
-        Products.findById(id, (err, resProduct) => {
-            if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-            if (!resProduct) return res.json({ message: "Không tìm thấy id sản phẩm", data: null, status: false });
 
-            Products.findByIdAndUpdate(resProduct._id, { $set: product }, {}, (err, resUpdate) => {
-                if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-                res.json({
-                    message: "Cập nhật sản phẩm thành công",
-                    data: resUpdate,
-                    status: true
+        if (!id) return error_400(res, "Vui lòng nhập Id sản phẩm", "id");
+
+        if (product.Name && product.Name === "")
+            return error_400(res, "Tên sản phẩm không được rỗng", "product.Name");
+
+        Products.findById(id, (err, resProduct) => {
+            if (err) return error_500(res, err)
+            if (!resProduct)
+                return error_400(res, "Không tìm thấy id sản phẩm" + id, "id");
+
+            Products.findByIdAndUpdate(resProduct._id, product, { new: true })
+                .exec((err, resUpdate) => {
+                    if (err) return error_500(res, err);
+                    success(res, "Cập nhật sản phẩm thành công", resUpdate)
                 })
-            })
         })
     },
+
     // Lấy chi tiết sản phẩm bằng id
     get_product: (req, res) => {
         const id = req.query.id
-        if (!id) return res.status(400).json({ message: "Vui lòng nhập Id", status: false });
+        if (!id) return error_400(res, "Vui lòng nhập id", "id");
 
         Products.findById(id, (err, resProduct) => {
-            if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-            if (!resProduct) return res.status(400).json({ message: "Không tìm thấy sản phẩm", data: null, status: false });
+            if (err) return error_500(res, e);
+            if (!resProduct)
+                return error_400(res, "Không tìm thấy sản phẩm" + id, "id");
 
-            res.json({
-                message: "Lấy chi tiết sản phẩm thành công",
-                data: resProduct,
-                status: true
-            })
+            success(res, "Lấy chi tiết sản phẩm thành công", resProduct);
         })
     },
+
     // Xóa sản phẩm bằng id
     remove_product: (req, res) => {
         const id = req.params.id
-        if (!id) return res.status(400).json({ message: "Vui lòng nhập Id", status: false });
+        if (!id) return error_400(res, "Vui lòng nhập id", id);
 
         Products.findById(id, (err, resProduct) => {
-            if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-            if (!resProduct) return res.status(400).json({ message: "Không tìm thấy sản phẩm", data: null, status: false });
+            if (err) return error_500(res, err);
+            if (!resProduct)
+                return error_400(res, "Không tìm thấy sản phẩm" + id, id);
 
             Products.findByIdAndRemove(resProduct._id, (err, resRemove) => {
-                if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-                res.json({
-                    message: "Xóa sản phẩm thành công",
-                    data: resRemove,
-                    status: true
-                })
+                if (err) error_500(res, err)
+                success(res, "Xóa sản phẩm thành công", resRemove)
             })
         })
     },
@@ -99,49 +108,49 @@ module.exports = {
                 .limit(config.limit)
                 .sort({ Date: "desc" })
                 .exec((e, data) => e ? cb(e) : cb(null, data)),
+
             (cb) => Products.count().exec((e, data) => e ? cb(e) : cb(null, data))
+
         ], (err, results) => {
-            if (err) if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-            res.json({
-                message: "Lấy danh sách sản phẩm thành công",
-                data: {
+            if (err) return error_500(res, err);
+
+            success(res, "Lấy danh sách sản phẩm thành công",
+                {
                     products: results[0],
                     count: results[1],
-                },
-                status: true
-            })
+                })
         })
     },
 
     // xóa danh sách sản phẩm
     remove_list_product: (req, res) => {
-        const listIdProduct = req.body.ListId;
-        if (!listIdProduct || (Array.isArray(listIdProduct) && listIdProduct.length === 0)) return res.status(400).json({ message: "Vui lòng chọn sản phẩm cần xóa", status: false });
-        if (!Array.isArray(listIdProduct)) return res.status(400).json({ message: "ListId phải là array", status: false });
+
+        const listId = req.body.ListId;
+
+        if (!Array.isArray(listId))
+            return error_400(res, "ListId phải là array", "ListId");
+
+        if (!listId || (Array.isArray(listId) && listId.length === 0))
+            return error_400(res, "Vui lòng chọn sản phẩm cần xóa", "ListId");
 
         Products
-            .deleteMany({ _id: { $in: listIdProduct } })
+            .deleteMany({ _id: { $in: listId } })
             .exec((err, resData) => {
-                if (err) if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-                res.send({
-                    message: `Xóa thành công ${resData.n} sản phẩm`,
-                    data: resData,
-                    status: true
-                })
+                if (err) return error_500(res, err);
+                success(res, `Xóa thành công ${resData.n} sản phẩm`, resData)
             })
     },
 
     // Tìm kiếm theo tên
     search_product: (req, res) => {
         try {
-
             const config = {};
             config.search = req.query.search
             config.page = req.query.page ? Number(req.query.page) : 1
             config.limit = req.query.limit ? Number(req.query.limit) : 20
             config.skip = (config.page - 1) * config.limit;
+            const query = { Name: { $regex: config.search, $options: "i" } };
 
-            const query = { Name: { $regex: config.search, $options: "i" } }
             async.parallel([
                 (cb) =>
                     Products.find(query)
@@ -151,25 +160,18 @@ module.exports = {
                         .exec((e, data) => e ? cb(e) : cb(null, data)),
                 (cb) => Products.count(query)
                     .exec((e, data) => e ? cb(e) : cb(null, data))
+
             ], (err, results) => {
-                if (err) if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-                res.json({
-                    message: "Lấy danh sách sản phẩm thành công",
-                    data: {
+                if (err) return error_500(res, err)
+                success(res, "Lấy danh sách sản phẩm thành công",
+                    {
                         products: results[0],
                         count: results[1],
-                    },
-                    status: true
-                })
+                    })
             })
+
         } catch (error) {
-            console.log(error);
-            res.status(500)
-                .json({
-                    message: "lỗi hệ thống",
-                    errors: error,
-                    status: 500
-                })
+            error_500(res, error);
         }
     },
 
@@ -182,12 +184,14 @@ module.exports = {
         config.limit = req.query.limit ? Number(req.query.limit) : 20
         config.skip = (config.page - 1) * config.limit;
 
-        if (!config.IdCategory) return res.status(400).json({ message: "Vui lòng nhập IdCategory", status: false })
+        if (!config.IdCategory)
+            return error_400(res, "Vui lòng nhập IdCategory", IdCategory)
+
         const query = {
             Name: { $regex: config.search, $options: "i" },
             IdCategory: new mongoose.mongo.ObjectId(config.IdCategory)
         }
-        console.log(query);
+
         async.parallel([
             (cb) => Products.find(query)
                 .skip(config.skip)
@@ -198,28 +202,24 @@ module.exports = {
             (cb) => Products.count(query)
                 .exec((e, data) => e ? cb(e) : cb(null, data))
         ], (err, results) => {
-            console.log(err);
-            if (err) if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-            res.json({
-                message: "Lấy danh sách sản phẩm thành công",
-                data: {
-                    products: results[0],
-                    count: results[1],
-                },
-                status: true
+            if (err) return error_500(res, err);
+            success(res, "Lấy danh sách sản phẩm thành công", {
+                products: results[0],
+                count: results[1],
             })
         })
     },
 
     // Tìm kiếm nâng cao
     search: (req, res) => {
-        if(req.query.sort && !IsJsonString(req.query.sort)) 
-            return res.json({message: "sort phải là dạng json", status: false}) 
+
+        if (req.query.sort && !IsJsonString(req.query.sort))
+            return error_500(res, "sort phải là dạng json", "sort")
 
         let config = {
             limit: Number(req.query.limit) || process.env.LIMIT || 20,
             page: Number(req.body.page) || 1,
-            sort:req.query.sort? JSON.parse(req.query.sort) : { "Date": -1 }
+            sort: req.query.sort ? JSON.parse(req.query.sort) : { "Date": -1 }
         }
         config.skip = (config.page - 1) * config.limit;
 
@@ -228,30 +228,45 @@ module.exports = {
                 var query = {
                     $or: [
                         { $text: { $search: req.query.search || "" } },
-                        { Name: new RegExp("^.*?" + EscapeRegExp(req.query.search || "") + ".*$", "i") },
-                        // { ListCategory: { $elemMatch: { title:new RegExp("^.*?"+EscapeRegExp(req.query.search || ""))}}}
+                        {
+                            Name: new RegExp("^.*?" +
+                                EscapeRegExp(req.query.search || "") + ".*$", "i")
+                        },
                     ],
                     $and: [
                         {
-                            Price: { 
-                                $gte: Number(req.query.minPrice) || 0 , 
-                                $lt: Number(req.query.maxPrice) || Number(process.env.MAXPRICE) || 100000000000
+                            Price: {
+                                $gte: Number(req.query.minPrice) || 0,
+                                $lt: Number(req.query.maxPrice) ||
+                                    Number(process.env.MAXPRICE) || 100000000000
                             },
                         }
                     ]
                 };
-                if(req.query.idCategory) query.$and.push({ IdCategory: new mongoose.mongo.ObjectId(req.query.idCategory) })
-                if(req.query.idTrademark) query.$and.push({ IdTrademark: new mongoose.mongo.ObjectId(req.query.idTrademark) })
-                if(req.query.idCategorySub) query.$and.push({ IdCategorySub: new mongoose.mongo.ObjectId(req.query.idCategorySub) })
+                if (req.query.idCategory)
+                    query.$and.push({
+                        IdCategory:
+                            new mongoose.mongo.ObjectId(req.query.idCategory)
+                    });
+
+                if (req.query.idTrademark)
+                    query.$and.push({
+                        IdTrademark:
+                            new mongoose.mongo.ObjectId(req.query.idTrademark)
+                    });
+
+                if (req.query.idCategorySub)
+                    query.$and.push({
+                        IdCategorySub:
+                            new mongoose.mongo.ObjectId(req.query.idCategorySub)
+                    })
 
                 cb(null, query)
             },
             (query, cb) => {
-                console.log("query:: ", query.$and[0]);
                 async.parallel([
                     (cb) => Products
                         .aggregate([
-                            // {$match: {$text: {$search: req.query.search || ""}}}, 
                             { $match: query },
                             {
                                 $lookup: // danh mục
@@ -303,14 +318,13 @@ module.exports = {
                         ])
                         .exec((e, c) => e ? cb(e) : cb(null, c)),
                     (cb) => { // lưu lịch sử tìm kiếm
-                        keySevice.create_and_update_key(req.query,cb)
+                        keySevice.create_and_update_key(req.query, cb)
                     }
-                ], (e, res) => e ? cb(e) : cb(null, res))
+                ], (e, result) => e ? cb(e) : cb(null, result))
 
             }
         ], (err, results) => {
-            console.log("error:: ", err);
-            if (err) if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
+            if (err) return error_500(res, err)
 
             res.json({
                 message: "Lấy sản phẩm thành công",
