@@ -26,7 +26,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
-
+app.get('/auth/provider', passport.authenticate('local', { successRedirect: '/',
+                                                    failureRedirect: '/login' }));
 app.use(expressSession({
   secret: process.env.secretKey || "QTData-MarketPlace",
   resave: false,

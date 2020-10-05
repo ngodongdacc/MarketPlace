@@ -240,11 +240,12 @@ module.exports = {
             error_500(res, e);
         }
     },
+
+    // Lấy danh sách comment của sản phẩm
     getListCommentForProduct: async (req, res) => {
         try {
             const config = {};
             config.IdProduct = req.query.IdProduct
-            // config.search = req.query.search
             config.page = req.query.page ? Number(req.query.page) : 1
             config.limit = req.query.limit ? Number(req.query.limit) : 20
             config.skip = (config.page - 1) * config.limit;
@@ -253,8 +254,7 @@ module.exports = {
                 return error_400(res, "Vui lòng nhập Id", "IdProduct");
 
             Products.findById(config.IdProduct, (err, resFindProduct) => {
-                if (err) 
-                    return error_500(res,err);
+                if (err) return error_500(res,err);
                 
                 if (!resFindProduct) 
                     return error_400(res, "Không tìm thấy sản phẩm", "Errors");
@@ -262,7 +262,7 @@ module.exports = {
                 const query = {
                     IdProduct: new mongoose.mongo.ObjectId(config.IdProduct)
                 }
-                console.log("test");
+               
                 async.parallel([
                     (cb) =>
                         Comment.aggregate([
@@ -276,13 +276,14 @@ module.exports = {
                                     as: "UserName",
                                 },
                             }])
-                            
                             .skip(config.skip)
                             .limit(config.limit)
                             .sort({ NewDateAt: "desc" })
-                            .exec((e, resDataSearch) => e ? cb(e) : cb(null, resDataSearch)),
-                    (cb) => Comment.count(query)
-                        .exec((e, resDataSearch) => e ? cb(e) : cb(null, resDataSearch))
+                            .exec((e, resData) => e ? cb(e) : cb(null, resData)),
+
+                    (cb) => Comment.countDocuments(query)
+                                .exec((e, count) => e ? cb(e) : cb(null, count))
+
                 ], (err, results) => {
                     if (err) return error_500(res, err);
                     async.waterfall([
