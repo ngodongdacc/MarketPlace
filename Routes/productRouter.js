@@ -6,6 +6,8 @@ const multer = require("multer");
 // controller
 const productCtr = require("../Controllers/productController");
 
+const {checkLogInShop} = require("../middleware/auth");
+
 // Begin import img
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -44,5 +46,5 @@ router.post("/list/delete",productCtr.remove_list_product);
 router.get("/search",productCtr.search_product);
 router.get("/category/search",productCtr.search_category);
 router.get("/search/query",productCtr.search);
-
+router.get('/shop/search',checkLogInShop(),productCtr.search_product_shop); // tìm kiếm sản phẩm của shop
 module.exports = router

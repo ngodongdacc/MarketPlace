@@ -106,10 +106,10 @@
 | :---------------: | :----------: | :---------------------------------------: |
 |  StoreOwnername   |    String    |            (Tên chủ cửa hàng)             |
 |       Phone       |    String    |              (Số điện thoại)              |
-|    EmailOwner     |    String    |             (Email của shop)              |
 |   PasswordShop    |    String    |            (Mật khẩu của shop)            |
 |     ShopName      |    String    |              (Tên cửa hàng )              |
 |      Country      |    String    |      (Thành phố đăng ký kinh doanh)       |
+| BusinessRegisCode |    String    |        (Mã số kinh doanh cửa hàng)        |
 | CommodityIndustry |    String    | (Loại nghành hàng hóa đăng ký kinh doanh) |
 
 - Dữ liệu trả về
@@ -133,9 +133,9 @@
 
 - Body:
 
-  | Tên Trường | Kiểu dữ liệu |         Mô tả         |
-  | :--------: | :----------: | :-------------------: |
-  |   ListId   |    array     |Danh sách [_id:("id của shop") ] |
+  | Tên Trường | Kiểu dữ liệu |              Mô tả               |
+  | :--------: | :----------: | :------------------------------: |
+  |   ListId   |    array     | Danh sách [_id:("id của shop") ] |
 
 - Dữ liệu trả về
 

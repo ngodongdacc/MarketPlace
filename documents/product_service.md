@@ -71,9 +71,10 @@
    * [2.2: Cập nhật sản phẩm ](#12--cập-nhật-sản-phẩm )  
    * [2.3: Xóa sản phẩm ](#13--xóa-sản-phẩm)
    * [2.4: Xóa danh sách sản phẩm](#14--xóa-danh-sách-sản-phẩm)
-   * [2.5: Tìm kiếm sản phẩm của shop ](#15--tìm-kiếm-sản-phẩm-của-shop)
+   * [2.5: Tìm kiếm sản phẩm của người dùng ](#15--tìm-kiếm-sản-phẩm-của-người-dùng)
    * [2.6: Lấy chi tiết sản phẩm của người dùng ](#16--lấy-chi-tiết-sản-phẩm-của-người-dùng)
    * [2.7: Lấy chi tiết sản phẩm của shop ](#17--lấy-chi-tiết-sản-phẩm-của-shop)
+   * [2.8: Tìm kiếm sản phẩm của shop ](#17--tìm-kiếm-sản-phẩm-của-shop)
   
 ### 2.1  Thêm sản phẩm mới  
  - Router: **/api/product**  
@@ -162,7 +163,7 @@
     |   status     |    boolean         | true - Thành công; false - Có lỗi                           |  
     |   message    |    string        | Tin nhắn trả về                                      |  
 
-### 1.5  Tìm kiếm sản phẩm của shop  
+### 1.5  Tìm kiếm sản phẩm của người dùng
  - Router: **/api/product/search**  
  - Function: **search_product()**  
  - Method: **GET**
@@ -205,9 +206,42 @@
     |   status     |    boolean         | true - Thành công; false - Có lỗi                           |  
     |   message    |    string        | Tin nhắn trả về                                      |  
 
+
+
 ### 1.7  Lấy chi tiết sản phẩm của shop  
  - Router: **/**  
  - Function: **()**  
  - Method: **GET**
  - Paremeter: 
-  
+
+### 1.8  Tìm kiếm sản phẩm của shop  
+ - Router: **/api/product/shop/search**  
+ - Function: **search_product_shop()**  
+ - Method: **GET**
+ - Description: Từ khóa tìm kiếm sẽ được lưu vào từ khóa tìm kiếm
+ - header:
+
+    | Tên Trường  | Kiểu dữ liệu     |              Mô tả                  |  
+    |:----------:  |:------------:   |:--------------------------------:    |  
+    |    Authorization     |    string |          Token đăng nhập      |
+
+ - Paremeter: 
+    | Tên Trường  | Kiểu dữ liệu     | mặc định |               Mô tả                  |  
+    |:----------:  |:------------:|:------------:    |:--------------------------------:    |  
+    |    search     |    string | null |         Từ khóa tìm kiếm      |
+    |    page     |    number | 1 |         trang cần xem     |
+    |    limit     |    number | 20 |         Số lượng kết quả trả về      |
+    |    sort     |    object | `{"Date": -1}` |         Trường sắp xếp      |
+    |    idCategory     |    string | null |         Id của danh mục      |
+    |    idCategorySub     |    string | null |         Id của danh mục con      |
+    |    minPrice     |    number | 0 |         khoảng giá thấp nhất      |
+    |    maxPrice     |    number | 100.000.000.000 |         khoảng giá cao nhất      |
+    |    idUser     |    ObjectId | null |         Nếu truyền vào idUser thì từ khóa sẽ được lưu vào lịch sử tìm kiếm của user    |
+
+- Dữ liệu trả về
+
+    | Tên Trường   | Kiểu dữ liệu     |                        Mô tả                         |  
+    |:----------:  |:------------:    |:---------------------------------------------------: |  
+    |   data      |    object        |  Danh sách sản phấm tìm thấy   |  
+    |   status     |    boolean         | true - Thành công; false - Có lỗi                           |  
+    |   message    |    string        | Tin nhắn trả về                                      |  

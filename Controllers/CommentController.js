@@ -236,7 +236,6 @@ module.exports = {
             })
 
         } catch (e) {
-            console.log(e)
             error_500(res, e);
         }
     },
@@ -311,7 +310,6 @@ module.exports = {
             })
 
         } catch (e) {
-            console.log(e)
             error_500(res, e);
         }
 

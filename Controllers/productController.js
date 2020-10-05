@@ -7,6 +7,7 @@ const EscapeRegExp = require("escape-string-regexp");
 // validator
 const { error_400, error_500, success } = require("../validator/errors");
 const { IsJsonString } = require("../validator/validator");
+const { param } = require("express-validator");
 
 module.exports = {
     create_product: (req, res) => {
@@ -149,7 +150,7 @@ module.exports = {
             config.page = req.query.page ? Number(req.query.page) : 1
             config.limit = req.query.limit ? Number(req.query.limit) : 20
             config.skip = (config.page - 1) * config.limit;
-            const query = { Name: { $regex: config.search, $options: "i" } };
+            const query = { Name: { $regex: config.search || "", $options: "i" } };
 
             async.parallel([
                 (cb) =>
@@ -158,7 +159,7 @@ module.exports = {
                         .limit(config.limit)
                         .sort({ Date: "desc" })
                         .exec((e, data) => e ? cb(e) : cb(null, data)),
-                (cb) => Products.count(query)
+                (cb) => Products.countDocuments(query)
                     .exec((e, data) => e ? cb(e) : cb(null, data))
 
             ], (err, results) => {
@@ -335,5 +336,84 @@ module.exports = {
                 status: true
             })
         })
+    },
+
+    // Lấy danh sách sản phẩm theo shop
+    search_product_shop: (req, res) => {
+        let params = req.query;
+
+        if (!req.user) return error_400(res, "Vui lòng đăng nhập", "user");
+
+        if (params.sort && !IsJsonString(params.sort))
+            return error_500(res, "sort phải là dạng json", "sort");
+
+
+        let limit = params.limit ? Number(params.limit) : process.env.LIMIT || 20
+        let page = params.page ? Number(params.limit) : process.env.PAGE || 1
+        let skip = (page - 1) * limit;
+        let sort = params.sort ? JSON.parse(params.sort) : { Date: -1 };
+
+        let query = {
+            $and: [
+                {
+                    IdShop: new mongoose.mongo.ObjectId(req.user._id),
+                    Price: {
+                        $gte: Number(req.query.minPrice) || 0,
+                        $lt: Number(req.query.maxPrice) ||
+                            Number(process.env.MAXPRICE) || 100000000000
+                    },
+                }
+            ]
+        };
+
+        if (params.search && params.search !== "")
+            query.$or = [
+                { $text: { $search: req.query.search } },
+                {
+                    Name: new RegExp("^.*?" +
+                        EscapeRegExp(req.query.search) + ".*$", "i")
+                },
+            ]
+
+        if (req.query.idCategory)
+            query.$and.push({
+                IdCategory:
+                    new mongoose.mongo.ObjectId(req.query.idCategory)
+            });
+
+        if (req.query.idTrademark)
+            query.$and.push({
+                IdTrademark:
+                    new mongoose.mongo.ObjectId(req.query.idTrademark)
+            });
+
+        if (req.query.idCategorySub)
+            query.$and.push({
+                IdCategorySub:
+                    new mongoose.mongo.ObjectId(req.query.idCategorySub)
+            })
+
+        async.parallel([
+            cb => Products
+                .aggregate([{ $match: query }])
+                .limit(limit)
+                .skip(skip)
+                .sort(sort)
+                .exec((e, r) => e ? cb(e) : cb(null, r)),
+
+            cb => Products.countDocuments(query)
+                .exec((e, c) => e ? cb(e) : cb(null, c))
+        ], (e, results) => {
+            if (e) return error_500(res, e);
+
+            success(res, "Lấy danh sách sản phẩm shop thành công",
+                {
+                    products: results[0],
+                    count: results[1]
+                }
+            )
+        })
+
+
     }
 }
