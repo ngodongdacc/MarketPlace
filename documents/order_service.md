@@ -34,15 +34,15 @@
     |    4     |           Đơn hàng bị hủy     |
 ## 2. Service info  
 ### Thông tin service * Tên service: **Order**  
-* Source code: ./Controller/OrderCOntroller.js  
+* Source code: ./Controller/OrderController.js  
 * Danh sách routers  
    * [2.1: Tạo đơn hàng mới](#21--tạo-đơn-hàng-mới)  
    * [2.2: Hủy đơn hàng](#22--hủy-đơn-hàng)  
-   * [2.3: Cập nhật trạng thái đơn hàng](#23--Cập-nhật-trạng-thái-đơn-hàng)  
-   * [2.4: Cập nhật thông tin giao hàng của đơn hàng](#24--Cập-nhật-thông-tin-giao-hàng-của-đơn-hàng)
+   * [2.3: Cập nhật trạng thái đơn hàng](#23--cập-nhật-trạng-thái-đơn-hàng)  
+   * [2.4: Cập nhật thông tin giao hàng của đơn hàng](#24--cập-nhật-thông-tin-giao-hàng-của-đơn-hàng)
    * [2.5: Tìm kiếm đơn hàng-của-khách-hàng](#25--tìm-kiếm-đơn-hàng-của-khách-hàng)  
-   * [2.6: Lấy chi tiết đơn hàng của khách hàng](#26--Lấy-chi-tiết-đơn-hàng-khách-hàng)
-   * [2.7: Xoá danh sách đơn hàng](#2--Xoá-danh-sách-đơn-hàng)
+   * [2.6: Lấy chi tiết đơn hàng của khách hàng](#26--lấy-chi-tiết-đơn-hàng-khách-hàng)
+   * [2.7: Xoá danh sách đơn hàng](#2--xoá-danh-sách-đơn-hàng)
 
 ### 2.1  Tạo đơn hàng mới
 - Router: **/api/order/create**  
@@ -70,7 +70,7 @@
     |   status     |    boolean         | true: thành công, false: thất bại                          |  
     |   message    |    string        | Tin nhắn trả về                                      |  
 
-### 2.2 Hủy đơn hàng
+### 2.2  Hủy đơn hàng
 - Router: **api/order/cancel/:id**  
  - Function: **/**  
  - Method: **POST**
@@ -94,7 +94,7 @@
     |   status     |    boolean         | true: thành công, false: thất bại                          |  
     |   message    |    string        | Tin nhắn trả về                                      |  
 
-### 2.3 Cập nhật trạng thái đơn hàng
+### 2.3  Cập nhật trạng thái đơn hàng
  - Router: **/**  
  - Function: **/**  
  - Method: **POST**
@@ -117,7 +117,7 @@
     |   message    |    string        | Tin nhắn trả 
     về                                      |  
     
-### 2.4 Cập nhật thông tin giao hàng của đơn hàng
+### 2.4  Cập nhật thông tin giao hàng của đơn hàng
 - Router: **/api/order/update-info**  
  - Function: **update_order_infor()**  
  - Method: **POST**
@@ -152,7 +152,7 @@
     |   status     |    boolean         | true - Thành công; false - Có lỗi                           |  
     |   message    |    string        | Tin nhắn trả về                                      |  
 
-### 2.5 Tìm kiếm đơn hàng theo khách hàng
+### 2.5  Tìm kiếm đơn hàng theo khách hàng
 - Router: **/api/order/search-users**  
  - Function: **search_order_users()**  
  - Method: **GET**
@@ -178,7 +178,7 @@
     |   status     |    boolean         | true - Thành công; false - Có lỗi                           |  
     |   message    |    string        | Tin nhắn trả về                                      |  
 
-### 2.6 Lấy chi tiết đơn hàng của khách hàng
+### 2.6  Lấy chi tiết đơn hàng của khách hàng
 - Router: **/api/order/detail/:id**  
  - Function: **get_order()**  
  - Method: **GET**
@@ -195,7 +195,7 @@
     |   status     |    boolean         | true - Thành công; false - Có lỗi                           |  
     |   message    |    string        | Tin nhắn trả về 
 
-### 2.7 Xoá danh sách đơn hàng
+### 2.7  Xoá danh sách đơn hàng
 - Router: **/api/order/list/delete**  
  - Function: **deleteListOrder()**  
  - Method: **POST**
