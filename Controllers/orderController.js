@@ -1,354 +1,240 @@
 const Order = require("../Model/order");
 const async = require("async");
-const Users = require("../Model/users");
-const userServic = require("../Services/usersService");
-const cartServie = require("../Services/cartService")
-const { mongo, Mongoose } = require("mongoose");
 const mongoose = require("mongoose");
-const Product = require("../Model/product");
-const { count } = require("../Model/product");
-const order = require("../Model/order");
 const Cart = require("../Model/cart");
-const cartService = require("../Services/cartService");
-const express = require("express");
+
 const { isEmail, isPhone } = require("../validator/validator");
-
-
-
+const { error_400, error_500, success } = require("../validator/errors");
 
 module.exports = {
-    createOrder: (req, res, next)=>{
-        
-       const IdCart = req.body.IdCart
-        const order = req.body
-       const UserId = req.body.UserId
-       const ProductId = req.body.ProductId
-       if(!UserId) return res.status(400).json({message: "Vui lòng nhập IdUser", status:false});
-       if(order.Name=== "") return res.status(400).json({ message: "Tên không được bỏ trống!", status: false, code: 0});
-       if(order.Phone=== "") return res.status(400).json({ message: "SĐT không được bỏ trống!", status: false, code: 0});
-       if(order.Address=== "") return res.status(400).json({ message: "Địa chỉ không được bỏ trống!", status: false, code: 0});
-       if(order.Email=== "") return res.status(400).json({ message: "Email không được bỏ trống!", status: false, code: 0});
-       if(order.Payment=== "") return res.status(400).json({ message: "Email không được bỏ trống!", status: false, code: 0});
-       if(!isEmail(order.Email)) return res.status(400).json({message: "Email not format",status: false,code: 0});
-       if(!isPhone(order.Phone)) return res.status(400).json({message: "Phone not format",status: false,code: 0})
 
-        try{
-                    Cart.findOne({_id: IdCart}, async(err,resCart) => {
-                        if (err) return res.status(400).json({ message: "Giỏ hàng không còn tồn tại", errors: err, status: false });
-                        if(!resCart) return res.json({message: "Không tìm thấy ID CART", data: null, status: false});
-                        var UserCart = resCart.UserId;
-                        var IdProduct = resCart.ProductId
-                        var itemIndex = await resCart.ListProduct.findIndex(p => p.IdProduct == ProductId);
-                        if (itemIndex <= -1){
-                                return res.status(400).json({message: "Không có sản phẩm trong giỏ hàng", data: null, errors: err, stutus:false});
-                            }else if(UserId == UserCart){
-                                order.IntoMoney = resCart.SubPrice
-                                order.Products = resCart.ListProduct
-                                order.GrossProduct = resCart.SubTotal
-                                Order.create(order,(err,resOrder) =>{
-                                    if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false});
-                                    resCart.ListProduct = [];
-                                    resCart.SubTotal = 0;
-                                    resCart.SubPrice = 0;
-                                    Cart.findOneAndUpdate({_id: resCart._id }, {
-                                        ListProduct: resCart.ListProduct,
-                                        SubPrice: resCart.SubPrice,
-                                        SubTotal: resCart.SubTotal
-                                    },function(err, resDataCart) {
-                                        if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý", errors:err , status: false});
-                                        res.json({
-                                            message: "Tạo đơn hàng thành công",
-                                            data: resOrder,
-                                            status: true
-                                        })
-                                    })
-                                })
-                            }else{
-                                res.json({
-                                    message: "Tạo đơn hàng thất bại",
-                                    errors: err,
-                                    status: 400
-                                })
-                            }
-                    })
-                    
-        }catch (e){
-            res.send({
-                message: e.message,
-                errors: e.errors,
-                code: 0
-            }).status(500) && next(e)
-        }
-    },
+    // Tạo mới đơn hàng
+    create_order: (req, res) => {
+        try {
+            const order = req.body;
+            let id = req.user._id
+            if (!id || id === "")
+                return error_400(res, "Vui lòng đăng nhập", "Login");
 
+            if (!order.Name || order.Name === "")
+                return error_400(res, "Vui lòng nhập tên người nhận", "Name");
 
-    updateOrder: (req,res) => {
-        const order = req.body
-        order.DateUpdate = Date.now();
-        const id = req.params.id
-        if(!id) return res.status(400).json({message: "Vui lòng nhập Id", status:false})
+            if (!order.Address || order.Address === "")
+                return error_400(res, "Vui lòng nhập địa chỉ giao hàng", "Address");
 
-        if(order.Name=== "") return res.status(400).json({ message: "Tên không được bỏ trống!", status: false, code: 0});
-        if(order.Phone=== "") return res.status(400).json({ message: "SĐT không được bỏ trống!", status: false, code: 0});
-        if(order.Address=== "") return res.status(400).json({ message: "Địa chỉ không được bỏ trống!", status: false, code: 0});
-        if(order.Email=== "") return res.status(400).json({ message: "Email không được bỏ trống!", status: false, code: 0});
-        if(order.Payment=== "") return res.status(400).json({ message: "Email không được bỏ trống!", status: false, code: 0});
-        if(!isEmail(order.Email)) return res.status(400).json({message: "Email not format",status: false,code: 0});
-        if(!isPhone(order.Phone)) return res.status(400).json({message: "Phone not format",status: false,code: 0})
-        Order.findById(id,(err, resOrder) => {
-            if(resOrder.Status=== 1 || resOrder.Status=== 2 || resOrder.Status=== 3 || resOrder.Status=== 4) return res.status(400).json({ message: "Không thể update đơn hàng trong khi đã đang giao hàng và xác thực đơn hàng!", status: false, code: 0});
-            if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false});
-            if(!resOrder) return res.json({message: "Không tìm thấy id đơn hàng",data: null,status:false});
-                Order.findByIdAndUpdate(resOrder._id, {$set: order},{new: true},(err, resUpdate) => {
-                    if(err) {
-                        return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false});
-                    }else{
-                        res.json({
-                            message: "Đơn hàng đang chờ xác nhận!",
-                            data: resUpdate,
-                            status: true
-                        })
-                    }
-                 })
-            })
-    },
-    getOrder: async(req, res) => {
-        const id = req.params.id
-        if(!id) return res.status(400).json({message: "Vui lòng nhập Id", status:false});
+            if (!order.Phone || order.Phone === "")
+                return error_400(res, "Vui lòng nhập số điện thoại", "Phone");
 
+            if (!isPhone(order.Phone))
+                return error_400(res, "Số điện thoại không đúng", "Phone")
 
-        Order.findById(id, (err,resOrder) => {
-            if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lứ, vui lòng thử lại", er: err, status: false});
-            if(!resOrder) return res.status(400).json({message: "Không tim thấy đơn hàng !", data: null, status: false});
+            if (!order.Email || order.Email === "")
+                return error_400(res, "Vui lòng nhập Email!", "Email");
 
-            res.json({
-                message: "Lấy chi tiết đơn hàng thành công",
-                data: resOrder,
-                status: true
-            })
-        })
-    },
-    deleteOrder: async(req,res) => {
-        const id = req.params.id
-        if(!id) return res.status(400).json({message: "Vui lòng nhập Id", status:false});
+            if (!isEmail(order.Email))
+                return error_400(res, "Email không đúng định dạng", "Email");
 
-            Order.findById(id,(err, resOrder)=>{
-                if(err) return res.stutus(400).json({message: "OOp lỗi rồi", err:err, status:false});
-                if(!resOrder) return res.stutus(400).json({message: "không tìm đc ID này, vui lòng thử lại", data: null, status:false});
+            if (!order.Payment || order.Payment === "")
+                return error_400(res, "Vui lòng chọn hình thức giao hàng", "Payment");
 
-            Order.findByIdAndRemove(resOrder._id,function(err,resData){
-                if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false});
-                res.json({
-                    message: "Xóa sản phẩm thành công",
-                    data: resData,
-                    status: true
+            Cart.findOne({ UserId: id }, async (err, resCart) => {
+                if (err) return error_500(res, err);
+                if (!resCart)
+                    return error_400(res, "Không tìm thấy giỏ hàng", "Cart");
+                if (resCart.ListProduct.length === 0)
+                    return error_400(res, "Giỏ hàng không có sản phẩm", "Product");
+                console.log("cart:: ", resCart);
+                let newOrder = new Order({
+                    UserId: id,
+                    Products: resCart.ListProduct,
+                    Name: order.Name,
+                    Email: order.Email,
+                    Phone: order.Phone,
+                    Address: order.Address,
+                    Payment: order.Payment,
+                    Status: 0,
+                    IntoMoney: resCart.SubPrice,
+                    GrossProduct: resCart.SubTotal,
+                    IdCart: resCart._id,
+                    CreateAt: Date.now(),
+                    UpdateAt: Date.now()
                 })
-            })
-        })
-    },
 
-    getOrderByIdUsers: async(req, res) => {
-        const config = {};
-        config.search =req.query.search || ""
-        config.UserId = req.query.UserId
-        config.page = req.query.page ? Number(req.query.page):1 
-        config.limit = req.query.limit ? Number(req.query.limit):20 
-        config.skip = (config.page-1)*config.limit;
+                Order.create(newOrder, (e, resOrder) => {
+                    if (e) return error_500(res, e);
 
-        if(!config.UserId) return res.status(400).json({message: "Vui lòng nhập UserId", status: false})
-        const query = {
-                Name: { $regex: config.search, $options: "i" },
-                UserId: new mongoose.mongo.ObjectId(config.UserId)
-        }
-        console.log(query);
-        async.parallel([
-            (cb) => 
-            Order.find(query)
-                    .skip(config.skip)
-                    .limit(config.limit)
-                    .sort({Date: "desc"})
-                    .exec((e,data) => e ? cb(e): cb(null, data)),  
-            (cb) => Order.count(query)
-                    .exec((e,data)=> e ? cb(e) : cb(null,data))
-        ],(err,results) => {
-            // console.log(err);
-            if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false});
-            res.json({
-                message: "Lấy danh sách order thành công",
-                data: {
-                    order: results[0],
-                    count: results[1],
-                },
-                status: true
-            }) 
-        })
-    },
-    getOrderByCart: async(req, res)=>{
-        const config = {};
-        config.search = req.query.search || ""
-        config.IdCart = req.query.IdCart
-        config.page = req.query.page ? Number(req.query.page) : 1
-        config.limit = req.query.limit ? Number(req.query.limit) : 20
-        config.skip = (config.page - 1) * config.limit;
-
-        if (!config.IdCart) return res.status(400).json({ message: "Vui lòng nhập Id Cart", status: false })
-        const query = {
-            Name: { $regex: config.search, $options: "i" },
-            IdCart: new mongoose.mongo.ObjectId(config.IdCart)
-        }
-        console.log(query);
-        async.parallel([
-            (cb) => Order.find(query)
-                .skip(config.skip)
-                .limit(config.limit)
-                .sort({ Date: "desc" })
-                .exec((e, data) => e ? cb(e) : cb(null, data)),
-
-            (cb) => Order.count(query)
-                .exec((e, data) => e ? cb(e) : cb(null, data))
-        ], (err, results) => {
-            console.log(err);
-            if (err) if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-            res.json({
-                message: "Lấy danh sách đơn hàng thành công",
-                data: {
-                    order: results[0],
-                    count: results[1],
-                },
-                status: true
-            })
-        })
-    },
-   searchListOrderByShop: (req, res) => {
-
-        const config = {};
-        config.search = req.query.search || ""
-        config.IdShop = req.query.IdShop
-        config.page = req.query.page ? Number(req.query.page) : 1
-        config.limit = req.query.limit ? Number(req.query.limit) : 20
-        config.skip = (config.page - 1) * config.limit;
-
-        if (!config.IdShop) return res.status(400).json({ message: "Vui lòng nhập Id Shop", status: false })
-        const query = {
-            Name: { $regex: config.search, $options: "i" },
-            IdShop: new mongoose.mongo.ObjectId(config.IdShop)
-        }
-        async.parallel([
-            (cb) => Order.find(query)
-                .skip(config.skip)
-                .limit(config.limit)
-                .sort({ Date: "desc" })
-                .exec((e, data) => e ? cb(e) : cb(null, data)),
-
-            (cb) => Order.count(query)
-                .exec((e, data) => e ? cb(e) : cb(null, data))
-        ], (err, results) => {
-            console.log(err);
-            if (err) if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-            res.json({
-                message: "Lấy danh sách đơn hàng thành công",
-                data: {
-                    order: results[0],
-                    count: results[1],
-                },
-                status: true
-            })
-        })
-    },
-
-    deleteListOrder: async(req, res) => {
-        const ListIdOrder = req.body.ListId;
-        if(!ListIdOrder || (Array.isArray(ListIdOrder) && ListIdOrder.length === 0)) return res.status(400).json({ message: "Vui lòng chọn đơn hàng cần xóa", status: false });
-        if(!Array.isArray(ListIdOrder)) return res.status(400).json({message:"ListId phải là Array", stutus: false});
-        Order.findOne({_id: ListIdOrder}, async(err, resDataOrder) => {
-            if (err) return res.status(400).json({ message: "Đơn hàng không còn tồn tại ", errors: err, status: false });
-            if(!resDataOrder){
-                return res.json({message: "Không tìm thấy IdOrder", data: resDataOrder, status: false});
-            }else{
-                Order.deleteMany({ _id: { $in: ListIdOrder } })
-                .exec((err, resData) => {
-                    if (err) if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-                    res.send({
-                        message: `Xóa thành công ${resData.n} đơn hàng`,
-                        data: resData,
-                        status: true
-                    })
-                })
-            }
-            
-        })
-    },
-
-    updateStatusOrder: async(req, res) =>{
-        const order = req.body
-        order.DateUpdate = Date.now();
-        const id = req.params.id
-        if(!id) return res.status(400).json({message: "Vui lòng nhập Id", status:false})
-        Order.findById(id,(err, resOrder) => {
-            if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false});
-            if(!resOrder) return res.json({message: "Không tìm thấy id đơn hàng",data: null,status:false});
-                 Order.findByIdAndUpdate(resOrder._id, {$set: order},{ new: true},(err, resUpdate) => {
-                    if(err) {
-                        return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false});
-                    }else if(resUpdate.Status == 1) {
-                        res.json({
-                            message: "Đơn hàng đã xác nhận ",
-                            data: resUpdate,
-                            status: true
-                        })
-                    }else if(resUpdate.Status == 2) {
-                        res.json({
-                            message: "Đang giao hàng",
-                            data: resUpdate,
-                            status: true
-                        })
-                    }else if(resUpdate.Status == 3) {
-                        res.json({
-                            message: "Đã giao hàng",
-                            data: resUpdate,
-                            status: true
-                        })
-                      
-                    }else {
-                        res.json({
-                            message: "Đơn hàng đang chờ xác nhận!",
-                            data: resUpdate,
-                            status: true
-                        })
-                    }
-                 })
-         })
-    },
-    cancelOrder: async(req, res) => {
-        const order = req.body
-        order.DateUpdate = Date.now();
-        const id = req.params.id
-        if(!id) return res.status(400).json({message: "Vui lòng nhập Id", status:false})
-        Order.findById(id,(err, resOrder) => {
-            if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false});
-            if(!resOrder) return res.json({message: "Không tìm thấy id đơn hàng",data: null,status:false});
-                 Order.findByIdAndUpdate(resOrder._id, {$set: order},{ new: true},(err, resUpdate) => {
-                    if(err) {
-                        return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false});
-                    }else if(resUpdate.Status !== 4) {
-                        if(resUpdate.Reason == "") {
-                            return res.status(400).json({ message: "Vui lòng điền lý do bạn huỷ đơn hàng", status: false, code: 0})
+                    // Xóa hết sản phẩm trong giỏ hàng
+                    Cart.findByIdAndUpdate(resCart._id, {
+                        $set: {
+                            ListProduct: [],
+                            SubTotal: 0,
+                            SubPrice: 0
                         }
-                        res.status(400).json({
-                            message: "Trạng thái huỷ phải bắt buộc phải bằng 4",
-                            data: null,
-                            status: false
+                    }, { new: true })
+                        .exec((e, upCart) => {
+                            if (e) return error_500(res, e)
+                            success(res, "Tạo đơn hàng thành công", {
+                                order: resOrder,
+                                cart: upCart
+                            })
                         })
-                    }else {
-                        res.json({
-                            message: "Huỷ đơn hàng thành công!",
-                            data: resUpdate,
-                            status: true
-                        })
-                    }
-                 })
-         })
+                })
+            })
+        } catch (e) {
+            error_500(res, e)
+        }
     },
 
+    // Cập nhật thông tin đơn hàng
+    update_order_infor: (req, res) => {
+        let { info } = req.body;
+        let idOrder = req.params.id;
+        let idUser = req.user._id;
+
+        if (!idUser || idUser === "") {
+            return error_400(res, "Vui lòng đăng nhập", "Login");
+        }
+
+        if (!idOrder || idOrder === "") {
+            return error_400(res, "Vui lòng nhập id đơn hàng", "idOrder");
+        }
+        if (!mongoose.Types.ObjectId.isValid(idOrder)){
+            return error_400(res, "Vui lòng nhập id dạng ObjectId", "id");
+        }
+        if (info && info.Name && info.Name === "") {
+            return error_400(res, "Vui lòng nhập tên người nhận", "info.Name");
+        }
+        if (info && info.Address && info.Address === "") {
+            return error_400(res, "Vui lòng nhập địa chỉ giao hàng", "info.Address");
+        }
+        if (info && info.Phone && info.Phone === "") {
+            return error_400(res, "Vui lòng nhập số điện thoại", "info.Phone");
+        }
+        if (info && info.Phone && !isPhone(info.Phone)) {
+            return error_400(res, "Số điện thoại không đúng", "info.Phone")
+        }
+        if (info && info.Email && info.Email === "") {
+            return error_400(res, "Vui lòng nhập Email!", "info.Email");
+        }
+        if (info && info.Email && !isEmail(info.Email)) {
+            return error_400(res, "Email không đúng định dạng", "Email");
+        }
+        if (info && info.Payment && info.Payment === "") {
+            return error_400(res, "Vui lòng chọn hình thức giao hàng", "Payment");
+        }
+
+        Order.findOne({ _id: idOrder, UserId: idUser })
+            .exec((e, resFindOrder) => {
+                if (e) return error_500(res, e);
+                if (!resFindOrder)
+                    return error_400(res, "Không tìm thấy đơn hàng", "idOrder");
+
+                let updateInforOrder = { UpdateAt: Date.now() };
+                if (info && info.Name) updateInforOrder.Name = info.Name;
+                if (info && info.Phone) updateInforOrder.Phone = info.Phone;
+                if (info && info.Address) updateInforOrder.Address = info.Address;
+                if (info && info.Email) updateInforOrder.Email = info.Email;
+                if (info && info.Payment) updateInforOrder.Payment = info.Payment;
+
+                Order.findByIdAndUpdate(idOrder, { $set: updateInforOrder },
+                    { new: true })
+                    .exec((e, result) => {
+                        if (e) error_500(res, e);
+                        success(res, "Cập nhật thông tin đơn hàng thành công", result)
+                    })
+            })
+    },
+
+    // Tim kiem đơn hàng của khách hàng
+    search_order_users: async (req, res) => {
+        let idUser = req.user._id;
+        let params = req.query;
+
+        if (!idUser)
+            return error_400(res, "Vui lòng đăng nhập", "Login");
+
+        if (params.sort && !IsJsonString(params.sort))
+            return error_500(res, "sort phải là dạng json", "sort");
+
+        let limit = params.limit ? Number(params.limit) : process.env.LIMIT || 20
+        let page = params.page ? Number(params.limit) : process.env.PAGE || 1
+        let skip = (page - 1) * limit;
+        let sort = params.sort ? JSON.parse(params.sort) : { CreateAt: -1 };
+
+        let query = {
+            $and: [
+                {
+                    UserId: new mongoose.mongo.ObjectId(idUser),
+                }
+            ]
+        };
+
+        if (params.search && params.search !== "") {
+            query.$or = [
+                { $text: { $search: req.query.search } }
+            ]
+        }
+
+        async.parallel([
+            cb => Order.aggregate([{ $match: query }])
+                .skip(skip)
+                .limit(limit)
+                .sort(sort)
+                .exec((e, O) => e ? cb(e) : cb(null, O)),
+            cb => Order.countDocuments(query).exec((e, c) => e ? cb(e) : cb(null, c))
+        ], (e, results) => {
+            console.log("test");
+            if (e) return error_500(res, e);
+            success(res, "Lấy danh sách đơn hàng thành công", {
+                orders: results[0],
+                count: results[1]
+            })
+        })
+    },
+
+    // Hủy đơn hàng
+    cancel_order: (req, res) => {
+        let idUser = req.user._id;
+        let idOrder = req.params.id
+
+        if (!idUser) return error_400(res, "Vui lòng đăng nhập", "Login");
+        if (!idOrder) return error_400(res, "Vui lòng nhập id đơn hàng", "id");
+        if (!mongoose.Types.ObjectId.isValid(idOrder))
+            return error_400(res, "Vui lòng nhập id dạng ObjectId", "id");
+
+        Order.findOne({ _id: idOrder, UserId: idUser })
+            .exec((e, order) => {
+                if (e) return error_500(res, e);
+                if (!order) 
+                    return error_400(res, "Không tìm thấy đơn hàng", "id");
+                if(order.Status !== 0) 
+                    return error_400(res, "Đơn hàng không thể hủy", "Status");
+
+                Order.findByIdAndUpdate(order._id, { Status: 4 }, { new: true })
+                    .exec((e, r) =>
+                        e ? error_500(res, e) : success(res, "Hủy đơn hàng thành công", r))
+            })
+    },
+
+    //Lấy chi tiết đơn hàng của khách hàng
+    detail_order: (req,res) => {
+        let idUser = req.user._id;
+        let idOrder = req.params.id
+
+        if (!idUser) return error_400(res, "Vui lòng đăng nhập", "Login");
+        if (!idOrder) return error_400(res, "Vui lòng nhập id đơn hàng", "id");
+        console.log(idOrder);
+        if (!mongoose.Types.ObjectId.isValid(idOrder))
+            return error_400(res, "Vui lòng nhập id dạng ObjectId", "id");
+
+            Order.findOne({ _id: idOrder, UserId: idUser })
+            .exec((e, order) => {
+                if (e) return error_500(res, e);
+                if (!order) 
+                    return error_400(res, "Không tìm thấy đơn hàng", "id");
+                
+                success(res,"Lấy chi tiết đơn hàng thành công",order)
+            })
+    }
 }
 

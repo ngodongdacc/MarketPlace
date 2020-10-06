@@ -33,6 +33,7 @@ module.exports = {
                                         , 0);
                                     resFindUser.SubTotal = await totals;
                                     resFindUser.SubPrice = await prices;
+                                    
                                     let CartUpdate = {};
                                     CartUpdate = await resFindUser;
                                     Cart.findOneAndUpdate({ _id: resFindUser._id }, {
@@ -58,6 +59,7 @@ module.exports = {
                                         , 0);
                                     resFindUser.SubTotal = await totals;
                                     resFindUser.SubPrice = await prices;
+                                    console.log(resFindUser.SubTotal);
                                     //product does not exists in cart, add new item
                                     resFindUser.SubTotal = resFindUser.ListProduct.map(ListProduct => ListProduct.Total).reduce((acc, next) => acc + next);
                                     Cart.findByIdAndUpdate(resFindUser._id, { $set: resFindUser }, { new: true }, function (err, resData) {

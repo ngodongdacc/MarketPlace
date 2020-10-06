@@ -13,6 +13,7 @@ router.use("/category",require('./categoryRouter')); // Danh mục
 router.use("/sub-category",require('./subcategoryRouter')); // Danh mục con
 router.use("/order",require('./orderRouter')); // Đơn hàng
 router.use("/comment",require('./commentRouter')) // Comment  của sản phẩm
+router.use("/book",require('./bookRouter')) // book
 
 
 

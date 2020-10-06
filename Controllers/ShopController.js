@@ -170,7 +170,7 @@ module.exports = {
             ], (err, results) => {
                 if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
                 if (!results[0]) return error_400(res, "Số điện thoại đã tồn tại", "Phone");
-                if (!results[1]) return error_400(res, "Tên cửa hàng đã tồn tại", "Name");
+                if (!results[1]) return error_400(res, "Tên cửa hàng đã tồn tại", "ShopName");
                 if (shopUpdate.PasswordShop) {
                     bcrypt.genSalt(10, function (err, salt) {
                         bcrypt.hash(shopUpdate.PasswordShop, salt, async function (err, hash) {
