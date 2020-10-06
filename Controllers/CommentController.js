@@ -28,7 +28,14 @@ module.exports = {
                     if (!resFindUser) return error_400(res, "Tài khoản không tồn tại trong hệ thống", "IdUser");
                     Comment.create(comments, (err, resCommentParent) => {
                         if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
-                        success(res, "Đã bình luận cho sản phẩm này", resCommentParent)
+                        CommentService.listComments(IdProduct, (err, resListData) => {
+                            success(res, "Đã trả lời cho sản phẩm này",
+                                {
+                                    comment: resListData[0],
+                                    count: resListData[1],
+                                })
+                        })
+
                     })
                 })
 
@@ -66,7 +73,13 @@ module.exports = {
                             Comment.findByIdAndUpdate(resFindCommentOfPostSupper._id, { $set: resFindCommentOfPostSupper }, { new: true })
                                 .exec((e, u) => {
                                     if (e) error_500(res, e)
-                                    success(res, "Đã cập nhật câu trả lời cho bình luận này", u)
+                                    CommentService.listComments(IdProduct, (err, resListData) => {
+                                        success(res, "Đã cập nhật câu trả lời cho bình luận này",
+                                            {
+                                                comment: resListData[0],
+                                                count: resListData[1],
+                                            })
+                                    })
                                 })
                         }
                     });
@@ -166,7 +179,7 @@ module.exports = {
                         success(res, "Đã xóa câu trả lời cho bình luận này", resFindComment)
                     });
                 })
-                
+
             })
         } catch (e) {
             error_500(res, e)
@@ -192,10 +205,10 @@ module.exports = {
                             if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
                             success(res, "Bình luận này đã được xóa", resRemove)
                         })
-                    }else{
+                    } else {
                         error_400(res, "Bình luận này không còn tồn tại", "Errors");
                     }
-                   
+
                 });
             })
         } catch (e) {
@@ -249,19 +262,19 @@ module.exports = {
             config.limit = req.query.limit ? Number(req.query.limit) : 20
             config.skip = (config.page - 1) * config.limit;
 
-            if (!config.IdProduct) 
+            if (!config.IdProduct)
                 return error_400(res, "Vui lòng nhập Id", "IdProduct");
 
             Products.findById(config.IdProduct, (err, resFindProduct) => {
-                if (err) return error_500(res,err);
-                
-                if (!resFindProduct) 
+                if (err) return error_500(res, err);
+
+                if (!resFindProduct)
                     return error_400(res, "Không tìm thấy sản phẩm", "Errors");
 
                 const query = {
                     IdProduct: new mongoose.mongo.ObjectId(config.IdProduct)
                 }
-               
+
                 async.parallel([
                     (cb) =>
                         Comment.aggregate([
@@ -281,26 +294,26 @@ module.exports = {
                             .exec((e, resData) => e ? cb(e) : cb(null, resData)),
 
                     (cb) => Comment.countDocuments(query)
-                                .exec((e, count) => e ? cb(e) : cb(null, count))
+                        .exec((e, count) => e ? cb(e) : cb(null, count))
 
                 ], (err, results) => {
                     if (err) return error_500(res, err);
                     async.waterfall([
                         cb => {
                             results[0] = results[0].map(el => {
-                                if(el.UserName && el.UserName[0] 
-                                                    && el.UserName[0].FullName) 
-                                el.UserName = el.UserName[0].FullName
+                                if (el.UserName && el.UserName[0]
+                                    && el.UserName[0].FullName)
+                                    el.UserName = el.UserName[0].FullName
 
                                 else el.UserName = "Khách hàng";
                                 return el
-                            } )
-                            cb(null,results)
+                            })
+                            cb(null, results)
                         }
-                    ], (e,results) => {
-                        if(e) error_500(res,e)
+                    ], (e, results) => {
+                        if (e) error_500(res, e)
 
-                        success(res,"Lấy danh sách bình luận thành công",
+                        success(res, "Lấy danh sách bình luận thành công",
                             {
                                 comment: results[0],
                                 count: results[1],
