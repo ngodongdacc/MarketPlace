@@ -23,6 +23,15 @@
 |14| Reason               | String  | null |  | Lý do huỷ đơn hàng |
 |15| IdCart             | ObjectId |  | required | Id Của Giỏ Hàng |
 
+
++ Status: 
+    | Status  |               Mô tả                  |  
+    |:----------:    |:--------------------------------:    |  
+    |    0     |           Chờ xác nhận (mặc định)     |
+    |    1     |           Đã xác nhận     |
+    |    2     |           Đang giao hàng     |
+    |    3     |           Đã giao hàng     |
+    |    4     |           Đơn hàng bị hủy     |
 ## 2. Service info  
 ### Thông tin service * Tên service: **Order**  
 * Source code: ./Controller/OrderCOntroller.js  
@@ -81,7 +90,7 @@
 
     | Tên Trường   | Kiểu dữ liệu     |                        Mô tả                         |  
     |:----------:  |:------------:    |:---------------------------------------------------: |  
-    |   data      |    object        | [ User object](#data-structure-user-object)|  
+    |   data      |    object        | [ order object](#data-structure-order-object)|  
     |   status     |    boolean         | true: thành công, false: thất bại                          |  
     |   message    |    string        | Tin nhắn trả về                                      |  
 
@@ -147,13 +156,19 @@
 - Router: **/api/order/search-users**  
  - Function: **search_order_users()**  
  - Method: **GET**
+ - header:
+
+    | Tên Trường  | Kiểu dữ liệu     |              Mô tả                  |  
+    |:----------:  |:------------:   |:--------------------------------:    |  
+    |    Authorization     |    string |          Token đăng nhập      |
+
  - Paremeter: 
     | Tên Trường  | Kiểu dữ liệu     | mặc định |               Mô tả                  |  
     |:----------:  |:------------:|:------------:    |:--------------------------------:    |  
     |    search     |    string | null |         Từ khóa tìm kiếm      |
     |    page     |    number | 1 |         trang cần xem     |
     |    limit     |    number | 20 |         Số lượng kết quả trả về      |
-    |    sort     |    object | {"Date": -1} |         Trường sắp xếp      |
+    |    sort     |    object | {"CreateAt": -1} |         Trường sắp xếp      |
 
 - Dữ liệu trả về
 
