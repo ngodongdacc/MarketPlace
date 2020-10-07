@@ -31,7 +31,13 @@ var express = require("express");
 
 var _require3 = require("../validator/validator"),
     isEmail = _require3.isEmail,
-    isPhone = _require3.isPhone;
+    isPhone = _require3.isPhone,
+    IsJsonString = _require3.IsJsonString;
+
+var _require4 = require("../validator/errors"),
+    error_400 = _require4.error_400,
+    error_500 = _require4.error_500,
+    success = _require4.success;
 
 module.exports = {
   createOrder: function createOrder(req, res, next) {
@@ -39,45 +45,14 @@ module.exports = {
     var order = req.body;
     var UserId = req.body.UserId;
     var ProductId = req.body.ProductId;
-    if (!UserId) return res.status(400).json({
-      message: "Vui lòng nhập IdUser",
-      status: false
-    });
-    if (order.Name === "") return res.status(400).json({
-      message: "Tên không được bỏ trống!",
-      status: false,
-      code: 0
-    });
-    if (order.Phone === "") return res.status(400).json({
-      message: "SĐT không được bỏ trống!",
-      status: false,
-      code: 0
-    });
-    if (order.Address === "") return res.status(400).json({
-      message: "Địa chỉ không được bỏ trống!",
-      status: false,
-      code: 0
-    });
-    if (order.Email === "") return res.status(400).json({
-      message: "Email không được bỏ trống!",
-      status: false,
-      code: 0
-    });
-    if (order.Payment === "") return res.status(400).json({
-      message: "Email không được bỏ trống!",
-      status: false,
-      code: 0
-    });
-    if (!isEmail(order.Email)) return res.status(400).json({
-      message: "Email not format",
-      status: false,
-      code: 0
-    });
-    if (!isPhone(order.Phone)) return res.status(400).json({
-      message: "Phone not format",
-      status: false,
-      code: 0
-    });
+    if (!UserId) return error_400(res, "Vui lòng nhập id người dùng" + UserId, "UserId");
+    if (order.Name === "") return error_400(res, "Tên không được bỏ trống!", "order.Name");
+    if (order.Phone === "") return error_400(res, "Số điện thoại  không được bỏ trống!", "order.Phone");
+    if (order.Address === "") return error_400(res, "Địa chỉ không được bỏ trống!", "order.Address");
+    if (order.Email === "") return error_400(res, "Email không được bỏ trống!", "order.Email");
+    if (order.Payment === "") return error_400(res, "Payment không được bỏ trống!", "order.Payment");
+    if (!isEmail(order.Email)) return error_400(res, "Email không hợp lệ!");
+    if (!isPhone(order.Phone)) return error_400(res, "Số điện thoại không hợp lệ!");
 
     try {
       Cart.findOne({
@@ -135,47 +110,37 @@ module.exports = {
                 }));
 
               case 13:
-                if (UserId == UserCart) {
-                  order.IntoMoney = resCart.SubPrice;
-                  order.Products = resCart.ListProduct;
-                  order.GrossProduct = resCart.SubTotal;
-                  Order.create(order, function (err, resOrder) {
-                    if (err) return res.status(400).json({
-                      message: "Có lỗi trong quá trình xử lý",
-                      errors: err,
-                      status: false
-                    });
-                    resCart.ListProduct = [];
-                    resCart.SubTotal = 0;
-                    resCart.SubPrice = 0;
-                    Cart.findOneAndUpdate({
-                      _id: resCart._id
-                    }, {
-                      ListProduct: resCart.ListProduct,
-                      SubPrice: resCart.SubPrice,
-                      SubTotal: resCart.SubTotal
-                    }, function (err, resDataCart) {
-                      if (err) return res.status(400).json({
-                        message: "Có lỗi trong quá trình xử lý",
-                        errors: err,
-                        status: false
-                      });
-                      res.json({
-                        message: "Tạo đơn hàng thành công",
-                        data: resOrder,
-                        status: true
-                      });
-                    });
-                  });
-                } else {
-                  res.json({
-                    message: "Tạo đơn hàng thất bại",
-                    errors: err,
-                    status: 400
-                  });
+                if (!(UserId == UserCart)) {
+                  _context.next = 20;
+                  break;
                 }
 
-              case 14:
+                order.IntoMoney = resCart.SubPrice;
+                order.Products = resCart.ListProduct;
+                order.GrossProduct = resCart.SubTotal;
+                Order.create(order, function (err, resOrder) {
+                  if (err) return error_500(res, err);
+                  resCart.ListProduct = [];
+                  resCart.SubTotal = 0;
+                  resCart.SubPrice = 0;
+                  Cart.findOneAndUpdate({
+                    _id: resCart._id
+                  }, {
+                    ListProduct: resCart.ListProduct,
+                    SubPrice: resCart.SubPrice,
+                    SubTotal: resCart.SubTotal
+                  }, function (err, resDataCart) {
+                    if (err) return error_500(res, err);
+                    success(res, "Tạo sản phẩm thành công", resOrder);
+                  });
+                });
+                _context.next = 21;
+                break;
+
+              case 20:
+                return _context.abrupt("return", error_400(res, "Tạo đơn hàng thất bại !"));
+
+              case 21:
               case "end":
                 return _context.stop();
             }
@@ -262,7 +227,7 @@ module.exports = {
           });
         } else {
           res.json({
-            message: "Đơn hàng đang chờ xác nhận!",
+            message: "Cập nhập đơn hàng thành công!",
             data: resUpdate,
             status: true
           });
@@ -462,7 +427,6 @@ module.exports = {
               },
               IdCart: new mongoose.mongo.ObjectId(config.IdCart)
             };
-            console.log(query);
             async.parallel([function (cb) {
               return Order.find(query).skip(config.skip).limit(config.limit).sort({
                 Date: "desc"
@@ -490,7 +454,7 @@ module.exports = {
               });
             });
 
-          case 11:
+          case 10:
           case "end":
             return _context5.stop();
         }
@@ -526,8 +490,7 @@ module.exports = {
         return e ? cb(e) : cb(null, data);
       });
     }], function (err, results) {
-      console.log(err);
-      if (err) if (err) return res.status(400).json({
+      if (err) return res.status(400).json({
         message: "Có lỗi trong quá trình xử lý",
         errors: err,
         status: false
@@ -783,6 +746,68 @@ module.exports = {
           case 6:
           case "end":
             return _context9.stop();
+        }
+      }
+    });
+  },
+  searchOrderShop: function searchOrderShop(req, res) {
+    var config, query;
+    return regeneratorRuntime.async(function searchOrderShop$(_context10) {
+      while (1) {
+        switch (_context10.prev = _context10.next) {
+          case 0:
+            // Tìm kiếm theo điều kiện yêu cầu: Id, tên, địa chỉ, nghành hàng
+            config = {};
+            config.IdShop = req.query.IdShop;
+            config.Phone = req.query.Phone;
+            config.CodeOrder = req.query.CodeOrder;
+            config.IntoMoney = req.query.IntoMoney;
+            config.page = req.query.page ? Number(req.query.page) : 1;
+            config.limit = req.query.limit ? Number(req.query.limit) : 20;
+            config.skip = (config.page - 1) * config.limit;
+
+            if (config.IdShop) {
+              _context10.next = 10;
+              break;
+            }
+
+            return _context10.abrupt("return", error_400(res, "Vui lòng nhập Id Shop", "Errors"));
+
+          case 10:
+            query = {
+              // Phone: { $regex: config.Phone, $options: "x" },
+              CodeOrder: {
+                $regex: config.CodeOrder,
+                $options: "i"
+              },
+              // IntoMoney: { $regex: config.IntoMoney, $options: "x" },
+              IdShop: new mongoose.mongo.ObjectId(config.IdShop)
+            };
+            async.parallel([function (cb) {
+              return Order.find(query).skip(config.skip).limit(config.limit).sort({
+                Date: "desc"
+              }).exec(function (e, resDataSearch) {
+                return e ? cb(e) : cb(null, resDataSearch);
+              });
+            }, function (cb) {
+              return Order.count(query).exec(function (e, resDataSearch) {
+                return e ? cb(e) : cb(null, resDataSearch);
+              });
+            }], function (err, results) {
+              if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
+              res.json({
+                message: "Lấy danh sách sản phẩm thành công",
+                data: {
+                  order: results[0],
+                  count: results[1]
+                },
+                status: true
+              });
+            });
+
+          case 12:
+          case "end":
+            return _context10.stop();
         }
       }
     });

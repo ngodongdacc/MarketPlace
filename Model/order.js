@@ -6,6 +6,7 @@ const { schema } = require('./category');
 
   var OrderSchema = new Schema({
     UserId: {type: mongoose.Types.ObjectId, required:true},
+    IdShop: {type: mongoose.Types.ObjectId},
     Products: {type: Array, required:true},
     Name: {type: String, required:true},
     Email: {type: String},

@@ -19,4 +19,5 @@ router.get("/serchListOrderByShop", orderController.searchListOrderByShop);
 router.post("/list/delete", orderController.deleteListOrder);
 router.post("/updateStutus/:id", orderController.updateStatusOrder);
 router.post("/cancelOrder/:id", orderController.cancelOrder);
+router.get("/searchOrderShop", orderController.searchOrderShop);
 module.exports = router;

@@ -11,7 +11,9 @@ const order = require("../Model/order");
 const Cart = require("../Model/cart");
 const cartService = require("../Services/cartService");
 const express = require("express");
-const { isEmail, isPhone } = require("../validator/validator");
+const { isEmail, isPhone , IsJsonString} = require("../validator/validator");
+const { error_400, error_500, success } = require("../validator/errors");
+
 
 
 
@@ -23,14 +25,14 @@ module.exports = {
         const order = req.body
        const UserId = req.body.UserId
        const ProductId = req.body.ProductId
-       if(!UserId) return res.status(400).json({message: "Vui lòng nhập IdUser", status:false});
-       if(order.Name=== "") return res.status(400).json({ message: "Tên không được bỏ trống!", status: false, code: 0});
-       if(order.Phone=== "") return res.status(400).json({ message: "SĐT không được bỏ trống!", status: false, code: 0});
-       if(order.Address=== "") return res.status(400).json({ message: "Địa chỉ không được bỏ trống!", status: false, code: 0});
-       if(order.Email=== "") return res.status(400).json({ message: "Email không được bỏ trống!", status: false, code: 0});
-       if(order.Payment=== "") return res.status(400).json({ message: "Email không được bỏ trống!", status: false, code: 0});
-       if(!isEmail(order.Email)) return res.status(400).json({message: "Email not format",status: false,code: 0});
-       if(!isPhone(order.Phone)) return res.status(400).json({message: "Phone not format",status: false,code: 0})
+       if(!UserId) return error_400(res, "Vui lòng nhập id người dùng" + UserId, "UserId");
+       if(order.Name=== "") return error_400(res, "Tên không được bỏ trống!", "order.Name");
+       if(order.Phone=== "") return error_400(res, "Số điện thoại  không được bỏ trống!", "order.Phone"); 
+       if(order.Address=== "") return error_400(res, "Địa chỉ không được bỏ trống!", "order.Address");
+       if(order.Email=== "")  return error_400(res, "Email không được bỏ trống!", "order.Email");
+       if(order.Payment=== "")  return error_400(res, "Payment không được bỏ trống!", "order.Payment");
+       if(!isEmail(order.Email))  return error_400(res, "Email không hợp lệ!");
+       if(!isPhone(order.Phone)) return error_400(res, "Số điện thoại không hợp lệ!"); 
 
         try{
                     Cart.findOne({_id: IdCart}, async(err,resCart) => {
@@ -46,7 +48,7 @@ module.exports = {
                                 order.Products = resCart.ListProduct
                                 order.GrossProduct = resCart.SubTotal
                                 Order.create(order,(err,resOrder) =>{
-                                    if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false});
+                                    if (err) return error_500(res, err)
                                     resCart.ListProduct = [];
                                     resCart.SubTotal = 0;
                                     resCart.SubPrice = 0;
@@ -55,20 +57,13 @@ module.exports = {
                                         SubPrice: resCart.SubPrice,
                                         SubTotal: resCart.SubTotal
                                     },function(err, resDataCart) {
-                                        if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý", errors:err , status: false});
-                                        res.json({
-                                            message: "Tạo đơn hàng thành công",
-                                            data: resOrder,
-                                            status: true
-                                        })
+                                        if (err) return error_500(res, err)
+                                        success(res, "Tạo sản phẩm thành công", resOrder)
+
                                     })
                                 })
                             }else{
-                                res.json({
-                                    message: "Tạo đơn hàng thất bại",
-                                    errors: err,
-                                    status: 400
-                                })
+                               return error_400(res, "Tạo đơn hàng thất bại !");
                             }
                     })
                     
@@ -104,7 +99,7 @@ module.exports = {
                         return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false});
                     }else{
                         res.json({
-                            message: "Đơn hàng đang chờ xác nhận!",
+                            message: "Cập nhập đơn hàng thành công!",
                             data: resUpdate,
                             status: true
                         })
@@ -193,14 +188,12 @@ module.exports = {
             Name: { $regex: config.search, $options: "i" },
             IdCart: new mongoose.mongo.ObjectId(config.IdCart)
         }
-        console.log(query);
         async.parallel([
             (cb) => Order.find(query)
                 .skip(config.skip)
                 .limit(config.limit)
                 .sort({ Date: "desc" })
                 .exec((e, data) => e ? cb(e) : cb(null, data)),
-
             (cb) => Order.count(query)
                 .exec((e, data) => e ? cb(e) : cb(null, data))
         ], (err, results) => {
@@ -240,8 +233,7 @@ module.exports = {
             (cb) => Order.count(query)
                 .exec((e, data) => e ? cb(e) : cb(null, data))
         ], (err, results) => {
-            console.log(err);
-            if (err) if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
+            if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
             res.json({
                 message: "Lấy danh sách đơn hàng thành công",
                 data: {
@@ -347,5 +339,44 @@ module.exports = {
          })
     },
 
+
+    searchOrderShop: async (req, res) => { // Tìm kiếm theo điều kiện yêu cầu: Id, tên, địa chỉ, nghành hàng
+            const config = {};
+            config.IdShop = req.query.IdShop
+            config.Phone = req.query.Phone
+            config.CodeOrder = req.query.CodeOrder
+            config.IntoMoney = req.query.IntoMoney
+            config.page = req.query.page ? Number(req.query.page) : 1
+            config.limit = req.query.limit ? Number(req.query.limit) : 20
+            config.skip = (config.page - 1) * config.limit;
+
+            if (!config.IdShop) return error_400(res, "Vui lòng nhập Id Shop","Errors")
+            const query = {
+                // Phone: { $regex: config.Phone, $options: "x" },
+                CodeOrder: { $regex: config.CodeOrder, $options: "i" },
+                // IntoMoney: { $regex: config.IntoMoney, $options: "x" },
+                IdShop: new mongoose.mongo.ObjectId(config.IdShop)
+            }
+            async.parallel([
+                (cb) =>Order.find(query)
+                        .skip(config.skip)
+                        .limit(config.limit)
+                        .sort({ Date
+                            : "desc" })
+                        .exec((e, resDataSearch) => e ? cb(e) : cb(null, resDataSearch)),
+                (cb) => Order.count(query)
+                    .exec((e, resDataSearch) => e ? cb(e) : cb(null, resDataSearch)),
+            ], (err, results) => {
+                if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
+                res.json({
+                    message: "Lấy danh sách sản phẩm thành công",
+                    data: {
+                        order: results[0],
+                        count: results[1],
+                    },
+                    status: true
+                })
+            })
+        },
 }
 
