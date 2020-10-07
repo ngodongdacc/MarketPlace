@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const SubCAtegoryCtr = require("../Controllers/SubCategoryController");
+const SubCAtegoryCtr = require("../Controllers/sub_category_controller");
 
 router.post('/create', SubCAtegoryCtr.createSubCategory);
 router.post('/update', SubCAtegoryCtr.updateSubCategory);

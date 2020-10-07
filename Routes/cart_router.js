@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const {checkSignIn,checkRole} = require("../middleware/auth")
-const cartCtr = require("../Controllers/CartController");
+const cartCtr = require("../Controllers/cart_controller");
 
 router.post('/add',checkSignIn(),checkRole(10051), cartCtr.postCart);
 // router.post('/update',checkSignIn(),checkRole(10050), cartCtr.postCart);

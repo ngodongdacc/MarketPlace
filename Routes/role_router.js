@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const {checkSignIn, checkRole} = require("../middleware/auth")
-const roleCtr = require("../Controllers/roleController");
+const roleCtr = require("../Controllers/role_controller");
 
 router.post("/", roleCtr.create_role);
 router.get("/search",checkSignIn(), checkRole(3),roleCtr.search);

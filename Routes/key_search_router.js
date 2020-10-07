@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const keySearchCtr = require("../Controllers/keySearchController");
+const keySearchCtr = require("../Controllers/key_search_controller");
 const {checkSignIn} = require("../middleware/auth");
 
 router.get("/count",keySearchCtr.count_search); // Lấy các từ khóa được tìm kiếm nhiều nhất

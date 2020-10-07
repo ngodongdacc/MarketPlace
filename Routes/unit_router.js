@@ -2,9 +2,9 @@ var express = require('express');
 var router = express.Router();
 const {checkSignIn} = require("../middleware/auth");
 
-var unitCtr = require("../Controllers/unitController");
+var unitCtr = require("../Controllers/unit_controller");
 
-router.post('/add',checkSignIn(), unitCtr.create_unit);
+router.post('/add', unitCtr.create_unit);
 router.post('/update/:id',checkSignIn(), unitCtr.update_unit);
 router.post('/delete/:id',checkSignIn(), unitCtr.remove_unit);
 router.get('',checkSignIn(), unitCtr.get_units);

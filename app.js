@@ -10,8 +10,8 @@ var cors = require('cors')
 
 dotenv.config();
 
-require("./Controllers/Passport");
-require('./Model/database');
+require("./middleware/Passport"); // using passport
+require('./middleware/database'); // connect database
 
 var app = express();
 
@@ -41,8 +41,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-//   res.setHeader('Access-Control-Allow-Origin', req.header('origin') 
-// || req.header('x-forwarded-host') || req.header('referer') || req.header('host'));
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
