@@ -2,7 +2,6 @@ const Users = require("../Model/users");
 const jwt = require("jsonwebtoken");
 const async = require("async");
 const bcrypt = require("bcryptjs");
-const { roles } = require('../middleware/roles');
 const mongoose = require("mongoose");
 
 // Validator
@@ -112,7 +111,7 @@ module.exports = {
         if (e) error_500(res, e);
         usersService.comparePassword(Password, userTrue.Password, (err, isMath) => {
           if (err) return error_500(res, err);
-          console.log("isMath:: ",isMath);
+          
           if (isMath) {
             var token = jwt.sign(userTrue.toJSON(), process.env.secretKey,
               { expiresIn: process.env.TimeToken || 60000000 });
@@ -123,6 +122,7 @@ module.exports = {
                   Username: userTrue.Username,
                   FirstName: userTrue.FirstName,
                   LastName: userTrue.LastName,
+                  FullName: userTrue.FullName,
                   Email: userTrue.Email,
                   Phone: userTrue.Phone,
                   Role: userTrue.Role,
@@ -344,25 +344,6 @@ module.exports = {
 
   // ------------------- end --------------------------
 }
-
-module.exports.grantAccess = function (action, resource) {
-  return async (req, res, next) => {
-    try {
-      const permission = roles.can(req.user.Role)[action](resource);
-      if (!permission.granted) {
-        return res.status(401).json({
-          message: "Bạn không có quyền",
-          status: false,
-          code: 401
-        });
-      }
-      next()
-    } catch (error) {
-      next(error)
-    }
-  }
-}
-
 module.exports.allowIfLoggedin = async (req, res, next) => {
   try {
     const user = res.locals.loggedInUser;

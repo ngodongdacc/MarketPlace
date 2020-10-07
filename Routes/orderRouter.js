@@ -11,7 +11,4 @@ router.get("/search-users",checkSignIn(),orderCtr.search_order_users); // Tìm k
 router.get("/detail/:id",checkSignIn(),orderCtr.detail_order); // Tìm kiếm đơn hàng của khách hàng
 router.post("/cancel/:id",checkSignIn(),orderCtr.cancel_order); // Hủy đơn hàng
 
-
-
-
 module.exports = router
