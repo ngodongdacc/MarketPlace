@@ -80,7 +80,7 @@ module.exports = {
     // Xóa sản phẩm bằng id
     remove_product: (req, res) => {
         const id = req.params.id
-        if (!id) return error_400(res, "Vui lòng nhập id", id);
+        if (!id) return error_400(res, "Vui lòng nhập id", "id");
 
         Products.findById(id, (err, resProduct) => {
             if (err) return error_500(res, err);
