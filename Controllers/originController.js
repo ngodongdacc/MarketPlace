@@ -87,7 +87,7 @@ module.exports = {
 
         Origin.findById(id, (err, resorigin) => {
             if (err) return (res, err);
-            if (!resorigin) return error_400("Không tìm thấy id Xuất xứ" + id, "id");
+            if (!resorigin) return error_400(res, "Không tìm thấy id Xuất xứ" + id, "id");
 
             success(res, "Lấy chi tiết xuất xứ thành công", resorigin);
         })
@@ -120,13 +120,13 @@ module.exports = {
         config.skip = (config.page - 1) * config.limit;
 
         async.parallel([
-            (cb) => origin
+            (cb) => Origin
                 .find({})
                 .skip(config.skip)
                 .limit(config.limit)
                 .sort({ Date: "desc" })
                 .exec((e, data) => e ? cb(e) : cb(null, data)),
-            (cb) => origin.count().exec((e, data) => e ? cb(e) : cb(null, data))
+            (cb) => Origin.count().exec((e, data) => e ? cb(e) : cb(null, data))
         ], (err, results) => {
             if (err) return error_500(res, err);
             success(res, "Lấy danh sách xuất xứ thành công",
@@ -145,7 +145,7 @@ module.exports = {
             return error_400(res, "Vui lòng chọn xuất xứ cần xóa", "ListId");
         if (!Array.isArray(listIdOrigin)) return error_400(res, "ListId phải là array", "ListId");
 
-        origin
+        Origin
             .deleteMany({ _id: { $in: listIdOrigin } })
             .exec((err, resData) => {
                 if (err) return error_500(res, err);
@@ -169,12 +169,12 @@ module.exports = {
             const query = { Country: { $regex: config.Country, $options: "i" } }
             async.parallel([
                 (cb) =>
-                    origin.find(query)
+                    Origin.find(query)
                         .skip()
                         .limit(config.limit)
                         .sort({ Date: "desc" })
                         .exec((e, data) => e ? cb(e) : cb(null, data)),
-                (cb) => origin.count(query)
+                (cb) => Origin.count(query)
                     .exec((e, data) => e ? cb(e) : cb(null, data))
             ], (err, results) => {
                 if (err) return error_500(res, err);
