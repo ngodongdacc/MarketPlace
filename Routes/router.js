@@ -6,6 +6,7 @@ router.use("/book",require('./book_router')) // book test
 router.use("/users",require('./user_router'));  // Người dùng
 router.use("/address",require('./address_router')); // Đỉa chỉ người dùng
 router.use("/role",require('./role_router')); // Phân quyền người dùng
+router.use("/role-shop",require('./role_shop_router')); // Phân quyền shop người dùng
 router.use("/product",require('./product_router')); // Sản phẩm
 
 router.use("/key-search",require('./key_search_router')); // Từ khóa tìm kiếm
