@@ -46,18 +46,11 @@
   | :-----------: | :----------: | :-------------: |
   | Authorization |    string    | Token đăng nhập |
 
-- Paremeter:
-
-  | Tên Trường | Kiểu dữ liệu |        Mô tả        |
-  | :--------: | :----------: | :-----------------: |
-  | IdProduct  |   ObjectId   | Id sản phẩm comment |
-
 - Body:
 
   | Tên Trường | Kiểu dữ liệu |          Mô tả           |
   | :--------: | :----------: | :----------------------: |
   |  Content   |    String    | Tên của nội dung comment |
-  |   IdUser   |   ObjectId   |   Id tài khoản comment   |
   | IdProduct  |   ObjectId   |   Id sản phẩm comment    |
 
 - Dữ liệu trả về
@@ -79,12 +72,11 @@
   | :-----------: | :----------: | :-------------: |
   | Authorization |    string    | Token đăng nhập |
 
-- Paremeter:
+- Body:
 
   | Tên Trường | Kiểu dữ liệu |          Mô tả           |
   | :--------: | :----------: | :----------------------: |
   |  Content   |    String    | Tên của nội dung comment |
-  |   IdUser   |   ObjectId   |   Id tài khoản comment   |
   | IdProduct  |   ObjectId   |   Id sản phẩm comment    |
   | IdComment  |   ObjectId   | Id comment của sản phẩm  |
 
@@ -133,7 +125,7 @@
   | :-----------: | :----------: | :-------------: |
   | Authorization |    string    | Token đăng nhập |
 
-- Paremeter:
+- Body:
   | Tên Trường | Kiểu dữ liệu | Mô tả |
   | :--------: | :----------: | :----------------------: |
   | IdProduct | ObjectId | Id sản phẩm comment |
@@ -158,19 +150,13 @@
   | :-----------: | :----------: | :-------------: |
   | Authorization |    string    | Token đăng nhập |
 
-- Paremeter:
-
-  | Tên Trường | Kiểu dữ liệu |        Mô tả        |
-  | :--------: | :----------: | :-----------------: |
-  | IdProduct  |   ObjectId   | Id sản phẩm comment |
-
 - Body:
 
   | Tên Trường | Kiểu dữ liệu |            Mô tả            |
   | :--------: | :----------: | :-------------------------: |
   |  Content   |    String    | Tên của nội dung re-comment |
-  |   IdUser   |   ObjectId   |    Id tài khoản comment     |
   | IdComment  |   ObjectId   |   Id comment của sản phẩm   |
+  | IdProduct  |   ObjectId   |     Id sản phẩm comment     |
 
 - Dữ liệu trả về
 
@@ -218,12 +204,11 @@
   | :-----------: | :----------: | :-------------: |
   | Authorization |    string    | Token đăng nhập |
 
-- Paremeter:
+- Body:
 
   |   Tên Trường    | Kiểu dữ liệu |             Mô tả              |
   | :-------------: | :----------: | :----------------------------: |
   |     Content     |    String    |    Tên của nội dung comment    |
-  |     IdUser      |   ObjectId   |      Id tài khoản comment      |
   |    IdProduct    |   ObjectId   |      Id sản phẩm comment       |
   |    IdComment    |   ObjectId   | Id comment parent của sản phẩm |
   | IdCommentSupper |   ObjectId   | Id comment reply của sản phẩm  |
@@ -247,12 +232,13 @@
   | :-----------: | :----------: | :-------------: |
   | Authorization |    string    | Token đăng nhập |
 
-- Paremeter:
+- Body:
   | Tên Trường | Kiểu dữ liệu | Mô tả |
   | :--------: | :----------: | :----------------------: |
   | IdProduct | ObjectId | Id sản phẩm comment |
   | IdCommentParent | ObjectId | Id comment parent của sản phẩm |
   | IdCommentSup | ObjectId | Id comment reply của sản phẩm |
+  
 - Dữ liệu trả về
 
   | Tên Trường | Kiểu dữ liệu |                       Mô tả                       |

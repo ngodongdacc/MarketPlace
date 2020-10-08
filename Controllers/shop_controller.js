@@ -264,6 +264,7 @@ module.exports = {
     searchShop: async (req, res) => { // Tìm kiếm theo điều kiện yêu cầu: Id, tên, địa chỉ, nghành hàng
         try {
             const config = {};
+            config.search = req.query.search || ""
             config.Country = req.query.Country
             config.StoreOwnername = req.query.StoreOwnername
             config.ShopName = req.query.ShopName
@@ -273,10 +274,12 @@ module.exports = {
             config.skip = (config.page - 1) * config.limit;
 
             const query = {
-                ShopName: { $regex: config.ShopName, $options: "i" },
-                CommodityIndustry: { $regex: config.CommodityIndustry, $options: "i" },
-                Country: { $regex: config.Country, $options: "i" },
-                StoreOwnername: { $regex: config.StoreOwnername, $options: "i" }
+                // Name: { $regex: config.search, $options: "i" },
+                ShopName: { $regex: config.ShopName, $options: "s" },
+                CommodityIndustry: { $regex: config.CommodityIndustry, $options: "s" },
+                Country: { $regex: config.Country, $options: "s" },
+                StoreOwnername: { $regex: config.StoreOwnername, $options: "s" },
+
             }
             async.parallel([
                 (cb) =>
@@ -301,11 +304,10 @@ module.exports = {
         }
     },
     shop_details_forIdOwnerShop: (req, res) => {
-        const id = req.query.search;
-        if (!id)
-            return error_400(res, "ID không hợp lệ", "ID");
-
-        Shop.findById({ _id: id }, (err, resShopDetail) => {
+        let UserId=req.user._id;
+        if (!UserId)
+        return error_400(res, "Vui lòng đăng nhập", "Login");
+        Shop.findById({ _id: UserId }, (err, resShopDetail) => {
             if (err) return error_500(res, err);
             success(res, "Lấy thông tin cửa hàng thành công", resShopDetail)
         })
@@ -313,14 +315,14 @@ module.exports = {
 }
 module.exports.allowIfLoggedin = async (req, res, next) => {
     try {
-      const shop = res.locals.loggedInUser;
-      if (!shop)
-        return res.status(401).json({
-          error: "You need to be logged in to access this route"
-        });
-      req.shop = shop;
-      next();
+        const shop = res.locals.loggedInUser;
+        if (!shop)
+            return res.status(401).json({
+                error: "You need to be logged in to access this route"
+            });
+        req.shop = shop;
+        next();
     } catch (error) {
-      next(error);
+        next(error);
     }
-  }
+}
