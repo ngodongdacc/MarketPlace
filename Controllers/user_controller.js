@@ -170,7 +170,7 @@ module.exports = {
 
   // Cập nhật thông tin
   post_update: async (req, res) => {
-    
+     
     if(req.body.Birthday && req.body.Birthday === ""){
       return error_400(res, "Ngày sinh không được rỗng", "Birthday")
     } 
