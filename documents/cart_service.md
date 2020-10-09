@@ -41,12 +41,6 @@
   | :-----------: | :----------: | :-------------: |
   | Authorization |    string    | Token đăng nhập |
 
-- Paremeter:
-
-  | Tên Trường | Kiểu dữ liệu |       Mô tả       |
-  | :--------: | :----------: | :---------------: |
-  |   UserId   |   ObjectId   | Id của khách hàng |
-
 - Dữ liệu trả về
 
   | Tên Trường | Kiểu dữ liệu |                    Mô tả                    |
@@ -70,7 +64,6 @@
 
   | Tên Trường | Kiểu dữ liệu |       Mô tả       |
   | :--------: | :----------: | :---------------: |
-  |   UserId   |   ObjectId   | Id của khách hàng |
   | ProductId  |   ObjectId   |  Id của sản phẩm  |
   |  Quantity  |    Number    | Số lượng sản phẩm |
 
@@ -97,7 +90,6 @@
 
   | Tên Trường | Kiểu dữ liệu |       Mô tả       |
   | :--------: | :----------: | :---------------: |
-  |   UserId   |   ObjectId   | Id của khách hàng |
   | ProductId  |   ObjectId   |  Id của sản phẩm  |
   |  Quantity  |    Number    | Số lượng sản phẩm |
 
@@ -123,7 +115,6 @@
 - Body:
   | Tên Trường | Kiểu dữ liệu |       Mô tả       |
   | :--------: | :----------: | :---------------: |
-  |   UserId   |   ObjectId   | Id của khách hàng |
   | ProductId  |   ObjectId   |  Id của sản phẩm  |
 
 - Dữ liệu trả về
@@ -144,13 +135,7 @@
   |  Tên Trường   | Kiểu dữ liệu |      Mô tả      |
   | :-----------: | :----------: | :-------------: |
   | Authorization |    string    | Token đăng nhập |
-
-- Paremeter:
-  | Tên Trường | Kiểu dữ liệu |       Mô tả       |
-  | :--------: | :----------: | :---------------: |
-  |   id   |   ObjectId   | Id của giỏ hàng |
- 
-
+  
 - Dữ liệu trả về
 
   | Tên Trường | Kiểu dữ liệu |               Mô tả               |

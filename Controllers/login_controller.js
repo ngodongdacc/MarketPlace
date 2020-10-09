@@ -24,9 +24,8 @@ module.exports = {
         // return res.send("res");
         rq(options)
             .then(result => {
-                console.log(result);
                 if(result.data && result.data.is_valid){
-
+                        
                 } else {
 
                 }

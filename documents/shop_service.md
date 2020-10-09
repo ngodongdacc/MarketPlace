@@ -94,12 +94,6 @@
   | :-----------: | :----------: | :-------------: |
   | Authorization |    string    | Token đăng nhập |
 
-- Paremeter:
-
-  | Tên Trường | Kiểu dữ liệu |    Mô tả    |
-  | :--------: | :----------: | :---------: |
-  |     id     |    String    | id của Shop |
-
 - Body:
 
 |    Tên Trường     | Kiểu dữ liệu |                   Mô tả                   |
@@ -186,10 +180,6 @@
   | :-----------: | :----------: | :-------------: |
   | Authorization |    string    | Token đăng nhập |
 
-- Paremeter:
-  | Tên Trường | Kiểu dữ liệu | mặc định | Mô tả |  
-   |:----------: |:------------:|:------------: |:--------------------------------: |  
-   | search | string | null | id của shop |
 - Dữ liệu trả về
 
   | Tên Trường | Kiểu dữ liệu |                    Mô tả                    |
