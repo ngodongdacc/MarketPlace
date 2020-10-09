@@ -138,8 +138,9 @@ module.exports = {
         })
     },
     updateShop: async (req, res, next) => {
+        let id = req.user._id;
+        if (!id || id === "") return error_400(res,"Vui lòng nhập id","id")
         var shopUpdate = req.body;
-        if (!shopUpdate.id) error_400(res, "ID Shop is required", "shop.id");
         if (shopUpdate.PasswordShop === "") {
             if (shopUpdate.PasswordShop.length <= 5)  // Kiểm tra password
                 return error_400(res, "Mật khẩu phải lớn hơn 5 ký tự", "shop.Password");
@@ -152,7 +153,7 @@ module.exports = {
         if (shopUpdate.Phone && !isPhone(shopUpdate.Phone)) return error_400(res, "Số điện thoại không đúng định dạng", "shop.Phone");
         if (shopUpdate.EmailOwner && !isEmail(shopUpdate.EmailOwner)) return error_400(res, "Email không đúng định dạng", "shop.EmailOwner");
 
-        Shop.findById(shopUpdate.id, (err, resFindShop) => {
+        Shop.findById(id, (err, resFindShop) => {
             if (err) return error_500(res, err);
             if (!resFindShop) return error_400(res, "Không tìm thấy cửa hàng", "Errors");
             async.parallel([
@@ -194,7 +195,7 @@ module.exports = {
                     bcrypt.genSalt(10, function (err, salt) {
                         bcrypt.hash(shopUpdate.PasswordShop, salt, async function (err, hash) {
                             shopUpdate.PasswordShop = hash;
-                            Shop.findByIdAndUpdate(shopUpdate.id, { $set: shopUpdate }, { new: true }, (err, resShop) => {
+                            Shop.findByIdAndUpdate(id, { $set: shopUpdate }, { new: true }, (err, resShop) => {
                                 if (err) return error_500(res, err);
                                 delete resShop.PasswordShop;
                                 success(res, "Cập nhật cửa hàng thành công", resShop)
@@ -202,7 +203,7 @@ module.exports = {
                         });
                     });
                 } else {
-                    Shop.findByIdAndUpdate(shopUpdate.id, { $set: shopUpdate }, { new: true }, (err, resShop) => {
+                    Shop.findByIdAndUpdate(id, { $set: shopUpdate }, { new: true }, (err, resShop) => {
                         console.log(err);
                         if (err) return error_500(res, err);
                         delete resShop.PasswordShop;
