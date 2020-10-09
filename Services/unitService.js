@@ -7,6 +7,14 @@ module.exports = {
       throw e
     }
   },
+  findName: async (Name, cb) => {
+    try {
+      console.log(Name);
+      Units.findOne({ Name: Name }, cb);
+    } catch (e) {
+      throw e
+    }
+  }
 
 
 }

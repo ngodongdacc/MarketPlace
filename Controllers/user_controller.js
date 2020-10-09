@@ -170,13 +170,33 @@ module.exports = {
 
   // Cập nhật thông tin
   post_update: async (req, res) => {
-    var userUpdate = req.body;
-  
-    var id = req.user._id;
+     
+    if(req.body.Birthday && req.body.Birthday === ""){
+      return error_400(res, "Ngày sinh không được rỗng", "Birthday")
+    } 
+    if(req.body.Birthday && !isNaN(Date.parse(req.body.Birthday))){
+      return error_400(res, "Ngày sinh phải là dạng ngày", "Birthday")
+    } 
+    if(req.body.Gender && (req.body.Gender !== 0 || 
+        req.body.Gender !== 1 || req.body.Gender !== 2 )){
+      return error_400(res, "Ngày sinh phải là dạng ngày", "Birthday")
+    } 
+
+    let userUpdate = {
+      FullName: req.body.FullName ? req.body.FullName : undefined,
+      Phone: req.body.Phone ? req.body.Phone : undefined,
+      Email: req.body.Email ? req.body.Email : undefined,
+      Passowrd: req.body.Passowrd ? req.body.Passowrd : undefined,
+      Birthday: req.body.Birthday ? new Date(req.body.Birthday) : undefined,
+      Gender: req.body.Gender ? req.body.Gender : undefined,
+      DateUpdate: Date.now()
+    };
+    
+    let id = req.user._id;
 
     if (!id || id === "") return error_400(res,"Vui lòng nhập id","id")
     
-    if (userUpdate.FullName && userUpdate.FullName === "") 
+    if (userUpdate.FullName && userUpdate.FullName === "")
       return error_400(res,"Họ tên không được rỗng", "FullName");
 
     if (userUpdate.Phone && userUpdate.Phone === "") 
@@ -188,6 +208,8 @@ module.exports = {
     if (userUpdate.Email && userUpdate.Email === "") 
       return error_400(res,"Email không được rỗng", "Email");
 
+    if (userUpdate.Email && !isEmail(userUpdate.Email)) 
+      return error_400(res,"Email không đúng định dạng", "Email");
     if (userUpdate.Email && !isEmail(userUpdate.Email)) 
       return error_400(res,"Email không đúng định dạng", "Email");
 
@@ -274,7 +296,7 @@ module.exports = {
           .exec((e, u) => e ? cb(e) : cb(null, u))
       },
       (cb) => {
-        usersService.countUsers((err, count) => {
+        Users.count().exec((err, count) => {
           if (err) return cb(err);
           cb(null, count);
         })
@@ -341,19 +363,5 @@ module.exports = {
       })
     })
   }
-
   // ------------------- end --------------------------
-}
-module.exports.allowIfLoggedin = async (req, res, next) => {
-  try {
-    const user = res.locals.loggedInUser;
-    if (!user)
-      return res.status(401).json({
-        error: "You need to be logged in to access this route"
-      });
-    req.user = user;
-    next();
-  } catch (error) {
-    next(error);
-  }
 }
