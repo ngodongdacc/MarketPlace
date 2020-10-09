@@ -3,14 +3,7 @@ var Users = require("../Model/users");
 const bcrypt = require("bcryptjs");
 
 module.exports = {
-// Tìm kiếm user 
-findOneUser : async (username,cb) => {
-  try {         
-    Users.findOne({Username: username},cb);
-  } catch(e) {
-    throw e
-  }
-},
+
 
 // Tạo mới user 
 createUser : async (user,cb) => {
@@ -28,72 +21,7 @@ createUser : async (user,cb) => {
       throw e
     }
   },
-// Tìm kiếm user theo id 
-getUserById : async (id,cb) => {
-    try {         
-       Users.findById(id,cb);
-    } catch(e) {
-      throw e
-    }
-  },
 
-  // Cập nhật thông tin user
- updateUser : async (id,user,cb) => {
-  try {         
-     Users.updateOne({_id: id},user,cb);
-  } catch(e) {
-    throw e
-  }
-},
-
-
-  // Tìm kiếm user 
-findOneUserByID : async (id,cb) => {
-    try {         
-      Users.findById(id,cb);
-    } catch(e) {
-      throw e
-    }
-  },
-
-removeUserById : async (id,cb) => {
-  try {         
-    Users.findByIdAndRemove(id,cb);
-  } catch(e) {
-    throw e
-  }
-},
-// Tìm kiếm email 
-findEmail: async (Email,cb) => {
-    try {         
-      Users.findOne({Email: Email},cb);
-    } catch(e) {
-      throw e
-    }
-  },
-// Tìm kiếm Phone 
-findPhone: async (Phone,cb) => {
-    try {         
-      Users.findOne({Phone: Phone},cb);
-    } catch(e) {
-      throw e
-    }
-  },
-
-searchUsers: async (search,cb) => {  
-  var objSearch = {}
-  if(search.text)
-    objSearch = {$text: {$search: search.text}}    
-  Users.find(objSearch)  
-       .skip(search.skip)
-       .limit(search.limit)
-       .sort({Date: 'desc'})
-       .exec(cb)
-},
-
-countUsers: async (cb) => {  
-  Users.count({},cb);
-},
 // kiểm tra password
 comparePassword : async (myPassword,hash,cb) => {
     try {         

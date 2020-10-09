@@ -3,7 +3,7 @@ var Passport = require("passport");
 var JwtStrategy = require('passport-jwt').Strategy,
     ExtractJwt = require('passport-jwt').ExtractJwt;
 
-const userService = require("../Services/usersService");
+const Users = require("../Model/users");
 const shopService = require("../Services/shopService");
 
 Passport.serializeUser((user, done) => {
@@ -22,7 +22,7 @@ opts.secretOrKey = process.env.secretKey || "QTData-MarketPlace";
 // opts.audience = 'yoursite.net';
 Passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
     
-    userService.getUserById(jwt_payload._id, function(err, user) {
+    Users.findById(jwt_payload._id, function(err, user) {
     if (err) {
         return done(err, false);
     }

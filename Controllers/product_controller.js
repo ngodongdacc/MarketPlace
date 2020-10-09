@@ -7,7 +7,6 @@ const EscapeRegExp = require("escape-string-regexp");
 // validator
 const { error_400, error_500, success } = require("../validator/errors");
 const { IsJsonString } = require("../validator/validator");
-const { param } = require("express-validator");
 
 module.exports = {
     create_product: (req, res) => {
