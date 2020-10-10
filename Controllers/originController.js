@@ -195,7 +195,7 @@ module.exports = {
     // lấy tất cả xuất xứ
     getProfile: async (req, res) => {
         try {
-            const origin = await origin.find()
+            const origin = await Origin.find()
             res.json(origin)
         } catch (err) {
             res.send('Error ' + err)

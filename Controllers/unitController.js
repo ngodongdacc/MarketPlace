@@ -7,6 +7,7 @@ const { error_400, error_500, success } = require("../validator/errors");
 
 
 module.exports = {
+    // tạo mới một đơn vị 
     create_unit: async (req, res, next) => {
         try {
             const { Name, IdCategory } = req.body
@@ -98,7 +99,7 @@ module.exports = {
         })
 
     },
-
+    // lấy tất cẩ đơn vị
     get_units: async (req, res) => {
         try {
             const unit = await Units.find()

@@ -12,4 +12,4 @@ router.get('/get/:id',unitCtr.get_unit);
 router.get("/list",unitCtr.get_list_unit);
 router.post("/list/delete",unitCtr.remove_list_unit);
 router.get('/search', unitCtr.search_unit);
-module.exports = router
+module.exports = router;
