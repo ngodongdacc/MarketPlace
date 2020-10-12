@@ -212,14 +212,14 @@ module.exports = {
 
     // Tìm kiếm nâng cao
     search: (req, res) => {
-
-        if (req.query.sort && !IsJsonString(req.query.sort))
+        let params = req.query; 
+        if (params.sort && !IsJsonString(params.sort))
             return error_500(res, "sort phải là dạng json", "sort")
 
         let config = {
-            limit: Number(req.query.limit) || process.env.LIMIT || 20,
+            limit: Number(params.limit) || process.env.LIMIT || 20,
             page: Number(req.body.page) || 1,
-            sort: req.query.sort ? JSON.parse(req.query.sort) : { "Date": -1 }
+            sort: params.sort ? JSON.parse(params.sort) : { "Date": -1 }
         }
         config.skip = (config.page - 1) * config.limit;
 
@@ -227,45 +227,45 @@ module.exports = {
             (cb) => {
                 var query = {
                     $or: [
-                        { $text: { $search: req.query.search || "" } },
+                        { $text: { $search: params.search || "" } },
                         {
                             Name: new RegExp("^.*?" +
-                                EscapeRegExp(req.query.search || "") + ".*$", "i")
+                                EscapeRegExp(params.search || "") + ".*$", "i")
                         },
                     ],
                     $and: [
                         {
                             Price: {
-                                $gte: Number(req.query.minPrice) || 0,
-                                $lt: Number(req.query.maxPrice) ||
+                                $gte: Number(params.minPrice) || 0,
+                                $lt: Number(params.maxPrice) ||
                                     Number(process.env.MAXPRICE) || 100000000000
                             },
                         }
                     ]
                 };
-                if (req.query.idCategory)
+                if (params.idCategory)
                     query.$and.push({
                         IdCategory:
-                            new mongoose.mongo.ObjectId(req.query.idCategory)
+                            new mongoose.mongo.ObjectId(params.idCategory)
                     });
 
-                if (req.query.idTrademark)
+                if (params.idTrademark)
                     query.$and.push({
                         IdTrademark:
-                            new mongoose.mongo.ObjectId(req.query.idTrademark)
+                            new mongoose.mongo.ObjectId(params.idTrademark)
                     });
 
-                if (req.query.idCategorySub)
+                if (params.idCategorySub)
                     query.$and.push({
                         IdCategorySub:
-                            new mongoose.mongo.ObjectId(req.query.idCategorySub)
+                            new mongoose.mongo.ObjectId(params.idCategorySub)
                     })
                 
-                if (req.query.statusSale === true || req.query.statusSale === false)
-                    query.$and.push({ StatusSale: req.query.statusSale})
+                if (params.statusSale === "true" || params.statusSale === "false")
+                    query.$and.push({ StatusSale: JSON.parse(params.statusSale)})
                 
-                if (req.query.statusNew === true || req.query.statusNew === false)
-                    query.$and.push({ StatusNew: req.query.statusNew})
+                if (params.statusNew === true || params.statusNew === false)
+                    query.$and.push({ StatusNew: JSON.parse(params.statusNew)})
                 
                 cb(null, query)
             },
@@ -324,7 +324,7 @@ module.exports = {
                         ])
                         .exec((e, c) => e ? cb(e) : cb(null, c)),
                     (cb) => { // lưu lịch sử tìm kiếm
-                        keySevice.create_and_update_key(req.query, cb)
+                        keySevice.create_and_update_key(params, cb)
                     }
                 ], (e, result) => e ? cb(e) : cb(null, result))
 
