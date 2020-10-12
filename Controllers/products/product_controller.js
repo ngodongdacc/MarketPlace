@@ -218,11 +218,11 @@ module.exports = {
 
         let config = {
             limit: Number(params.limit) || process.env.LIMIT || 20,
-            page: Number(req.body.page) || 1,
+            page:  Number(params.page) || 1,
             sort: params.sort ? JSON.parse(params.sort) : { "Date": -1 }
         }
         config.skip = (config.page - 1) * config.limit;
-
+        console.log(config.skip);
         async.waterfall([
             (cb) => {
                 var query = {
@@ -292,10 +292,10 @@ module.exports = {
                                     as: "Trademark",
                                 },
                             },
-                            { $skip: config.skip },
-                            { $limit: config.limit }
                         ])
                         .sort(config.sort)
+                        .skip(config.skip)
+                        .limit(config.limit)
                         .exec((e, p) => e ? cb(e) : cb(null, p)),
                     (cb) => Products
                         .aggregate([
