@@ -264,6 +264,9 @@ module.exports = {
                 if (req.query.statusSale === true || req.query.statusSale === false)
                     query.$and.push({ StatusSale: req.query.statusSale})
                 
+                if (req.query.statusNew === true || req.query.statusNew === false)
+                    query.$and.push({ StatusNew: req.query.statusNew})
+                
                 cb(null, query)
             },
             (query, cb) => {

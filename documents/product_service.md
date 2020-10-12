@@ -237,6 +237,8 @@
     |    minPrice     |    number | 0 |         khoảng giá thấp nhất      |
     |    maxPrice     |    number | 100.000.000.000 |         khoảng giá cao nhất      |
     |    idUser     |    ObjectId | null |         Nếu truyền vào idUser thì từ khóa sẽ được lưu vào lịch sử tìm kiếm của user    |
+    |    statusSale     |    Boolean | null |         Tìm kiếm sản phẩm sale    |
+    |    statusNew     |    Boolean | null |         Tìm kiếm sản phẩm mới    |
 
 - Dữ liệu trả về
 
