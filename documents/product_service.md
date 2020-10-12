@@ -164,7 +164,7 @@
     |   message    |    string        | Tin nhắn trả về                                      |  
 
 ### 1.5  Tìm kiếm sản phẩm của người dùng
- - Router: **/api/product/search**  
+ - Router: **/api/product/search/query**  
  - Function: **search_product()**  
  - Method: **GET**
  - Description: Từ khóa tìm kiếm sẽ được lưu vào từ khóa tìm kiếm
@@ -180,7 +180,8 @@
     |    minPrice     |    number | 0 |         khoảng giá thấp nhất      |
     |    maxPrice     |    number | 100.000.000.000 |         khoảng giá cao nhất      |
     |    idUser     |    ObjectId | null |         Nếu truyền vào idUser thì từ khóa sẽ được lưu vào lịch sử tìm kiếm của user    |
-
+    |    statusSale     |    Boolean | null |         Tìm kiếm sản phẩm sale    |
+    |    statusNew     |    Boolean | null |         Tìm kiếm sản phẩm mới    |
 - Dữ liệu trả về
 
     | Tên Trường   | Kiểu dữ liệu     |                        Mô tả                         |  
@@ -237,8 +238,7 @@
     |    minPrice     |    number | 0 |         khoảng giá thấp nhất      |
     |    maxPrice     |    number | 100.000.000.000 |         khoảng giá cao nhất      |
     |    idUser     |    ObjectId | null |         Nếu truyền vào idUser thì từ khóa sẽ được lưu vào lịch sử tìm kiếm của user    |
-    |    statusSale     |    Boolean | null |         Tìm kiếm sản phẩm sale    |
-    |    statusNew     |    Boolean | null |         Tìm kiếm sản phẩm mới    |
+    
 
 - Dữ liệu trả về
 
