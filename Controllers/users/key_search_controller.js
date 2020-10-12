@@ -1,6 +1,6 @@
-const KeySearch = require("../Model/keySearch");
+const KeySearch = require("../../Model/keySearch");
 const async = require("async");
-const { error_400, success, error_500 } = require("../validator/errors");
+const { error_400, success, error_500 } = require("../../validator/errors");
 
 module.exports = {
 

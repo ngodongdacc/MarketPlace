@@ -14,6 +14,12 @@ require("./middleware/Passport"); // using passport
 require('./middleware/database'); // connect database
 
 var app = express();
+// var corsOption = {
+//   origin: true,
+//   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+//   credentials: true,
+//   exposedHeaders: ['x-auth-token']
+// };
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -39,6 +45,8 @@ app.use(expressSession({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+
+// app.use(cors(corsOption));
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");

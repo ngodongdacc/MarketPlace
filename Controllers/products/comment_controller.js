@@ -1,11 +1,11 @@
-const Comment = require("../Model/comment");
-const Products = require("../Model/product");
-const Users = require("../Model/users");
+const Comment = require("../../Model/comment");
+const Products = require("../../Model/product");
+const Users = require("../../Model/users");
 const async = require("async");
 const { mongo, Mongoose } = require("mongoose");
 const mongoose = require("mongoose");
-const CommentService = require("../Services/commentService");
-const { success, error_500, error_400 } = require("../validator/errors");
+const CommentService = require("../../Services/commentService");
+const { success, error_500, error_400 } = require("../../validator/errors");
 module.exports = {
     postComment: async (req, res) => {
         const IdProduct = req.body.IdProduct;

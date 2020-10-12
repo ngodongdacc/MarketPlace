@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const {checkLogInShop,checkRoleShop,check_is_admin_shop} = require("../middleware/auth")
-const shopCtr = require("../Controllers/shop_controller");
+const shopCtr = require("../Controllers/shops/shop_controller");
 
 router.post('/add', shopCtr.postshop); // thêm mới một cửa hàng
 router.post('/login', shopCtr.post_login); // Đăng nhập

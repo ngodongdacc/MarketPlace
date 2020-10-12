@@ -1,14 +1,14 @@
-const Users = require("../Model/users");
+const Users = require("../../Model/users");
 const jwt = require("jsonwebtoken");
 const async = require("async");
 const bcrypt = require("bcryptjs");
 const mongoose = require("mongoose");
 
 // Validator
-const { isEmail, isPhone } = require("../validator/validator");
+const { isEmail, isPhone } = require("../../validator/validator");
 
-const usersService = require("../Services/usersService");
-const { error_400, error_500, success } = require("../validator/errors");
+const usersService = require("../../Services/usersService");
+const { error_400, error_500, success } = require("../../validator/errors");
 
 module.exports = {
   // Tạo tài khoản mới

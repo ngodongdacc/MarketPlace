@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const originCtr = require("../Controllers/origin_controller");
+const originCtr = require("../Controllers/customs_product/origin_controller");
 const {checkSignIn} = require("../middleware/auth");
 
 router.post('/add',checkSignIn(), originCtr.create_origin);

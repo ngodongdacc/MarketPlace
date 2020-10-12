@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const {checkSignIn,checkRole} = require("../middleware/auth")
-const commentCtr = require("../Controllers/comment_controller");
+const commentCtr = require("../Controllers/products/comment_controller");
 
 router.post('/comment',checkSignIn(), checkRole(10070),commentCtr.postComment);
 router.post('/recomment',checkSignIn(), checkRole(10074),commentCtr.reComment_Parent_ForCommentPost);

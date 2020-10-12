@@ -1,5 +1,5 @@
-const Trademark = require("../Model/trademark");
-const TrademarkService = require("../Services/trademarkService");
+const Trademark = require("../../Model/trademark");
+const TrademarkService = require("../../Services/trademarkService");
 const async = require("async");
 
 module.exports = {

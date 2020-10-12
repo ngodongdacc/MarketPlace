@@ -1,7 +1,7 @@
 const async = require("async");
-const Units = require("../Model/unit");
+const Units = require("../../Model/unit");
 
-const UnitService = require("../Services/unitService");
+const UnitService = require("../../Services/unitService");
 
 module.exports = {
     create_unit:async (req, res, next) => {

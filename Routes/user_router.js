@@ -1,16 +1,16 @@
 const express = require('express');
 const router = express.Router();
 // middleware
-const { checkSignIn, checkRole } = require("../middleware/auth");
+const { checkSignIn, checkRole,check_login_facebook } = require("../middleware/auth");
 
 // Controllers
-const UsersCtr = require("../Controllers/user_controller")
-const loginUserCtr = require("../Controllers/login_controller")
+const UsersCtr = require("../Controllers/users/user_controller");
+const loginUserCtr = require("../Controllers/users/login_controller");
 
 // api/users/
 router.post('/', UsersCtr.post_create_user); // Tạo mới tài khoản
 router.post('/login', UsersCtr.post_login); // Đăng nhập
-router.post('/login/facebook', loginUserCtr.login_facbook); // Đăng nhập
+router.post('/login/facebook',check_login_facebook(), loginUserCtr.login_facbook); // Đăng nhập
 
 router.post('/update/:id', checkSignIn(), checkRole(10002), UsersCtr.post_update); // Cập nhật
 router.get('/profile', checkSignIn(), checkRole(10001), UsersCtr.get_profile); // Lấy thông tin user

@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 const {checkSignIn} = require("../middleware/auth");
 
-var unitCtr = require("../Controllers/unit_controller");
+var unitCtr = require("../Controllers/customs_product/unit_controller");
 
 router.post('/add', unitCtr.create_unit);
 router.post('/update/:id',checkSignIn(), unitCtr.update_unit);

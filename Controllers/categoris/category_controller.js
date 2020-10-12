@@ -1,9 +1,9 @@
 
-const CategoryService = require("../Services/categoryService");
-const { updateOne, count } = require("../Model/category");
+const CategoryService = require("../../Services/categoryService");
+const { updateOne, count } = require("../../Model/category");
 const async = require("async");
-const { findOneCategory } = require("../Services/categoryService");
-const category = require("../Model/category");
+const { findOneCategory } = require("../../Services/categoryService");
+const category = require("../../Model/category");
 const mongoose = require("mongoose");
 // const category = require("../Model/category");
 

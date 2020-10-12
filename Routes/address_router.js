@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const Address = require("../Model/address");
-const addressCtr = require("../Controllers/address_controller");
+const addressCtr = require("../Controllers/users/address_controller");
 const {checkSignIn} = require("../middleware/auth");
 const {error_400} = require("../validator/errors");
 

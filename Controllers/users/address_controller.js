@@ -1,8 +1,8 @@
-const AddressSchema = require("../Model/address");
+const AddressSchema = require("../../Model/address");
 const mongoose = require("mongoose");
 const async = require("async");
-const {success,error_500,error_400} = require("../validator/errors");
-const {isPhone, IsJsonString} = require("../validator/validator");
+const {success,error_500,error_400} = require("../../validator/errors");
+const {isPhone, IsJsonString} = require("../../validator/validator");
 
 module.exports = {
     

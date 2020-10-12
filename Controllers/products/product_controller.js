@@ -1,12 +1,12 @@
 const async = require("async");
 const mongoose = require("mongoose");
-const Products = require("../Model/product");
-const keySevice = require("../Services/keySearchService");
+const Products = require("../../Model/product");
+const keySevice = require("../../Services/keySearchService");
 const EscapeRegExp = require("escape-string-regexp");
 
 // validator
-const { error_400, error_500, success } = require("../validator/errors");
-const { IsJsonString } = require("../validator/validator");
+const { error_400, error_500, success } = require("../../validator/errors");
+const { IsJsonString } = require("../../validator/validator");
 
 module.exports = {
     create_product: (req, res) => {

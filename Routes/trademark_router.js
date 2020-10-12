@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const trademarkCtr = require("../Controllers/trademark_controller");
+const trademarkCtr = require("../Controllers/customs_product/trademark_controller");
 
 router.post('/add', trademarkCtr.postcreateTrademark);
 router.post('/sua/:id', trademarkCtr.postupdateTrademark);

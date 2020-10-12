@@ -4,6 +4,7 @@ const RoleShop = require("../Model/roleShop");
 const {error_400,error_500} = require("../validator/errors");
 module.exports = {
     checkSignIn: () => passport.authenticate('jwt', { session: false }), // kiểm tra đăng nhập
+    check_login_facebook: () => passport.authenticate('facebook', { session: false }), // kiểm tra đăng nhập
     checkLogInShop: () => passport.authenticate('shop-jwt', { session: false }),
     checkRole:(role) => { // kiểm tra quyền
         return async (req, res, next) => {

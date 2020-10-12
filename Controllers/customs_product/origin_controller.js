@@ -1,5 +1,5 @@
-const Origin = require("../Model/origin");
-const OriginService = require("../Services/originService");
+const Origin = require("../../Model/origin");
+const OriginService = require("../../Services/originService");
 const async = require("async");
 
 

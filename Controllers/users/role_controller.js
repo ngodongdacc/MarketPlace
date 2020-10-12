@@ -1,20 +1,20 @@
-const RoleShopSchema = require("../Model/roleShop");
-const { error_500, error_400, success } = require("../validator/errors");
+const RoleSchema = require("../../Model/role");
+const { error_500, error_400, success } = require("../../validator/errors");
 
 module.exports = {
-    create_role_shop: (req, res) => {
+    create_role: (req, res) => {
         let { Title } = req.body;
 
         if (!Title || Title === "")
             return error_400(res, "Vui lòng nhập Title", "Title")
 
-        RoleShopSchema.findOne({ Title: Title }, (e, r) => {
+        RoleSchema.findOne({ Title: Title }, (e, r) => {
             if (e)
                 return error_500(res, e);
             else if (r)
                 return error_400(res, "Loại tài khoản đã tồn tại", "Title");
             else
-                RoleShopSchema.create({ Title: Title },
+                RoleSchema.create({ Title: Title },
                     (e, role) => {
                         if (e) return error_400(res, e)
                         success(res, "Thêm loại thành công", role)
@@ -40,7 +40,7 @@ module.exports = {
             query = {};
         if (search) query.$text = { $search: search };
 
-        RoleShopSchema.find(query)
+        RoleSchema.find(query)
             .skip(skip)
             .limit(limit)
             .sort(sort)
@@ -51,32 +51,32 @@ module.exports = {
 
     },
 
-    add_role_shop: (req, res) => {
-        let { Title, RoleShop } = req.body
+    add_role: (req, res) => {
+        let { Title, Role } = req.body
         if (!Title || Title === "")
             return error_400(res, "Vui lòng nhập Title", "Title");
 
-        if (!RoleShop) return error_400(res, "Vui lòng nhập Role", "RoleShop");
+        if (!Role) return error_400(res, "Vui lòng nhập Role", "Role");
 
-        if (typeof RoleShop !== "number")
-            return error_400(res, "Vui lòng nhập quyền là dạng số", "RoleShop");
+        if (typeof Role !== "number")
+            return error_400(res, "Vui lòng nhập quyền là dạng số", "Role");
 
-        if (RoleShop < 0)
-            return error_400(res, "Vui lòng nhập quyền lớn hơn 0", "RoleShop");
+        if (Role < 0)
+            return error_400(res, "Vui lòng nhập quyền lớn hơn 0", "Role");
 
-        RoleShopSchema.findOne({ Title: Title }, (e, r) => {
+        RoleSchema.findOne({ Title: Title }, (e, r) => {
             if (e) return error_500(res, e)
-            if (!r)
+            if (!r) 
                 return error_400(res, "Không tìm thấy loại tài khoản", "Title")
 
-            let index = r.RoleShops.indexOf(RoleShop);
+            let index = r.Roles.indexOf(Role);
             if (index > 0)
-                return success(res, `Thêm quyền ${RoleShop} vào ${Title} thành công`);
+                return success(res, `Thêm quyền ${Role} vào ${Title} thành công`);
 
-            r.RoleShops.push(Number(RoleShop));
-            RoleShopSchema.findByIdAndUpdate(r._id, r, { new: true }, (e, r) => {
+            r.Roles.push(Number(Role));
+            RoleSchema.findByIdAndUpdate(r._id, r, { new: true }, (e, r) => {
                 if (e) return error_500(res, e);
-                success(res, `Thêm quyền ${RoleShop} vào ${Title} thành công`);
+                success(res, `Thêm quyền ${Role} vào ${Title} thành công`);
             })
         })
     }

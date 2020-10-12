@@ -1,5 +1,5 @@
-const BrandOrigin = require("../Model/brandOrigin");
-const BrandOriginService = require("../Services/brandOriginService");
+const BrandOrigin = require("../../Model/brandOrigin");
+const BrandOriginService = require("../../Services/brandOriginService");
 const async = require("async");
 
 module.exports = {

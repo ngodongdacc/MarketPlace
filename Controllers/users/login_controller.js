@@ -1,9 +1,14 @@
 const { request } = require("express")
 const rq = require("request-promise");
 
-const { error_400, error_500, success } = require("../validator/errors");
+const { error_400, error_500, success } = require("../../validator/errors");
 module.exports = {
     login_facbook: (req,res,next) => {
+        console.log("test");
+        return res.send("tesst")
+        if (!req.user) {
+            return res.send(401, 'User Not Authenticated');
+          }
         if(!req.body.input_token || req.body.input_token === "")
             return error_400(res,"Vui lòng nhập input_token","input_token")
 

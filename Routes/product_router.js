@@ -4,7 +4,7 @@ const multer = require("multer");
 // const upload = multer({dest: "Public/images/"})
 
 // controller
-const productCtr = require("../Controllers/product_controller");
+const productCtr = require("../Controllers/products/product_controller");
 
 const {checkLogInShop} = require("../middleware/auth");
 
