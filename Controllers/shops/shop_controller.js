@@ -2,21 +2,15 @@ const Shop = require("../../Model/shop");
 const async = require("async");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-<<<<<<< HEAD:Controllers/shops/shop_controller.js
+const mongoose = require("mongoose");
+const EscapeRegExp = require("escape-string-regexp");
 const { isEmail, isPhone } = require("../../validator/validator");
 const ShopService = require("../../Services/shopService");
 const { success, error_500, error_400 } = require("../../validator/errors");
-=======
-const mongoose = require("mongoose");
-const EscapeRegExp = require("escape-string-regexp");
-const { isEmail, isPhone } = require("../validator/validator");
-const ShopService = require("../Services/shopService");
-const { success, error_500, error_400 } = require("../validator/errors");
-const { IsJsonString } = require("../validator/validator");
-const keySevice = require("../Services/keySearchService");
-const Products = require("../Model/product");
+const { IsJsonString } = require("../../validator/validator");
+const keySevice = require("../../Services/keySearchService");
+const Products = require("../../Model/product");
 const { param } = require("express-validator");
->>>>>>> tech24_Kokoro:Controllers/shop_controller.js
 module.exports = {
     postshop: async (req, res, next) => {
         try {
