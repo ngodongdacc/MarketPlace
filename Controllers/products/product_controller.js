@@ -260,7 +260,10 @@ module.exports = {
                         IdCategorySub:
                             new mongoose.mongo.ObjectId(req.query.idCategorySub)
                     })
-
+                
+                if (req.query.statusSale === true || req.query.statusSale === false)
+                    query.$and.push({ StatusSale: req.query.statusSale})
+                
                 cb(null, query)
             },
             (query, cb) => {
