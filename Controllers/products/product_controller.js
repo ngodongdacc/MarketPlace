@@ -264,7 +264,7 @@ module.exports = {
                 if (params.statusSale === "true" || params.statusSale === "false")
                     query.$and.push({ StatusSale: JSON.parse(params.statusSale)})
                 
-                if (params.statusNew === true || params.statusNew === false)
+                if (params.statusNew === "true" || params.statusNew === "false")
                     query.$and.push({ StatusNew: JSON.parse(params.statusNew)})
                 
                 cb(null, query)
