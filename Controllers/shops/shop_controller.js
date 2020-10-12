@@ -2,9 +2,21 @@ const Shop = require("../../Model/shop");
 const async = require("async");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+<<<<<<< HEAD:Controllers/shops/shop_controller.js
 const { isEmail, isPhone } = require("../../validator/validator");
 const ShopService = require("../../Services/shopService");
 const { success, error_500, error_400 } = require("../../validator/errors");
+=======
+const mongoose = require("mongoose");
+const EscapeRegExp = require("escape-string-regexp");
+const { isEmail, isPhone } = require("../validator/validator");
+const ShopService = require("../Services/shopService");
+const { success, error_500, error_400 } = require("../validator/errors");
+const { IsJsonString } = require("../validator/validator");
+const keySevice = require("../Services/keySearchService");
+const Products = require("../Model/product");
+const { param } = require("express-validator");
+>>>>>>> tech24_Kokoro:Controllers/shop_controller.js
 module.exports = {
     postshop: async (req, res, next) => {
         try {
@@ -132,8 +144,9 @@ module.exports = {
         })
     },
     updateShop: async (req, res, next) => {
+        let id = req.user._id;
+        if (!id || id === "") return error_400(res,"Vui lòng nhập id","id")
         var shopUpdate = req.body;
-        if (!shopUpdate.id) error_400(res, "ID Shop is required", "shop.id");
         if (shopUpdate.PasswordShop === "") {
             if (shopUpdate.PasswordShop.length <= 5)  // Kiểm tra password
                 return error_400(res, "Mật khẩu phải lớn hơn 5 ký tự", "shop.Password");
@@ -146,7 +159,7 @@ module.exports = {
         if (shopUpdate.Phone && !isPhone(shopUpdate.Phone)) return error_400(res, "Số điện thoại không đúng định dạng", "shop.Phone");
         if (shopUpdate.EmailOwner && !isEmail(shopUpdate.EmailOwner)) return error_400(res, "Email không đúng định dạng", "shop.EmailOwner");
 
-        Shop.findById(shopUpdate.id, (err, resFindShop) => {
+        Shop.findById(id, (err, resFindShop) => {
             if (err) return error_500(res, err);
             if (!resFindShop) return error_400(res, "Không tìm thấy cửa hàng", "Errors");
             async.parallel([
@@ -188,7 +201,7 @@ module.exports = {
                     bcrypt.genSalt(10, function (err, salt) {
                         bcrypt.hash(shopUpdate.PasswordShop, salt, async function (err, hash) {
                             shopUpdate.PasswordShop = hash;
-                            Shop.findByIdAndUpdate(shopUpdate.id, { $set: shopUpdate }, { new: true }, (err, resShop) => {
+                            Shop.findByIdAndUpdate(id, { $set: shopUpdate }, { new: true }, (err, resShop) => {
                                 if (err) return error_500(res, err);
                                 delete resShop.PasswordShop;
                                 success(res, "Cập nhật cửa hàng thành công", resShop)
@@ -196,7 +209,7 @@ module.exports = {
                         });
                     });
                 } else {
-                    Shop.findByIdAndUpdate(shopUpdate.id, { $set: shopUpdate }, { new: true }, (err, resShop) => {
+                    Shop.findByIdAndUpdate(id, { $set: shopUpdate }, { new: true }, (err, resShop) => {
                         console.log(err);
                         if (err) return error_500(res, err);
                         delete resShop.PasswordShop;
@@ -262,51 +275,48 @@ module.exports = {
         })
     },
     searchShop: async (req, res) => { // Tìm kiếm theo điều kiện yêu cầu: Id, tên, địa chỉ, nghành hàng
-        try {
-            const config = {};
-            config.search = req.query.search || ""
-            config.Country = req.query.Country
-            config.StoreOwnername = req.query.StoreOwnername
-            config.ShopName = req.query.ShopName
-            config.CommodityIndustry = req.query.CommodityIndustry
-            config.page = req.query.page ? Number(req.query.page) : 1
-            config.limit = req.query.limit ? Number(req.query.limit) : 20
-            config.skip = (config.page - 1) * config.limit;
+        let idUser = req.user._id;
+        let params = req.query;
 
-            const query = {
-                // Name: { $regex: config.search, $options: "i" },
-                ShopName: { $regex: config.ShopName, $options: "s" },
-                CommodityIndustry: { $regex: config.CommodityIndustry, $options: "s" },
-                Country: { $regex: config.Country, $options: "s" },
-                StoreOwnername: { $regex: config.StoreOwnername, $options: "s" },
+        if (!idUser)
+            return error_400(res, "Vui lòng đăng nhập", "Login");
 
-            }
-            async.parallel([
-                (cb) =>
-                    Shop.find(query)
-                        .skip(config.skip)
-                        .limit(config.limit)
-                        .sort({ ShopName: "desc" })
-                        .exec((e, resDataSearch) => e ? cb(e) : cb(null, resDataSearch)),
-                (cb) => Shop.count(query)
-                    .exec((e, resDataSearch) => e ? cb(e) : cb(null, resDataSearch))
-            ], (err, results) => {
-                if (err) return error_500(res, err);
-                success(res,
-                    "Lấy danh sách cửa hàng thành công",
-                    {
-                        shop: results[0],
-                        count: results[1]
-                    })
-            })
-        } catch (error) {
-            error_500(res, e);
+        if (params.sort && !IsJsonString(params.sort))
+            return error_500(res, "sort phải là dạng json", "sort");
+
+        let limit = params.limit ? Number(params.limit) : process.env.LIMIT || 20
+        let page = params.page ? Number(params.limit) : process.env.PAGE || 1
+        let skip = (page - 1) * limit;
+        let sort = params.sort ? JSON.parse(params.sort) : { CreateAt: -1 };
+
+        let query = {
+        };
+        if (params.search && params.search !== "") {
+            query.$or = [
+                { $text: { $search: req.query.search } }
+            ]
         }
+        async.parallel([
+            cb => Shop.aggregate([{ $match: query }])
+                .skip(skip)
+                .limit(limit)
+                .sort(sort)
+                .exec((e, O) => e ? cb(e) : cb(null, O)),
+            cb => Shop.countDocuments(query).exec((e, c) => e ? cb(e) : cb(null, c))
+        ], (e, results) => {
+            if (e) return error_500(res, e);
+            success(res,
+                "Lấy danh sách cửa hàng thành công",
+                {
+                    shop: results[0],
+                    count: results[1]
+                })
+        })
     },
     shop_details_forIdOwnerShop: (req, res) => {
-        let UserId=req.user._id;
+        let UserId = req.user._id;
         if (!UserId)
-        return error_400(res, "Vui lòng đăng nhập", "Login");
+            return error_400(res, "Vui lòng đăng nhập", "Login");
         Shop.findById({ _id: UserId }, (err, resShopDetail) => {
             if (err) return error_500(res, err);
             success(res, "Lấy thông tin cửa hàng thành công", resShopDetail)

@@ -197,7 +197,14 @@ module.exports = {
                         Comment.findByIdAndDelete(resFindData._id, (err, resFindComment) => {
                             if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
                             if (!resFindComment) return error_400(res, "Không tìm thấy bình luận của sản phẩm", "IdComment");
-                            success(res, "Đã xóa câu trả lời cho bình luận này", resFindComment)
+                            CommentService.listComments(IdProduct, (err, resListData) => {
+                                success(res, "Đã xóa bình luận này",
+                                    {
+                                        comment: resListData[0],
+                                        count: resListData[1],
+                                    })
+                            })
+                           
                         });
                     })
                 })
@@ -227,7 +234,13 @@ module.exports = {
                             resFindComment.Reply.findIndex(cmt => cmt.IdComment == IdCommentSup) !== -1 && resFindComment.Reply.splice(resFindComment.Reply.findIndex(cmt => cmt.IdComment == IdCommentSup), 1)
                             Comment.findByIdAndUpdate(resFindComment._id, resFindComment, (err, resRemove) => {
                                 if (err) return error_500(res, err)
-                                success(res, "Bình luận này đã được xóa", resRemove)
+                                CommentService.listComments(IdProduct, (err, resListData) => {
+                                    success(res, "Đã xóa bình luận này",
+                                        {
+                                            comment: resListData[0],
+                                            count: resListData[1],
+                                        })
+                                })
                             })
                         } else {
                             error_400(res, "Bình luận này không còn tồn tại", "Errors");

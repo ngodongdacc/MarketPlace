@@ -153,13 +153,10 @@
 - Paremeter:
   | Tên Trường | Kiểu dữ liệu | mặc định | Mô tả |  
    |:----------: |:------------:|:------------: |:--------------------------------: |  
-   | ShopName | string | null | Từ khóa tìm kiếm |
-  | Country | string | null | Từ khóa tìm kiếm |
-  | CommodityIndustry | string | null | Từ khóa tìm kiếm |
-  | StoreOwnername | string | null | Từ khóa tìm kiếm |
+   | search | string | null | Từ khóa tìm kiếm |
   | page | number | 1 | trang cần xem |
   | limit | number | 20 | Số lượng kết quả trả về |
-  | sort | object | {"ShopName": desc} | Trường sắp xếp |
+  | sort | object | {"CreateAt": -1} | Trường sắp xếp |
 
 - Dữ liệu trả về
 
