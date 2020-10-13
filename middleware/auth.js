@@ -7,19 +7,27 @@ module.exports = {
     checkSignIn: () => passport.authenticate('jwt', { session: false }), // kiểm tra đăng nhập
     check_login_facebook: () => {
        return async (req,res,next) => {
-            let token = req.body.access_token
-            if(!token || !token){
+            let token = req.body.access_token;
+            
+            if(!token || token === ""){
                 return error_400(res,"Vui lòng nhập token","access_token")
             }
-
+            
             rq.get({
                 uri: "https://graph.facebook.com/me",
                 qs: {
-                    access_token: token // -> uri + '?access_token=xxxxx%20xxxxx'
+                    access_token: token,
+                    fields:"name,picture,first_name,last_name,email"
                 },
                 json: true
             }).then(result =>{
-                success(res,"thành công", result)
+                req.user = result;
+                next();
+            })
+            .catch(e => {
+                if(e && e.error)
+                    return error_400(res,"Đăng nhập thất bại", e.error)
+                error_500(res,"access_token");
             })
         }
     },
@@ -40,7 +48,7 @@ module.exports = {
                         }
                     })
             } catch (error) {
-             next(error)
+                next(error)
             }
         }
     },

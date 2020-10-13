@@ -115,21 +115,21 @@ module.exports = {
           if (isMath) {
             var token = jwt.sign(userTrue.toJSON(), process.env.secretKey,
               { expiresIn: process.env.TimeToken || 60000000 });
-            success(res,
-              "Đăng nhập thành công",
-              {
-                user: {
-                  Username: userTrue.Username,
-                  FirstName: userTrue.FirstName,
-                  LastName: userTrue.LastName,
-                  FullName: userTrue.FullName,
-                  Email: userTrue.Email,
-                  Phone: userTrue.Phone,
-                  Role: userTrue.Role,
-                  _id: userTrue._id
-                },
-                token: "Bearer " + token
-              })
+            
+              success(res, "Đăng nhập thành công",
+                {
+                  user: {
+                    Username: userTrue.Username,
+                    FirstName: userTrue.FirstName,
+                    LastName: userTrue.LastName,
+                    FullName: userTrue.FullName,
+                    Email: userTrue.Email,
+                    Phone: userTrue.Phone,
+                    Role: userTrue.Role,
+                    _id: userTrue._id
+                  },
+                  token: "Bearer " + token
+                })
           } else {
             return error_400(res, "Tên đăng nhập hoặc mật khẩu không đúng",
               "Username or Passowrd")

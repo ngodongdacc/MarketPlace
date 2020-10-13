@@ -21,12 +21,9 @@ const mongoose = require('mongoose');
     DateUpdate: { type: Date, default: Date.now }, // Ngày update
     hidden: Boolean,
     Avatar: { type: String, default: "", }, // ảnh đại diện
-    Facebook: {
-      uid: String,
-      token: String,
-      email: { type: String, trim: true },
-    },
-    Google: { uid: String, token: String, email: { type: String, trim: true } },
+    Facebook: { type: Object, default: null},
+    Google: { type: Object, default: null },
+    Zalo: { type: Object, default: null },
     // Verify: { type: Boolean, default: false },
   });
   UserSchema.index({'$**': 'text'});
