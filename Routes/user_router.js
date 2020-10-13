@@ -16,6 +16,7 @@ router.post('/update/:id', checkSignIn(), checkRole(10002), UsersCtr.post_update
 router.get('/profile', checkSignIn(), checkRole(10001), UsersCtr.get_profile); // Lấy thông tin user
 router.get('/profile/:id', checkSignIn(), checkRole(10005), UsersCtr.get_profile_id); // Lấy thông tin user của tài khoản khác
 router.post('/delete/:id', checkSignIn(), UsersCtr.postDeleteUser); // Xóa thông tin user bằng id
+
 router.post('/role', checkSignIn(), UsersCtr.postDeleteUser); // Lấy thông tin user
 router.post('/remove/list', checkRole(10003), UsersCtr.remove_list_user); // xóa danh sách người dùng
 router.get('/search', checkRole(10004), UsersCtr.get_search); // Lấy thông tin user

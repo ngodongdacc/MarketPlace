@@ -56,7 +56,7 @@ Passport.use("shop-jwt", new JwtStrategy(opts, function (jwt_payload, done) {
 }));
 
 // JwtStrategy login facebook
-Passport.use(new FacebookStrategy({
+Passport.use("facebook",new FacebookStrategy({
     clientID: "1074493309677220",//process.env.CLIENT_ID,
     clientSecret: "ed564c1108faf182a8e6118f0f1791ec"//process.env.CLIENT_SECRET,
     // callbackURL: process.env.callbackURL

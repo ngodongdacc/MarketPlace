@@ -1,10 +1,28 @@
 const passport = require("passport");
 const Role = require("../Model/role");
 const RoleShop = require("../Model/roleShop");
-const {error_400,error_500} = require("../validator/errors");
+const {error_400,error_500, success} = require("../validator/errors");
+const rq = require("request-promise");
 module.exports = {
     checkSignIn: () => passport.authenticate('jwt', { session: false }), // kiểm tra đăng nhập
-    check_login_facebook: () => passport.authenticate('facebook', { session: false }), // kiểm tra đăng nhập
+    check_login_facebook: () => {
+       return async (req,res,next) => {
+            let token = req.body.access_token
+            if(!token || !token){
+                return error_400(res,"Vui lòng nhập token","access_token")
+            }
+
+            rq.get({
+                uri: "https://graph.facebook.com/me",
+                qs: {
+                    access_token: token // -> uri + '?access_token=xxxxx%20xxxxx'
+                },
+                json: true
+            }).then(result =>{
+                success(res,"thành công", result)
+            })
+        }
+    },
     checkLogInShop: () => passport.authenticate('shop-jwt', { session: false }),
     checkRole:(role) => { // kiểm tra quyền
         return async (req, res, next) => {
