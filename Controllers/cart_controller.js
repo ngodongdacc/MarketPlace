@@ -146,9 +146,10 @@ module.exports = {
                 if (resUserCart) {
                     let itemIndex = await resUserCart.ListProduct.findIndex(p => p._id == ProductId);
                     if (itemIndex > -1) {
-                        if (resUserCart.ListProduct[itemIndex].Quantity <= Quantity) return error_400(res, "Số lượng của sản phẩm phải lớn hơn 1", "ProductId");
-                        if (Quantity <= 0) return error_400(res, "Phải có ít nhất 1 sản phẩm ", "Quantity");
-                        resUserCart.ListProduct[itemIndex].Quantity -= Quantity;
+                        if (resUserCart.ListProduct[itemIndex].Quantity <= 0) 
+                        return error_400(res, "Số lượng của sản phẩm phải lớn hơn 1", "ProductId");
+                        if (Quantity <=0) return error_400(res, "Phải có ít nhất 1 sản phẩm ", "Quantity");
+                        resUserCart.ListProduct[itemIndex].Quantity = Quantity;
                         let totals = await resUserCart.ListProduct.reduce((acc, next) =>
                             acc + next.Quantity
                             , 0);
@@ -159,7 +160,7 @@ module.exports = {
                         resUserCart.SubPrice = await prices;
                         Cart.findByIdAndUpdate(resUserCart._id, { $set: resUserCart }, { new: true }, (err, resRemove) => {
                             if (err) return error_500(res, err)
-                            success(res, "Xóa sản phẩm thành công", resRemove)
+                            success(res, "Đã cập nhật số lượng sản phẩm", resRemove)
                         })
                     } else {
                         error_400(res, "Sản phẩm không tồn tại trong giỏ hàng", "ProductId");
