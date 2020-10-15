@@ -1,4 +1,5 @@
 const Comment = require("../../Model/comment");
+const CommentReply = require("../../Model/commentreply");
 const Products = require("../../Model/product");
 const Users = require("../../Model/users");
 const async = require("async");
@@ -70,12 +71,21 @@ module.exports = {
                     Comment.findById(commentReq.IdComment, (err, resFindCommentOfPostSupper) => {
                         if (err) return error_500(res, err)
                         if (!resFindCommentOfPostSupper) return error_400(res, "Không tìm thấy bình luận của sản phẩm", "Errors");
-                        if (resFindCommentOfPostSupper) {
-                            commentReq.IdComment = new mongoose.Types.ObjectId;
+                        const commentReply = new CommentReply({
+                            IdUser: IdUser,
+                            Content: commentReq.Content,
+                            IdProduct: resFindCommentOfPostSupper.IdProduct,
+                            IdParent: commentReq.IdComment,
+                            NewDateAt: NewDateAt,
+                            UpDateAt: UpDateAt
+                        })
+                        CommentReply.create(commentReply, (err, resCommentReply) => {
+                            if (err) return error_500(res, err)
                             resFindCommentOfPostSupper.Reply.push(
-                                commentReq
+                                resCommentReply
                             );
-                            Comment.findByIdAndUpdate(resFindCommentOfPostSupper._id, { $set: resFindCommentOfPostSupper }, { new: true })
+                            Comment.findByIdAndUpdate(resFindCommentOfPostSupper._id,
+                                { $set: resFindCommentOfPostSupper }, { new: true })
                                 .exec((e, u) => {
                                     if (e) error_500(res, e)
                                     CommentService.listComments(IdProduct, (err, resListData) => {
@@ -86,7 +96,7 @@ module.exports = {
                                             })
                                     })
                                 })
-                        }
+                        })
                     });
                 })
 
@@ -105,30 +115,30 @@ module.exports = {
         if (commentReq.Content === "") return error_400(res, "Vui lòng nhập nội dung bình luận", "Content");
         try {
             if (!commentReq.IdProduct) return error_400(res, "Vui lòng nhập Id", "IdProduct");
-                Users.findById(IdUser, (err, resFindUser) => {
+            Users.findById(IdUser, (err, resFindUser) => {
+                if (err) return error_500(res, err)
+                if (!resFindUser) return error_400(res, "Tài khoản không tồn tại trong hệ thống", "IdUser");
+                Comment.findById(commentReq.IdComment, (err, resFindData) => {
                     if (err) return error_500(res, err)
-                    if (!resFindUser) return error_400(res, "Tài khoản không tồn tại trong hệ thống", "IdUser");
-                    Comment.findById(commentReq.IdComment, (err, resFindData) => {
-                        if (err) return error_500(res, err)
-                        if (!resFindData) return error_400(res, "Không tìm thấy bình luận của sản phẩm", "IdComment");
-                        Comment.findByIdAndUpdate(resFindData._id, {
-                            UpDateAt: UpDateAt,
-                            Content: commentReq.Content
-                        }, { new: true })
-                            .exec((e, u) => {
-                                if (e) error_500(res, e)
-                                CommentService.listComments(commentReq.IdProduct, (err, resListData) => {
-                                    success(res, "Đã cập nhật câu trả lời mới",
-                                        {
-                                            comment: resListData[0],
-                                            count: resListData[1],
-                                        })
-                                })
+                    if (!resFindData) return error_400(res, "Không tìm thấy bình luận của sản phẩm", "IdComment");
+                    Comment.findByIdAndUpdate(resFindData._id, {
+                        UpDateAt: UpDateAt,
+                        Content: commentReq.Content
+                    }, { new: true })
+                        .exec((e, u) => {
+                            if (e) error_500(res, e)
+                            CommentService.listComments(commentReq.IdProduct, (err, resListData) => {
+                                success(res, "Đã cập nhật câu trả lời mới",
+                                    {
+                                        comment: resListData[0],
+                                        count: resListData[1],
+                                    })
                             })
+                        })
 
-                    });
-                })
-   
+                });
+            })
+
         } catch (e) {
             error_500(res, e)
         }
@@ -145,37 +155,41 @@ module.exports = {
         if (commentReq.Content === "") return error_400(res, "Vui lòng nhập nội dung bình luận", "Content");
         try {
             if (!commentReq.IdProduct) return error_400(res, "Vui lòng nhập Id", "IdProduct");
-                Users.findById(IdUser, (err, resFindUser) => {
+            Users.findById(IdUser, (err, resFindUser) => {
+                if (err) return error_500(res, err)
+                if (!resFindUser) return error_400(res, "Tài khoản không tồn tại trong hệ thống", "IdUser");
+                Comment.findById(commentReq.IdComment, (err, resFindData) => {
                     if (err) return error_500(res, err)
-                    if (!resFindUser) return error_400(res, "Tài khoản không tồn tại trong hệ thống", "IdUser");
-                    Comment.findById(commentReq.IdComment, (err, resFindData) => {
+                    if (!resFindData) return error_400(res, "Không tìm thấy bình luận của sản phẩm", "IdComment");
+                    const itemIndex = resFindData.Reply.findIndex(cmt => cmt._id == commentReq.IdCommentSuper);
+                    if (itemIndex < -1) return error_400(res, "Không tìm thấy trả lời bình luận", "IdCommentSuper");
+                    resFindData.Reply[itemIndex].UpDateAt = UpDateAt;
+                    resFindData.Reply[itemIndex].Content = commentReq.Content;
+                    CommentReply.findById(commentReq.IdCommentSuper, (err, resFindReply) => {
                         if (err) return error_500(res, err)
-                        if (!resFindData) return error_400(res, "Không tìm thấy bình luận của sản phẩm", "IdComment");
-                        const itemIndex = resFindData.Reply.findIndex(cmt => cmt.IdComment == commentReq.IdCommentSuper);
-                        if (itemIndex > -1) {
-                            resFindData.Reply[itemIndex].UpDateAt = UpDateAt;
-                            resFindData.Reply[itemIndex].Content = commentReq.Content;
-                            Comment.findByIdAndUpdate(resFindData._id, {
-                                Reply: resFindData.Reply
-                            }, { new: true })
-                                .exec((e, u) => {
-                                    if (e) error_500(res, e)
-                                    CommentService.listComments(commentReq.IdProduct, (err, resListData) => {
-                                        success(res, "Đã cập nhật câu trả lời mới",
-                                            {
-                                                comment: resListData[0],
-                                                count: resListData[1],
-                                            })
-                                    })
-                                  
-                                })
-                        } else {
-                            error_400(res, "Không tìm thấy bình luận của sản phẩm", "IdCommentSuper");
-                        }
-                    });
-                })
+                        CommentReply.findByIdAndUpdate(resFindReply._id,
+                            resFindData.Reply[itemIndex]
+                            , { new: true })
+                            .exec((e, us) => {
+                                if (e) error_500(res, e)
+                                Comment.findByIdAndUpdate(resFindData._id, {
+                                    Reply: resFindData.Reply
+                                }, { new: true })
+                                    .exec((e, u) => {
+                                        if (e) error_500(res, e)
+                                        CommentService.listComments(commentReq.IdProduct, (err, resListData) => {
+                                            success(res, "Đã cập nhật câu trả lời mới",
+                                                {
+                                                    comment: resListData[0],
+                                                    count: resListData[1],
+                                                })
+                                        })
 
-      
+                                    })
+                            })
+                    })
+                });
+            })
         } catch (e) {
             error_500(res, e)
         }
@@ -188,27 +202,27 @@ module.exports = {
             return error_400(res, "Vui lòng đăng nhập", "Login");
         try {
             if (!IdProduct) return error_400(res, "Vui lòng nhập Id", "IdProduct");
-                Users.findById(IdUser, (err, resFindUser) => {
+            Users.findById(IdUser, (err, resFindUser) => {
+                if (err) return error_500(res, err)
+                if (!resFindUser) return error_400(res, "Tài khoản không tồn tại trong hệ thống", "IdUser");
+                Comment.findById(IdComment, (err, resFindData) => {
                     if (err) return error_500(res, err)
-                    if (!resFindUser) return error_400(res, "Tài khoản không tồn tại trong hệ thống", "IdUser");
-                    Comment.findById(IdComment, (err, resFindData) => {
-                        if (err) return error_500(res, err)
-                        if (!resFindData) return error_400(res, "Không tìm thấy bình luận của sản phẩm", "IdComment");
-                        Comment.findByIdAndDelete(resFindData._id, (err, resFindComment) => {
-                            if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
-                            if (!resFindComment) return error_400(res, "Không tìm thấy bình luận của sản phẩm", "IdComment");
-                            CommentService.listComments(IdProduct, (err, resListData) => {
-                                success(res, "Đã xóa bình luận này",
-                                    {
-                                        comment: resListData[0],
-                                        count: resListData[1],
-                                    })
-                            })
-                           
-                        });
-                    })
+                    if (!resFindData) return error_400(res, "Không tìm thấy bình luận của sản phẩm", "IdComment");
+                    Comment.findByIdAndDelete(resFindData._id, (err, resFindComment) => {
+                        if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
+                        if (!resFindComment) return error_400(res, "Không tìm thấy bình luận của sản phẩm", "IdComment");
+                        CommentService.listComments(IdProduct, (err, resListData) => {
+                            success(res, "Đã xóa bình luận này",
+                                {
+                                    comment: resListData[0],
+                                    count: resListData[1],
+                                })
+                        })
+
+                    });
                 })
-         
+            })
+
         } catch (e) {
             error_500(res, e)
         }
@@ -223,32 +237,31 @@ module.exports = {
             return error_400(res, "Vui lòng đăng nhập", "Login");
         try {
             if (!IdProduct) return error_400(res, "Vui lòng nhập Id", "IdProduct");
-                Users.findById(IdUser, (err, resFindUser) => {
+            Users.findById(IdUser, (err, resFindUser) => {
+                if (err) return error_500(res, err)
+                if (!resFindUser) return error_400(res, "Tài khoản không tồn tại trong hệ thống", "IdUser");
+                Comment.findById(IdCommentParent, (err, resFindComment) => {
                     if (err) return error_500(res, err)
-                    if (!resFindUser) return error_400(res, "Tài khoản không tồn tại trong hệ thống", "IdUser");
-                    Comment.findById(IdCommentParent, (err, resFindComment) => {
+                    if (!resFindComment) return error_400(res, "Không tìm thấy bình luận này", "resFindComment");
+                    const itemIndex = resFindComment.Reply.findIndex(cmt => cmt._id == IdCommentSup);
+                    if (itemIndex < -1) return error_400(res, "Bình luận này không còn tồn tại", "IdCommentSup");
+                    resFindComment.Reply.findIndex(cmt => cmt._id == IdCommentSup) !== -1 && resFindComment.Reply.splice(resFindComment.Reply.findIndex(cmt => cmt._id == IdCommentSup), 1)
+                    CommentReply.findByIdAndRemove(IdCommentSup, (err, resRemoveReply) => {
                         if (err) return error_500(res, err)
-                        if (!resFindComment) return error_400(res, "Không tìm thấy bình luận này", "Errors");
-                        const itemIndex = resFindComment.Reply.findIndex(cmt => cmt.IdComment == IdCommentSup);
-                        if (itemIndex > -1) {
-                            resFindComment.Reply.findIndex(cmt => cmt.IdComment == IdCommentSup) !== -1 && resFindComment.Reply.splice(resFindComment.Reply.findIndex(cmt => cmt.IdComment == IdCommentSup), 1)
-                            Comment.findByIdAndUpdate(resFindComment._id, resFindComment, (err, resRemove) => {
-                                if (err) return error_500(res, err)
-                                CommentService.listComments(IdProduct, (err, resListData) => {
-                                    success(res, "Đã xóa bình luận này",
-                                        {
-                                            comment: resListData[0],
-                                            count: resListData[1],
-                                        })
-                                })
+                        Comment.findByIdAndUpdate(resFindComment._id, resFindComment, (err, resRemove) => {
+                            if (err) return error_500(res, err)
+                            CommentService.listComments(IdProduct, (err, resListData) => {
+                                success(res, "Đã xóa bình luận này",
+                                    {
+                                        comment: resListData[0],
+                                        count: resListData[1],
+                                    })
                             })
-                        } else {
-                            error_400(res, "Bình luận này không còn tồn tại", "Errors");
-                        }
+                        })
+                    })
+                });
+            })
 
-                    });
-                })
-       
         } catch (e) {
             error_500(res, e)
         }

@@ -7,12 +7,16 @@
 var app = require('../app');
 var debug = require('debug')('marketplace:server');
 var https = require('https');
+var socketio = require('socket.io');
+var Notification = require("../Model/notification");
+var NotificationService = require("../Services/notificationService");
 const fs = require('fs');
 const path = require('path');
 const options = {
-  key: fs.readFileSync(path.join(__dirname,'key.pem')),
-  cert: fs.readFileSync(path.join(__dirname,'cert.pem'))
+  key: fs.readFileSync(path.join(__dirname, 'key.pem')),
+  cert: fs.readFileSync(path.join(__dirname, 'cert.pem'))
 };
+
 /**
  * Get port from environment and store in Express.
  */
@@ -24,15 +28,69 @@ app.set('port', port);
  * Create HTTP server.
  */
 
-var server = https.createServer(options,app);
+var server = https.createServer(options, app);
+var io = require('socket.io')(server);
 
+io.on('connection', function (socket) {
+  console.log(socket.id);
+  // Create function to send status
+  sendStatus = function (s) {
+    socket.emit('status', s);
+  }
+
+  // Get chats from mongo collection
+  NotificationService.getListNotitification({}, (err, res) => {
+    Notification.countDocuments({}, (err, res1) => {
+      console.log("dataRes", res1);
+    })
+    // Emit the messages
+    socket.emit('output', res);
+  });
+
+  // Handle input events
+  socket.on('input', function (data) {
+    let name = data.name;
+    let message = data.message;
+
+    // Check for name and message
+    if (name == '' || message == '') {
+      // Send error status
+      sendStatus('Please enter a name and message');
+    } else {
+      // Insert message
+      let dataNotify = {};
+      dataNotify.Content = message;
+      dataNotify.IdUser = "5f742959bda71603f88e8d9e";
+      dataNotify.URL = name;
+      // moment().format('HH:mm:ss DD-MM-YYYY ')
+      Notification.create(dataNotify, (err, dataRes) => {
+        console.log("dataRes", dataRes);
+        io.emit('output', [dataRes]);
+        // Send status object
+        sendStatus({
+          message: 'Message sent',
+          clear: true
+        });
+      });
+    }
+  });
+
+  // Handle clear
+  socket.on('clear', function (data) {
+    // Remove all chats from collection
+    Notification.remove({}, function () {
+      // Emit cleared
+      socket.emit('cleared');
+    });
+  });
+});
 /**
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port,host,function () {
-    console.log(`App listening on ${host}:${port}!`)
-  });
+server.listen(port, host, function () {
+  console.log(`App listening on ${host}:${port}!`)
+});
 server.on('error', onError);
 server.on('listening', onListening);
 

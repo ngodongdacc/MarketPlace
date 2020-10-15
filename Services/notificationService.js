@@ -1,14 +1,31 @@
 var Notification = require("../Model/notification");
 const bcrypt = require("bcryptjs");
-var socket = io("http://192.168.43.64:3000");
+const moment = require('moment');
+
 module.exports = {
-  createNotification : async (name, cb) => {
+  formatMessage: async (username, text, cb) => {
+    return {
+      username,
+      text,
+      time: moment().format('HH:mm:ss DD-MM-YYYY ')
+    };
+  },
+  createNotification: async (name, cb) => {
+    var data = {};
+    data.formatMessage();
     try {
-        Notification.findOne({ ShopName: name }, cb);
+      // Notification.create()
+    } catch (e) {
+      throw e
+    }
+  },
+  getListNotitification : async (data, cb) => {
+    try {
+      Notification.find({}, cb)
     } catch (e) {
       throw e
     }
   }
- 
+
 
 }
