@@ -7,15 +7,6 @@
 var app = require('../app');
 var debug = require('debug')('marketplace:server');
 var https = require('https');
-<<<<<<< HEAD
-var spdy  = require('spdy');
-const fs = require('fs');
-const path = require('path');
-const options = {
-  key: fs.readFileSync(path.join(__dirname,'key.pem')),
-  cert: fs.readFileSync(path.join(__dirname,'cert.pem')),
-  ca: fs.readFileSync(path.join(__dirname,'cacert.crt'))
-=======
 var socketio = require('socket.io');
 var Notification = require("../Model/notification");
 var NotificationService = require("../Services/notificationService");
@@ -24,7 +15,6 @@ const path = require('path');
 const options = {
   key: fs.readFileSync(path.join(__dirname, 'key.pem')),
   cert: fs.readFileSync(path.join(__dirname, 'cert.pem'))
->>>>>>> tech24_Kokoro
 };
 
 /**
