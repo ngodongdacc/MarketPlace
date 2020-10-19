@@ -147,6 +147,7 @@ module.exports = {
     ,
     updateComment_Super: async (req, res) => {
         const commentReq = req.body;
+        console.log(req.url);
         var UpDateAt = new Date();
         let IdUser = req.user._id;
         if (!IdUser)
