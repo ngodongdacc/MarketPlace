@@ -105,6 +105,21 @@ module.exports = {
         })
 
     },
+    //Lấy thương hiệu thao danh mục
+    get_trademark_IdCategorySub:(req, res)=> {
+        const { IdCategorySub } = req.body
+        const trademark = req.body
+        if (!IdCategorySub) return error_400(res, "Vui lòng nhập id", "id");
+
+        Trademark.findById(IdCategorySub, (err, resTrademark) => {
+            if (err) return error_500(res, err)
+            if (!resTrademark)
+                return error_400(res, "Không tìm thấy id thương hiệu" + IdCategorySub, "IdCategorySub");
+
+            success(res, "Lấy thương hiệu thành công", resTrademark);
+        })
+
+    },
     // lấy tất cả thương hiệu
     get_trademarks: async (req, res) => {
         try {

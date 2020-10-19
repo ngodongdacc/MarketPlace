@@ -10,6 +10,6 @@ router.get('/get/:id',trademarkCtr.get_trademark);
 router.get("/list",trademarkCtr.get_list_trademark);
 router.post("/list/delete",trademarkCtr.remove_list_trademark);
 router.get('/search', trademarkCtr.search_trademark);
-
+router.get('/get/:IdCategorySub', trademarkCtr.get_trademark_IdCategorySub);
 
 module.exports = router;
