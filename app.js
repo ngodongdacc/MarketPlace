@@ -15,7 +15,6 @@ require('./middleware/database'); // connect database
 
 const app = express();
 
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
@@ -50,7 +49,7 @@ app.use(function(req, res, next) {
   next();
 });
 
-app.use('/api/', require('./Routes/router'));
+app.use('/api', require('./Routes/router'));
 app.use('/', (req,res)=>res.status(404).send("not found api"));
 
 // error handler

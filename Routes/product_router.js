@@ -6,7 +6,8 @@ const multer = require("multer");
 // controller
 const productCtr = require("../Controllers/products/product_controller");
 
-const {checkLogInShop} = require("../middleware/auth");
+// validator
+const {checkLogInShop} = require("../middleware/auth_shop");
 
 // Begin import img
 var storage = multer.diskStorage({

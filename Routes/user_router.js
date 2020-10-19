@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 // middleware
-const { checkSignIn, checkRole,check_login_facebook } = require("../middleware/auth");
+const { checkSignIn, checkRole,check_login_facebook,check_login_google, 
+    check_login_zalo} = require("../middleware/auth");
 
 // Controllers
 const UsersCtr = require("../Controllers/users/user_controller");
@@ -10,7 +11,9 @@ const loginUserCtr = require("../Controllers/users/login_controller");
 // api/users/
 router.post('/', UsersCtr.post_create_user); // Tạo mới tài khoản
 router.post('/login', UsersCtr.post_login); // Đăng nhập
-router.post('/login/facebook',check_login_facebook(), loginUserCtr.login_facbook); // Đăng nhập facebook
+router.post('/login/facebook',check_login_facebook(), loginUserCtr.facbook_login); // Đăng nhập facebook
+router.post('/login/google',check_login_google(), loginUserCtr.google_login); // Đăng nhập facebook
+router.post('/login/zalo',check_login_zalo(), loginUserCtr.zalo_login); // Đăng nhập facebook
 
 router.post('/update/:id', checkSignIn(), checkRole(10002), UsersCtr.post_update); // Cập nhật
 router.get('/profile', checkSignIn(), checkRole(10001), UsersCtr.get_profile); // Lấy thông tin user

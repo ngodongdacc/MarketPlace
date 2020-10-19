@@ -44,6 +44,8 @@ module.exports = {
         FirstName: user.FirstName,
         LastName: user.LastName,
         FullName: user.FullName,
+        Birthday: user.Birthday,
+        Avatar: user.Avatar,
         Email: user.Email,
         Phone: user.Phone,
         Role: user.Role,

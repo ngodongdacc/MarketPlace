@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const {checkLogInShop, checkRoleShop} = require("../middleware/auth")
+const {checkLogInShop, checkRoleShop} = require("../middleware/auth_shop")
 const roleShopCtr = require("../Controllers/shops/role_shop_controller");
 
 router.post("/", roleShopCtr.create_role_shop);
