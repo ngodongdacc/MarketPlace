@@ -6,6 +6,7 @@ const { error_400, error_500, success } = require("../../validator/errors");
 
 
 module.exports = {
+    //tạo mới mội xuất xứ
     create_origin: async (req, res, next) => {
         try {
             const { Country } = req.body
@@ -40,7 +41,7 @@ module.exports = {
             error_500(res, error);
         }
     },
-    // chỉnh sửa xuất xứ thương hiệu theo id
+    // chỉnh sửa xuất xứ  theo id
     update_origin: async (req, res, next) => {
         try {
             const { Country } = req.body
@@ -80,7 +81,7 @@ module.exports = {
             error_500(res, error);
         }
     },
-    // Lấy chi tiết xuất xứ thương hiệu bằng id
+    // Lấy chi tiết xuất xứ  bằng id
     get_origin: (req, res) => {
         const id = req.params.id
         if (!id) return error_400("Vui lòng nhập Id", "id");
@@ -93,7 +94,7 @@ module.exports = {
         })
 
     },
-    // Xóa xuất xứ thương hiệu bằng id
+    // Xóa xuất xứ bằng id
     remove_origin: (req, res) => {
         const id = req.params.id
         if (!id) return error_400("Vui lòng nhập Id", "id");
@@ -111,7 +112,7 @@ module.exports = {
         })
 
     },
-    //Lấy danh sách xuất xứ thương hiệu
+    //Lấy danh sách xuất xứ 
     get_list_origin: (req, res) => {
         const config = {};
 

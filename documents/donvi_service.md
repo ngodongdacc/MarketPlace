@@ -31,7 +31,7 @@
  -[2.6: Tìm kiếm đơn vị tính](#26-tìm-kiếm-đơn-vị-tính)
  -[2.7: Xoá danh sách đơn vị tính](#27-xoá-danh-sách-đơn-vị-tính)
  
- ### 2.1 Tạo một đơn vị tính
+ ### 2.1 Tạo mới đơn vị tính
 - Router: **/api/unit/add**
 - Function: **create_unit()**
 - Method: **POST**
@@ -57,7 +57,7 @@
   |   status   |   boolean    |      true: thành công, false: thất bại      |
   |  message   |    string    |               Tin nhắn trả về               |
 
-### 2.2 Cập nhật một đơn vị tính 
+### 2.2 Cập nhật đơn vị tính 
 
 - Router: **/api/unit/update/:id**
 - Function: **update_unit**

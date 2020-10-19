@@ -5,6 +5,7 @@ const async = require("async");
 const { error_400, error_500, success } = require("../../validator/errors");
 
 module.exports = {
+    //tạo mới một xuất xứ thương hiệu
     create_brandOrigin: async (req, res, next) => {
         try {
             const { Country } = req.body
@@ -63,7 +64,8 @@ module.exports = {
                 if (!results[0]) return error_400(res, "Tết quốc gia đã tồn tại");
                 BrandOrigin.findById(id, (err, resbrandOrigin) => {
                     if (err) return error_500(res, err);
-                    if (!resbrandOrigin) return error_400(res, "Không tìm thấy id Xuất xứ thương hiệu " + id, "id");
+                    if (!resbrandOrigin) 
+                    return error_400(res, "Không tìm thấy id Xuất xứ thương hiệu " + id, "id");
         
                     BrandOrigin.findByIdAndUpdate(resbrandOrigin._id, brandOrigin, { new: true })
                         .exec((err, resUpdate) => {
@@ -85,7 +87,8 @@ module.exports = {
 
         BrandOrigin.findById(id, (err, resbrandOrigin) => {
             if (err) return (res, err);
-            if (!resbrandOrigin) return error_400("Không tìm thấy id Xuất xứ thương hiệu " + id, "id");
+            if (!resbrandOrigin)
+             return error_400("Không tìm thấy id Xuất xứ thương hiệu " + id, "id");
 
             success(res, "Lấy chi tiết xuất xứ thương hiệu thành công", resbrandOrigin);
         })
@@ -97,7 +100,8 @@ module.exports = {
 
         BrandOrigin.findById(id, (err, resbrandOrigin) => {
             if (err) return error_500(res, err);
-            if (!resbrandOrigin) return error_400(res, "Không tìm thấy id xuất xứ thương hiệu" + id, "id");
+            if (!resbrandOrigin)
+             return error_400(res, "Không tìm thấy id xuất xứ thương hiệu" + id, "id");
 
             BrandOrigin.findByIdAndRemove(resbrandOrigin._id, (err, resRemove) => {
                 if (err) return error_500(res, err);
