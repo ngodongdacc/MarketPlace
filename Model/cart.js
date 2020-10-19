@@ -8,7 +8,7 @@ var CartSchema = new Schema({
         type: Number
     },
     UserId: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.Types.ObjectId,
         required:true
     },
     // cookieId: { type: String, default:"" },

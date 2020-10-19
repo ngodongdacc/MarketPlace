@@ -94,22 +94,16 @@
   | :-----------: | :----------: | :-------------: |
   | Authorization |    string    | Token đăng nhập |
 
-- Paremeter:
-
-  | Tên Trường | Kiểu dữ liệu |    Mô tả    |
-  | :--------: | :----------: | :---------: |
-  |     id     |    String    | id của Shop |
-
 - Body:
 
 |    Tên Trường     | Kiểu dữ liệu |                   Mô tả                   |
 | :---------------: | :----------: | :---------------------------------------: |
 |  StoreOwnername   |    String    |            (Tên chủ cửa hàng)             |
 |       Phone       |    String    |              (Số điện thoại)              |
-|    EmailOwner     |    String    |             (Email của shop)              |
 |   PasswordShop    |    String    |            (Mật khẩu của shop)            |
 |     ShopName      |    String    |              (Tên cửa hàng )              |
 |      Country      |    String    |      (Thành phố đăng ký kinh doanh)       |
+| BusinessRegisCode |    String    |        (Mã số kinh doanh cửa hàng)        |
 | CommodityIndustry |    String    | (Loại nghành hàng hóa đăng ký kinh doanh) |
 
 - Dữ liệu trả về
@@ -133,9 +127,9 @@
 
 - Body:
 
-  | Tên Trường | Kiểu dữ liệu |         Mô tả         |
-  | :--------: | :----------: | :-------------------: |
-  |   ListId   |    array     |Danh sách [_id:("id của shop") ] |
+  | Tên Trường | Kiểu dữ liệu |              Mô tả               |
+  | :--------: | :----------: | :------------------------------: |
+  |   ListId   |    array     | Danh sách [_id:("id của shop") ] |
 
 - Dữ liệu trả về
 
@@ -159,13 +153,10 @@
 - Paremeter:
   | Tên Trường | Kiểu dữ liệu | mặc định | Mô tả |  
    |:----------: |:------------:|:------------: |:--------------------------------: |  
-   | ShopName | string | null | Từ khóa tìm kiếm |
-  | Country | string | null | Từ khóa tìm kiếm |
-  | CommodityIndustry | string | null | Từ khóa tìm kiếm |
-  | StoreOwnername | string | null | Từ khóa tìm kiếm |
+   | search | string | null | Từ khóa tìm kiếm |
   | page | number | 1 | trang cần xem |
   | limit | number | 20 | Số lượng kết quả trả về |
-  | sort | object | {"ShopName": desc} | Trường sắp xếp |
+  | sort | object | {"CreateAt": -1} | Trường sắp xếp |
 
 - Dữ liệu trả về
 
@@ -186,10 +177,6 @@
   | :-----------: | :----------: | :-------------: |
   | Authorization |    string    | Token đăng nhập |
 
-- Paremeter:
-  | Tên Trường | Kiểu dữ liệu | mặc định | Mô tả |  
-   |:----------: |:------------:|:------------: |:--------------------------------: |  
-   | search | string | null | id của shop |
 - Dữ liệu trả về
 
   | Tên Trường | Kiểu dữ liệu |                    Mô tả                    |

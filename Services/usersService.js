@@ -1,111 +1,60 @@
 
-var Users = require("../Model/users");
+const Users = require("../Model/users");
 const bcrypt = require("bcryptjs");
-
+const jwt = require("jsonwebtoken");
 module.exports = {
-// Tìm kiếm user 
-findOneUser : async (username,cb) => {
-  try {         
-    Users.findOne({Username: username},cb);
-  } catch(e) {
-    throw e
-  }
-},
 
-// Tạo mới user 
-createUser : async (user,cb) => {
+  // Tạo mới user 
+  createUser: async (user, cb) => {
     try {
-          bcrypt.genSalt(10, function(err, salt) {
-            bcrypt.hash(user.Password, salt,async function(err, hash) {
-              if (err){
-                cb(err,null)
-              } 
-                user.Password = hash;
-                Users.create(user,cb);
-            });
-          });    
-       } catch(e) {
-      throw e
-    }
-  },
-// Tìm kiếm user theo id 
-getUserById : async (id,cb) => {
-    try {         
-       Users.findById(id,cb);
-    } catch(e) {
+      bcrypt.genSalt(10, function (err, salt) {
+        bcrypt.hash(user.Password, salt, async function (err, hash) {
+          if (err) {
+            cb(err, null)
+          }
+          user.Password = hash;
+          Users.create(user, cb);
+        });
+      });
+    } catch (e) {
       throw e
     }
   },
 
-  // Cập nhật thông tin user
- updateUser : async (id,user,cb) => {
-  try {         
-     Users.updateOne({_id: id},user,cb);
-  } catch(e) {
-    throw e
-  }
-},
-
-
-  // Tìm kiếm user 
-findOneUserByID : async (id,cb) => {
-    try {         
-      Users.findById(id,cb);
-    } catch(e) {
-      throw e
-    }
-  },
-
-removeUserById : async (id,cb) => {
-  try {         
-    Users.findByIdAndRemove(id,cb);
-  } catch(e) {
-    throw e
-  }
-},
-// Tìm kiếm email 
-findEmail: async (Email,cb) => {
-    try {         
-      Users.findOne({Email: Email},cb);
-    } catch(e) {
-      throw e
-    }
-  },
-// Tìm kiếm Phone 
-findPhone: async (Phone,cb) => {
-    try {         
-      Users.findOne({Phone: Phone},cb);
-    } catch(e) {
-      throw e
-    }
-  },
-
-searchUsers: async (search,cb) => {  
-  var objSearch = {}
-  if(search.text)
-    objSearch = {$text: {$search: search.text}}    
-  Users.find(objSearch)  
-       .skip(search.skip)
-       .limit(search.limit)
-       .sort({Date: 'desc'})
-       .exec(cb)
-},
-
-countUsers: async (cb) => {  
-  Users.count({},cb);
-},
-// kiểm tra password
-comparePassword : async (myPassword,hash,cb) => {
-    try {         
-      bcrypt.compare(myPassword,hash,(err,isMath) => {
-        if(err) throw err
+  // kiểm tra password
+  comparePassword: async (myPassword, hash, cb) => {
+    try {
+      bcrypt.compare(myPassword, hash, (err, isMath) => {
+        if (err) throw err
         cb(null, isMath)
       })
-    } catch(e) {
+    } catch (e) {
       throw e
     }
+  },
+
+  // Tạo token
+  token_login: async (user,cb) => {
+    let token = jwt.sign(user.toJSON(), process.env.secretKey,
+    { expiresIn: process.env.TimeToken || 60000000 });
+
+    cb({
+      "user": {
+        Username: user.Username,
+        FirstName: user.FirstName,
+        LastName: user.LastName,
+        FullName: user.FullName,
+        Email: user.Email,
+        Phone: user.Phone,
+        Role: user.Role,
+        Facebook: user.Facebook,
+        Google: user.Google,
+        Zalo: user.Zalo,
+        _id: user._id
+      },
+      token: "Bearer " + token
+    })
   }
 
-// ----------------------------------------------
 }
 

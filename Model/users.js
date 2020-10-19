@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
     FirstName:   {type: String , default:""}, // Tên
     FullName:   {type: String , default:""}, // Họ và Tên
     Address:   {type: Array , default:[]}, // địa chỉ
-    Gender:   {type: Number }, // giới tính 
+    Gender:   {type: Number, default: null }, // giới tính 
     Birthday:   {type: Date }, // Ngày sinh 
     Email:   {type: String , required: true,unique: true}, // Email
     Password: {type: String , required: true, unique: true}, // Mật khẩu
@@ -21,12 +21,9 @@ const mongoose = require('mongoose');
     DateUpdate: { type: Date, default: Date.now }, // Ngày update
     hidden: Boolean,
     Avatar: { type: String, default: "", }, // ảnh đại diện
-    Facebook: {
-      uid: String,
-      token: String,
-      email: { type: String, trim: true },
-    },
-    Google: { uid: String, token: String, email: { type: String, trim: true } },
+    Facebook: { type: Object, default: null},
+    Google: { type: Object, default: null },
+    Zalo: { type: Object, default: null },
     // Verify: { type: Boolean, default: false },
   });
   UserSchema.index({'$**': 'text'});

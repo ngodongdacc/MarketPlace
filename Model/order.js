@@ -1,8 +1,5 @@
-const { ObjectID } = require('mongodb');
 const mongoose = require('mongoose');
-const { schema } = require('./category');
   var Schema = mongoose.Schema;
-
 
   var OrderSchema = new Schema({
     UserId: {type: mongoose.Types.ObjectId, required:true},
@@ -18,10 +15,10 @@ const { schema } = require('./category');
     GrossProduct: {type: Number},
     Reason: {type: String},
     IdCart: {type: mongoose.Types.ObjectId, required:true},
-    Date: { type: Date, default: Date.now }, // ngày tạo 
-    DateUpdate: { type: Date, default: Date.now }, // ngày cập nhật
+    CreateAt: { type: Date, default: Date.now }, // ngày tạo 
+    UpdateAt: { type: Date, default: Date.now }, // ngày cập nhật
   });
-
+  OrderSchema.index({'$**': 'text'});
   module.exports = mongoose.model("Order", OrderSchema);
 
  

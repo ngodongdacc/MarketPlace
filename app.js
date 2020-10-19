@@ -1,32 +1,33 @@
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-var dotenv = require('dotenv');
-var passport = require('passport');
-var expressSession = require('express-session');
-var MemoryStore = require('memorystore')(expressSession)
-var cors = require('cors')
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const dotenv = require('dotenv');
+const passport = require('passport');
+const expressSession = require('express-session');
+const MemoryStore = require('memorystore')(expressSession)
+const cors = require('cors')
 
 dotenv.config();
 
-require("./Controllers/Passport");
-require('./Model/database');
+require("./middleware/Passport"); // using passport
+require('./middleware/database'); // connect database
 
-var app = express();
+const app = express();
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 app.set('trust proxy', 1) // trust first proxy
-
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
-
+// app.get('/auth/provider', passport.authenticate('local', { successRedirect: '/',
+ //                                                   failureRedirect: '/login' }));
 app.use(expressSession({
   secret: process.env.secretKey || "QTData-MarketPlace",
   resave: false,
@@ -38,10 +39,10 @@ app.use(expressSession({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+
+// app.use(cors(corsOption));
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-//   res.setHeader('Access-Control-Allow-Origin', req.header('origin') 
-// || req.header('x-forwarded-host') || req.header('referer') || req.header('host'));
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');

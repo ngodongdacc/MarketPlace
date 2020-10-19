@@ -1,8 +1,36 @@
 const passport = require("passport");
 const Role = require("../Model/role");
-const {error_400,error_500} = require("../validator/errors");
+const RoleShop = require("../Model/roleShop");
+const {error_400,error_500, success} = require("../validator/errors");
+const rq = require("request-promise");
 module.exports = {
     checkSignIn: () => passport.authenticate('jwt', { session: false }), // kiểm tra đăng nhập
+    check_login_facebook: () => {
+       return async (req,res,next) => {
+            let token = req.body.access_token;
+            
+            if(!token || token === ""){
+                return error_400(res,"Vui lòng nhập token","access_token")
+            }
+            
+            rq.get({
+                uri: "https://graph.facebook.com/me",
+                qs: {
+                    access_token: token,
+                    fields:"name,picture,first_name,last_name,email"
+                },
+                json: true
+            }).then(result =>{
+                req.user = result;
+                next();
+            })
+            .catch(e => {
+                if(e && e.error)
+                    return error_400(res,"Đăng nhập thất bại", e.error)
+                error_500(res,"access_token");
+            })
+        }
+    },
     checkLogInShop: () => passport.authenticate('shop-jwt', { session: false }),
     checkRole:(role) => { // kiểm tra quyền
         return async (req, res, next) => {
@@ -20,7 +48,7 @@ module.exports = {
                         }
                     })
             } catch (error) {
-             next(error)
+                next(error)
             }
         }
     },
@@ -34,4 +62,34 @@ module.exports = {
             }
         }
     },
+    checkRoleShop:(role) => { // kiểm tra quyền của shop
+        return async (req, res, next) => {
+            try {
+                RoleShop.findOne({ Title: req.user.RoleShop})
+                    .exec(async (e,r) =>{
+                        if(e) {
+                            return error_500(res,e);
+                        } else if(!r) {
+                            return error_400(res,"Bạn không có quyền để thực hiện chức năng này","RoleShop")
+                        } else {
+                            let index = r.RoleShops.findIndex(el => el === role)
+                            if(index===-1) return error_400(res,"Bạn không có quyền thực hiện chức năng này", "RoleShop")
+                            else next()
+                        }
+                    })
+            } catch (error) {
+             next(error)
+            }
+        }
+    },
+    check_is_admin_shop: () => { // kiểm tra là tài khoản admin (shop)
+        return async (req,res,next) => {
+            try {
+                if(req.user.RoleShop === "admin") next();
+                else error_400(res,"Bạn không có quyền thực hiện chức năng này","RoleShop")
+            } catch (error) {
+                next(error)
+            }
+        }
+    }
 }

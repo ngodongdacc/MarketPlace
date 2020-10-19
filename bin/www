@@ -6,8 +6,13 @@
 
 var app = require('../app');
 var debug = require('debug')('marketplace:server');
-var http = require('http');
-
+var https = require('https');
+const fs = require('fs');
+const path = require('path');
+const options = {
+  key: fs.readFileSync(path.join(__dirname,'key.pem')),
+  cert: fs.readFileSync(path.join(__dirname,'cert.pem'))
+};
 /**
  * Get port from environment and store in Express.
  */
@@ -19,7 +24,7 @@ app.set('port', port);
  * Create HTTP server.
  */
 
-var server = http.createServer(app);
+var server = https.createServer(options,app);
 
 /**
  * Listen on provided port, on all network interfaces.
