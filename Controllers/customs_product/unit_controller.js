@@ -1,208 +1,215 @@
 const async = require("async");
 const Units = require("../../Model/unit");
 
+<<<<<<< HEAD:Controllers/customs_product/unit_controller.js
 const UnitService = require("../../Services/unitService");
+=======
+const UnitService = require("../Services/unitService");
+// validator
+const { error_400, error_500, success } = require("../validator/errors");
+
+>>>>>>> Hung:Controllers/unitController.js
 
 module.exports = {
-    create_unit:async (req, res, next) => {
+    // tạo mới một đơn vị 
+    create_unit: async (req, res, next) => {
         try {
-            const { Name } = req.body
+            const { Name, IdCategory } = req.body
+            const unit = req.body
             if (!Name)
-                return res.status(400) // kiểm tra name
-                    .json({
-                        message: "Please enter your Name",
-                        status: false,
-                        code: 0
-                    })
-          
-            const  unit = req.body
+                return error_400(res, "Hãy nhập tên đơn vị ") // kiểm tra name
+            if (!IdCategory)
+                return error_400(res, "Hãy nhập id danh mục", "IdCategory");// Kiểm tra IdCategory
             async.parallel([
                 (cb) => {// kiểm tra name
                     if (Name)
-                    UnitService.findName(Name, (err, resNameUnit) => {
+                        UnitService.findName(Name, (err, resNameUnit) => {
                             if (err) cb(err)
                             else if (!resNameUnit) cb(null, true);
                             else cb(null, false);
                         })
                     else cb(null, true)
                 },
-               
-            ], (err, results) => {
-                if (err) return res.status(400).json({ message: "There was an error processing", errors: err });
-                if (!results[0]) return res.status(400).json({ message: "Tên đã tồn tại", status: false, code: 0 });
 
-                Units.create(origin, (err, resUint) => {
-                    if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-                    res.json({
-                        message: "Tạo một đơn vị thành công",
-                        data: resUint,
-                        status: true
-                    })
+            ], (err, results) => {
+                if (err) return error_500(res, err);
+                if (!results[0]) return error_400(res, "Tên đơn vị đã tồn tại");
+
+                Units.create(unit, (err, resUint) => {
+                    if (err) return error_500(res, err)
+
+                    success(res, "Tạo một đơn vị thành công", resUint)
                 })
-               
+
             });
 
-        } catch (e) {
-            res.send({
-                message: e.message,
-                errors: e.errors,
-                code: 0
-            }).status(500) && next(e)
+        } catch (error) {
+           error_500(res, error);
         }
 
     },
-    // chỉnh sửa đơn vị tính theo id
-    update_unit: (req, res) => {
-        const unit = req.body
-        const id = req.params.id
-        if (!id) return res.status(400).json({ message: "Vui lòng nhập Id unit", status: false });
-        if (unit.Name === "") return res.status(400).json({ message: "Tên units không được rỗng", status: false });
-        console.log("unit:: ", req.body);
-        Units.findById(id, (err, resUint) => {
-            if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-            if (!resUint) return res.json({ message: "Không tìm thấy id sản phẩm", data: null, status: false });
+     // chỉnh sửa đơn vị tính theo id
+    update_unit: async (req, res, next) => {
+        try {
+            const { Name, IdCategory } = req.body
+            const unit = req.body
+            const id = req.params.id
+            if (!id) return error_400(res, "Vui lòng nhập Id unit", "id");
+            if (!unit.Name) return error_400(res, "Tên units không được rỗng", "Name");
+            if (!unit.IdCategory) return error_400(res, "Id danh mục không được rổng", "IdCategory");
+            
+            async.parallel([
+                (cb) => {// kiểm tra name
+                    if (Name)
+                        UnitService.findName(Name, (err, resNameUnit) => {
+                            if (err) cb(err)
+                            else if (!resNameUnit) cb(null, true);
+                            else cb(null, false);
+                        })
+                    else cb(null, true)
+                },
 
-            Units.findByIdAndUpdate(resUint._id, { $set: unit }, {}, (err, resUpdate) => {
-                if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-                res.json({
-                    message: "Cập nhật một Units thành công",
-                    data: resUpdate,
-                    status: true
+            ], (err, results) => {
+                if (err) return error_500(res, err);
+                if (!results[0]) return error_400(res, "Tên đơn vị đã tồn tại");
+                Units.findById(id, (err, resUint) => {
+                    if (err) return error_500(res, err)
+                    if (!resUint) return error_400(res, "Không tìm thấy id đơn vị" + id, "id");
+
+                    Units.findByIdAndUpdate(resUint._id, unit, { new: true })
+                        .exec((err, resUpdate) => {
+                            if (err) return error_500(res, err);
+                            success(res, "Cập nhật đơn vị thành công", resUpdate)
+                        })
                 })
-            })
-        })
+
+            });
+
+        } catch (error) {
+           error_500(res, error);
+        }
+
     },
     // Lấy chi tiết đơn vị tính  bằng id
-    get_unit: (req, res)=> {
+    get_unit: (req, res) => {
         const id = req.params.id
-        if(!id) return res.status(400).json({message: "Vui lòng nhập Id", status:false});
+        if (!id) return error_400(res, "Vui lòng nhập id", "id");
 
-        Units.findById(id,(err,resUint)=>{
-            if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false});
-            if(!resUint) return res.status(400).json({message: "Không tìm thấy đơn vị tính",data: null,status:false});
-            
-            res.json({
-                message: "Lấy chi tiết đơn vị tính thành công",
-                data: resUint,
-                status: true
-            })
+        Units.findById(id, (err, resUint) => {
+            if (err) return error_500(res, err)
+            if (!resUint) return error_400(res, "Không tìm thấy id đơn vị tính" + id, "id");
+
+            success(res, "Lấy chi tiết đơn vị  thành công", resUint);
         })
+
     },
+    // lấy tất cẩ đơn vị
     get_units: async (req, res) => {
-        try{
+        try {
             const unit = await Units.find()
-            
+
             res.json(unit)
-        }catch(err){
+        } catch (err) {
             res.send('Error ' + err)
         }
     },
     // Xóa đớn vị tính bằng id
     remove_unit: (req, res) => {
         const id = req.params.id
-        if (!id) return res.status(400).json({ message: "Vui lòng nhập Id", status: false });
+        if (!id) return error_400(res, "Vui lòng nhập id", "id");
 
         Units.findById(id, (err, resUint) => {
-            if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-            if (!resUint) return res.status(400).json({ message: "Không tìm thấy Units", data: null, status: false });
+            if (err) return error_500(res, err);
+            if (!resUint) return error_400(res, "Không tìm thấy id đơn vị " + id, "id");
 
             Units.findByIdAndRemove(resUint._id, (err, resRemove) => {
-                if (err) return res.status(400).json({ message: "Có lỗi trong quá trình xử lý", errors: err, status: false });
-                res.json({
-                    message: "Xóa một units thành công",
-                    data: resRemove,
-                    status: true
-                })
+                if (err) error_500(res, err)
+                success(res, "Xóa đơn vị thành công", resRemove)
             })
         })
+
     },
     //Lấy danh sách đơn vị tính
-    get_list_unit: (req,res) => {
+    get_list_unit: (req, res) => {
         const config = {};
-        
-        config.page = req.query.page ? Number(req.query.page):1 
-        config.limit = req.query.limit ? Number(req.query.limit):20 
-        config.skip = (config.page-1)*config.limit;
-    
+
+        config.page = req.query.page ? Number(req.query.page) : 1
+        config.limit = req.query.limit ? Number(req.query.limit) : 20
+        config.skip = (config.page - 1) * config.limit;
+
         async.parallel([
             (cb) => Units
-                        .find({})
-                        .skip(config.skip)
-                        .limit(config.limit)
-                        .sort({Date: "desc"})
-                        .exec((e,data) => e ? cb(e): cb(null, data)),
-            (cb) => Units.count().exec((e,data)=> e ? cb(e) : cb(null,data))
-        ], (err,results) => {
-            if(err) if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false });
-            res.json({
-                message: "Lấy danh sách đơn vị tính thành công",
-                data: {
+                .find({})
+                .skip(config.skip)
+                .limit(config.limit)
+                .sort({ Date: "desc" })
+                .exec((e, data) => e ? cb(e) : cb(null, data)),
+            (cb) => Units.count().exec((e, data) => e ? cb(e) : cb(null, data))
+        ], (err, results) => {
+            if (err) return error_500(res, err);
+
+            success(res, "Lấy danh sách đơn vị thành công",
+                {
                     unit: results[0],
                     count: results[1],
-                },
-                status: true
-            }) 
+
+                })
+
         })
     },
-    // xóa danh sách xuất xứ
-    remove_list_unit: (req,res) => {
-        const listIdUnit = req.body.ListId;
-        if(!listIdUnit || (Array.isArray(listIdUnit) && listIdUnit.length === 0)) return res.status(400).json({message: "Vui lòng chọn sản phẩm cần xóa",status:false}); 
-        if(!Array.isArray(listIdUnit)) return res.status(400).json({message: "ListId phải là array",status:false}); 
+    // xóa danh sách đơn vị tính
+    remove_list_unit: (req, res) => {
+        const listId = req.body.ListId;
+        if (!Array.isArray(listId))
+            return error_400(res, "ListId phải là array", "ListId");
+
+        if (!listId || (Array.isArray(listId) && listId.length === 0))
+            return error_400(res, "Vui lòng chọn đơn vị cần xóa", "ListId");
 
         Units
-            .deleteMany({_id: {$in: listIdUnit}})
-            .exec((err,resData)=> {
-                if(err) if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false });
-                res.send({
-                    message: `Xóa thành công ${resData.n} sản phẩm`,
-                    data: resData,
-                    status: true
-                })
+            .deleteMany({ _id: { $in: listId } })
+            .exec((err, resData) => {
+                if (err) return error_500(res, err);
+                success(res, `Xóa thành công ${resData.n} đơn vị`, resData)
             })
 
     },
+
+    //Tìm kiếm theo tến
     search_unit: (req, res) => {
+
         try {
-            
-        
-        const config = {};
-        config.search = req.query.search 
-        config.Name = req.query.Name
-        config.page = req.query.page ? Number(req.query.page):1 
-        config.limit = req.query.limit ? Number(req.query.limit):20 
-        config.skip = (config.page-1)*config.limit;
-        
-        const query = { Name: { $regex: config.Name, $options: "i" }}
-        async.parallel([
-            (cb) => 
-            Units.find(query)
-                        .skip()
+
+
+            const config = {};
+            config.Name = req.query.Name
+            config.page = req.query.page ? Number(req.query.page) : 1
+            config.limit = req.query.limit ? Number(req.query.limit) : 20
+            config.skip = (config.page - 1) * config.limit;
+            const query = { Name: { $regex: config.Name, $options: "i" } };
+
+            async.parallel([
+                (cb) =>
+                    Units.find(query)
+                        .skip(config.skip)
                         .limit(config.limit)
-                        .sort({Date: "desc"})
-                        .exec((e,data) => e ? cb(e): cb(null, data)),
-            (cb) => Units.count(query)
-                            .exec((e,data)=> e ? cb(e) : cb(null,data))
-        ], (err,results) => {
-            if(err) if(err) return res.status(400).json({message: "Có lỗi trong quá trình xử lý",errors: err,status:false });
-            res.json({
-                message: "Lấy danh sách Xuất xứ  thành công",
-                data: {
-                    unit: results[0],
-                    count: results[1],
-                },
-                status: true
-            }) 
-        })
-    } catch (error) {
-        console.log(error);
-        res.status(500)
-            .json({
-                message: "lỗi hệ thống", 
-                errors: error,
-                status: 500
+                        .sort({ Date: "desc" })
+                        .exec((e, data) => e ? cb(e) : cb(null, data)),
+                (cb) => Units.count(query)
+                    .exec((e, data) => e ? cb(e) : cb(null, data))
+
+            ], (err, results) => {
+                if (err) return error_500(res, err)
+                success(res, "Lấy danh sách đơn vị thành công",
+                    {
+                        unit: results[0],
+                        count: results[1],
+                    })
             })
-    }
+
+        } catch (error) {
+            error_500(res, error);
+        }
     },
-    
+
 }

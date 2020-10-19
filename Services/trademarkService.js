@@ -35,6 +35,15 @@ module.exports = {
     } catch (e) {
       throw e
     }
+  },
+  findName: async (Name, cb) => {
+    try {
+      console.log(Name);
+      Trademark.findOne({ Name: Name }, cb);
+    } catch (e) {
+      throw e
+    }
   }
+
 
 }
