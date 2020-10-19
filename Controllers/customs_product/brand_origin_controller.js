@@ -2,7 +2,7 @@ const BrandOrigin = require("../../Model/brandOrigin");
 const BrandOriginService = require("../../Services/brandOriginService");
 const async = require("async");
 // validator
-const { error_400, error_500, success } = require("../validator/errors");
+const { error_400, error_500, success } = require("../../validator/errors");
 
 module.exports = {
     create_brandOrigin: async (req, res, next) => {

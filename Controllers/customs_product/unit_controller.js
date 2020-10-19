@@ -1,14 +1,10 @@
 const async = require("async");
 const Units = require("../../Model/unit");
 
-<<<<<<< HEAD:Controllers/customs_product/unit_controller.js
 const UnitService = require("../../Services/unitService");
-=======
-const UnitService = require("../Services/unitService");
 // validator
-const { error_400, error_500, success } = require("../validator/errors");
+const { error_400, error_500, success } = require("../../validator/errors");
 
->>>>>>> Hung:Controllers/unitController.js
 
 module.exports = {
     // tạo mới một đơn vị 

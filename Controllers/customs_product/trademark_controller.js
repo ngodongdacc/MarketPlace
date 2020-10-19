@@ -2,7 +2,7 @@ const Trademark = require("../../Model/trademark");
 const TrademarkService = require("../../Services/trademarkService");
 const async = require("async");
 // validator
-const { error_400, error_500, success } = require("../validator/errors");
+const { error_400, error_500, success } = require("../../validator/errors");
 module.exports = {
     //tạo mới một thương hiệu 
     create_trademark: async (req, res, next) => {

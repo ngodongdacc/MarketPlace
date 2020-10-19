@@ -2,7 +2,7 @@ const Origin = require("../../Model/origin");
 const OriginService = require("../../Services/originService");
 const async = require("async");
 // validator
-const { error_400, error_500, success } = require("../validator/errors");
+const { error_400, error_500, success } = require("../../validator/errors");
 
 
 module.exports = {
