@@ -2,13 +2,13 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-const dotenv = require('dotenv');
+const dotenv = require('dotenv').config();
 const passport = require('passport');
 const expressSession = require('express-session');
 const MemoryStore = require('memorystore')(expressSession)
 const cors = require('cors')
 
-dotenv.config();
+// dotenv.config();
 
 require("./middleware/Passport"); // using passport
 require('./middleware/database'); // connect database

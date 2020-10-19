@@ -32,7 +32,11 @@
     "pug": "2.0.0-beta11",
     "request": "^2.88.2",
     "request-promise": "^4.2.6",
+<<<<<<< HEAD
     "spdy": "^4.0.2",
+=======
+    "socket.io": "^2.3.0",
+>>>>>>> tech24_Kokoro
     "tunnel-ssh": "^4.1.4"
   },
   "devDependencies": {
