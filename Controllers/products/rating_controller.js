@@ -54,7 +54,7 @@ module.exports = {
     },
 
     // Lấy xếp hạng sản phẩm
-    get_rating_product: (req, res) => {
+    count_rating_product: (req, res) => {
         let IdProduct = req.query.idProduct;
 
         if(!IdProduct || IdProduct === "") {
