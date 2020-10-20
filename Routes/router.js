@@ -17,6 +17,7 @@ router.use("/category",require('./category_router')); // Danh mục
 router.use("/sub-category",require('./sub_category_router')); // Danh mục con
 router.use("/order",require('./order_router')); // Đơn hàng
 router.use("/comment",require('./comment_router')) // Nhận xét của sản phẩm
+router.use("/rating",require('./products/rating_router')) // Nhận xét của sản phẩm
 
 
 router.use("/trademark", require('./trademark_router'))  // 

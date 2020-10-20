@@ -14,5 +14,6 @@ var CommentSchema = new Schema({
     IdProduct: {
         type: mongoose.Types.ObjectId, required: true // Id sản phẩm comment
     },
+    Rating: { type: Number, default: null, enum: [1,2,3,4,5]} // xếp hạng
 });
 module.exports = mongoose.model("Comments", CommentSchema); 
