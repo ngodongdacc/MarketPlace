@@ -1,8 +1,8 @@
 
 const Passport = require("passport");
-const JwtStrategy = require('passport-jwt').Strategy,
-    ExtractJwt = require('passport-jwt').ExtractJwt,
-    FacebookStrategy = require('passport-facebook').Strategy;
+const JwtStrategy = require('passport-jwt').Strategy;
+var    ExtractJwt = require('passport-jwt').ExtractJwt;
+var    FacebookStrategy = require('passport-facebook').Strategy;
 
 // Models
 const Users = require("../Model/users");
