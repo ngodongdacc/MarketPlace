@@ -17,18 +17,26 @@
 * Source code: ./Controller/(rating_controller.js  
 * Danh sách routers  
    * [2.1: Thêm xếp hạng mới](#21--thêm-xếp-hạng-mới)  
-   * [2.2: Lấy số lượng xếp hạng sản phẩm ](#22--Lấy-số-lượng-xếp-hạng-sản-phẩm)  
+   * [2.2: Lấy số lượng xếp hạng sản phẩm ](#22--lấy-danh-sách-số-lượng-xếp-hạng-sản-phẩm)  
    
-### 2.1  Thêm sản phẩm mới  
+### 2.1  Thêm xếp hạng mới  
  - Router: **/api/rating/add**  
  - Function: **add_rating()**  
  - Method: **POST**
  - Paremeter: 
+ - Header
+    
+      | Tên Trường  | Kiểu dữ liệu     |               Mô tả                  |  
+    |:----------:  |:------------:    |:--------------------------------:    |  
+    |    Authorization     |    string |         Token đăng nhập của tài khoản      |
+
+
  - Body:
 
     | Tên Trường  | Kiểu dữ liệu     |               Mô tả                  |  
     |:----------:  |:------------:    |:--------------------------------:    |  
-    |    body     |    object |         [ Rating object](#data-structure-rating-object)      |
+    |    IdProduct     |    ObjectId |         id của sản phẩm đánh giá xếp hạng       |
+    |    Start     |    number |         Xếp hạng sản phẩm chỉ nhận giá trị 1->5       |
 
 - Dữ liệu trả về
 
@@ -38,8 +46,8 @@
     |   status     |    boolean         | true: thành công, false: thất bại                  |  
     |   message    |    string        | Tin nhắn trả về                                      |  
 
-### 2.2  Lấy số lượng xếp hạng sản phẩm  
- - Router: **/api/rating/count**  
+### 2.2  Lấy danh sách số lượng xếp hạng sản phẩm  
+ - Router: **/api/rating/counts**  
  - Function: **count_rating_product()**  
  - Method: **get**
  - Paremeter: 

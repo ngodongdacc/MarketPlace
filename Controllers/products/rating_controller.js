@@ -8,7 +8,8 @@ module.exports = {
     // xếp hạng sản phẩm
     add_rating : (req,res) => {
         let ranting = req.body;
-        
+        let IdUser = req.user._id;
+
         if(!ranting.IdProduct || ranting.IdProduct === ""){
             return error_400( res, "Vui lòng nhập vào id sản phẩm", "IdProduct");
         }
@@ -17,11 +18,11 @@ module.exports = {
             return error_400( res, "Id sản phẩm không đúng định dạng", "IdProduct");
         }
 
-        if(!ranting.IdUser || ranting.IdUser === ""){
+        if(!IdUser || IdUser === ""){
             return error_400( res, "Vui lòng nhập vào id người dùng", "IdUser");
         }
 
-        if(ranting.IdUser && !mongoose.Types.ObjectId.isValid(ranting.IdUser)){
+        if(IdUser && !mongoose.Types.ObjectId.isValid(IdUser)){
             return error_400( res, "Id người dùng không đúng định dạng", "IdUser");
         }
 
@@ -36,7 +37,7 @@ module.exports = {
 
         RatingModel.findOne({
             IdProduct   : new mongoose.mongo.ObjectId(ranting.IdProduct),
-            IdUser      : new mongoose.mongo.ObjectId(ranting.IdUser)
+            IdUser      : new mongoose.mongo.ObjectId(IdUser)
         }).exec((e,resFindRa) => {
             if(e) return error_500(res,e);
 
@@ -45,7 +46,7 @@ module.exports = {
             let newRating = new RatingModel({
                 Star        : ranting.Star,
                 IdProduct   : ranting.IdProduct,
-                IdUser      : ranting.IdUser,
+                IdUser      : IdUser,
             })
     
             newRating.save(( e, resNew ) => e ? error_500( res, e) : 
@@ -54,7 +55,7 @@ module.exports = {
     },
 
     // Lấy xếp hạng sản phẩm
-    count_rating_product: (req, res) => {
+    counts_rating_product: (req, res) => {
         let IdProduct = req.query.idProduct;
 
         if(!IdProduct || IdProduct === "") {
