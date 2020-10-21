@@ -25,12 +25,12 @@
 
 - Source code: ./Socket/notification_socket.js
 - Danh sách routers
-  - [2.1: Thêm thông báo mới](#21-Thêm-comment-mới)
-  - [2.2: Cập nhật thông báo](#22-cập-nhật-comment-parent)
-  - [2.3: Xóa thông báo](#23-Lấy-chi-tiết-Comment)
-  - [2.4: Lấy danh sách thông báo của người dùng](#24-xóa-comment-parent)
-  - [2.5: Lấy chi tiết thông báo ](#25-Trả-lời-Comment)
-  - [2.6: Tìm kiếm thông báo ](#26-Lấy-danh-sách-Comment-của-sản-phẩm)
+  - [2.1: Thêm thông báo mới](#21-thêm-thông-báo-mới)
+  - [2.2: Cập nhật thông báo](#22-cập-nhật-thông-báo)
+  - [2.3: Xóa thông báo](#23-xóa-thông-báo)
+  - [2.4: Lấy danh sách thông báo của người dùng](#24-lấy-danh-sách-thông-báo-của-người-dùng)
+  <!-- - [2.5: Lấy chi tiết thông báo ](#25-Trả-lời-Comment)
+  - [2.6: Tìm kiếm thông báo ](#26-Lấy-danh-sách-Comment-của-sản-phẩm) -->
 
 ### 2.1 Thêm thông báo mới
 
