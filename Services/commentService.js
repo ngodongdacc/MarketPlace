@@ -69,5 +69,87 @@ module.exports = {
       throw e
     }
   }
-
+  // listComments: async (IdProduct, cb) => {
+    //   const query = {
+    //     IdProduct: new mongoose.mongo.ObjectId(IdProduct)
+    //   }
+    //   try {
+    //     async.parallel([
+    //       (cb) =>
+    //         Comment.aggregate([
+    //           { $match: query },
+    //           {
+    //             $lookup: // user
+    //             {
+    //               from: "users",
+    //               localField: "IdUser",
+    //               foreignField: "_id",
+    //               as: "UserName",
+    //             },
+    //           }])
+    //           // .skip(config.skip)
+    //           // .limit(config.limit)
+    //           .sort({ NewDateAt: "desc" })
+    //           .exec((e, resData) => e ? cb(e) : cb(null, resData)),
+  
+    //       (cb) => Comment.countDocuments(query)
+    //         .exec((e, count) => e ? cb(e) : cb(null, count)),
+    //       (cb) =>
+    //       Comment.aggregate([
+    //           {
+    //             $lookup: // user
+    //             {
+    //               from: "commentreplys",
+    //               localField: "Reply._id",
+    //               foreignField: "_id",
+    //               as: "comments",
+    //             },
+    //           }])
+    //           // .skip(config.skip)
+    //           // .limit(config.limit)
+    //           .sort({ NewDateAt: "desc" })
+    //           .exec((e, resData) => e ? cb(e) : cb(null, resData))
+  
+    //     ], (err, results) => {
+    //       if (err) return error_500(res, err);
+    //       async.waterfall([
+    //         cb => {
+    //           results[0] = results[0].map(el => {
+    //             if (el.UserName && el.UserName[0]
+    //               && el.UserName[0].FullName)
+    //               el.UserName = el.UserName[0].FullName
+  
+    //             else el.UserName = "Khách hàng";
+    //             return el
+    //           })
+    //           cb(null, results)
+    //         },
+    //         cb => {
+    //           results[0] = results[0].map(el => {
+    //             if (el.UserName && el.UserName[0]
+    //               && el.UserName[0].FullName)
+    //               el.UserName = el.UserName[0].FullName
+  
+    //             else el.UserName = "Khách hàng";
+    //             return el
+    //           })
+    //           cb(null, results)
+    //         }
+    //       ]
+   
+    //       , (e, results) => {
+    //           if (e) error_500(res, e)
+    //           cb(null, results)
+    //           // success(res, "Lấy danh sách bình luận thành công",
+    //           //   {
+    //           //     comment: results[0],
+    //           //     count: results[1],
+    //           //   })
+    //         }
+    //       )
+    //     })
+    //   } catch (e) {
+    //     throw e
+    //   }
+    // }
 }

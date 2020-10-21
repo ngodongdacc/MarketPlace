@@ -51,6 +51,9 @@ app.use(function(req, res, next) {
 });
 
 app.use('/api/', require('./Routes/router'));
+app.get('/notification', (req,res)=>{
+  res.render('index');
+});
 app.use('/', (req,res)=>res.status(404).send("not found api"));
 
 // error handler

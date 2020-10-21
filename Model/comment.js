@@ -15,4 +15,6 @@ var CommentSchema = new Schema({
         type: mongoose.Types.ObjectId, required: true // Id sản phẩm comment
     },
 });
-module.exports = mongoose.model("Comments", CommentSchema); 
+const Comments = mongoose.model("Comments",CommentSchema); 
+Comments.createIndexes();
+module.exports = Comments

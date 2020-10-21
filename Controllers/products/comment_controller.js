@@ -51,8 +51,8 @@ module.exports = {
         const commentReq = req.body;
         const IdProduct = req.body.IdProduct;
         commentReq.IdProduct = IdProduct;
-        var NewDateAt = new Date();
-        var UpDateAt = new Date();
+        let NewDateAt = new Date();
+        let UpDateAt = new Date();
         commentReq.NewDateAt = NewDateAt
         commentReq.UpDateAt = UpDateAt
         let IdUser = req.user._id;
@@ -81,8 +81,10 @@ module.exports = {
                         })
                         CommentReply.create(commentReply, (err, resCommentReply) => {
                             if (err) return error_500(res, err)
+                            let comment = {};
+                            comment._id = resCommentReply._id;
                             resFindCommentOfPostSupper.Reply.push(
-                                resCommentReply
+                                comment
                             );
                             Comment.findByIdAndUpdate(resFindCommentOfPostSupper._id,
                                 { $set: resFindCommentOfPostSupper }, { new: true })
@@ -107,7 +109,7 @@ module.exports = {
     },
     updateComment_Parent: async (req, res) => {
         const commentReq = req.body;
-        var UpDateAt = new Date();
+        let UpDateAt = new Date();
         let IdUser = req.user._id;
         if (!IdUser)
             return error_400(res, "Vui lòng đăng nhập", "Login");
@@ -147,8 +149,7 @@ module.exports = {
     ,
     updateComment_Super: async (req, res) => {
         const commentReq = req.body;
-        console.log(req.url);
-        var UpDateAt = new Date();
+        let UpDateAt = new Date();
         let IdUser = req.user._id;
         if (!IdUser)
             return error_400(res, "Vui lòng đăng nhập", "Login");
@@ -308,6 +309,7 @@ module.exports = {
     // Lấy danh sách comment của sản phẩm
     getListCommentForProduct: async (req, res) => {
         try {
+         
             const config = {};
             config.IdProduct = req.query.IdProduct
             config.page = req.query.page ? Number(req.query.page) : 1
@@ -317,7 +319,7 @@ module.exports = {
                 return error_400(res, "Vui lòng nhập id dạng ObjectId", "IdProduct");
             if (!config.IdProduct)
                 return error_400(res, "Vui lòng nhập Id", "IdProduct");
-
+             
             Products.findById(config.IdProduct, (err, resFindProduct) => {
                 if (err) return error_500(res, err);
 
@@ -327,7 +329,6 @@ module.exports = {
                 const query = {
                     IdProduct: new mongoose.mongo.ObjectId(config.IdProduct)
                 }
-
                 async.parallel([
                     (cb) =>
                         Comment.aggregate([
@@ -340,15 +341,24 @@ module.exports = {
                                     foreignField: "_id",
                                     as: "UserName",
                                 },
-                            }])
+                                $lookup: // user
+                                {
+                                    from: "commentreplys",
+                                    localField: "_id",
+                                    foreignField: "IdParent",
+                                    as: "Reply",
+                                }
+
+                            }
+
+                        ])
                             .skip(config.skip)
                             .limit(config.limit)
                             .sort({ NewDateAt: "desc" })
-                            .exec((e, resData) => e ? cb(e) : cb(null, resData)),
-
-                    (cb) => Comment.countDocuments(query)
+                            .exec((e, resData) => e ? cb(e) : cb(null, resData))
+                ,
+                (cb) => Comment.countDocuments(query)
                         .exec((e, count) => e ? cb(e) : cb(null, count))
-
                 ], (err, results) => {
                     if (err) return error_500(res, err);
                     async.waterfall([
@@ -360,18 +370,35 @@ module.exports = {
 
                                 else el.UserName = "Khách hàng";
                                 return el
-                            })
+                            }),
+                            
                             cb(null, results)
                         }
-                    ], (e, results) => {
-                        if (e) error_500(res, e)
+                    //      (results  )=>{
+                    //       results[0] = results[0].Reply.map(el =>{
+                    //             if (el.UserName && el.UserName[0]
+                    //                 && el.UserName[0].FullName)
+                    //                 el.UserName = el.UserName[0].FullName
 
+                    //             else el.UserName = "Khách hàng";
+                    //             return el
+                    //         })
+                    //         console.log("ff",results);
+                    //   }
+                            
+                            
+                         
+                      
+                    ]
+                    , (e, results) => {
+                        if (e) error_500(res, e)
                         success(res, "Lấy danh sách bình luận thành công",
                             {
                                 comment: results[0],
-                                count: results[1],
+                                count: results[1]
                             })
                     })
+              
                 })
             })
 
