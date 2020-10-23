@@ -36,7 +36,7 @@
     | Tên Trường  | Kiểu dữ liệu     |               Mô tả                  |  
     |:----------:  |:------------:    |:--------------------------------:    |  
     |    IdProduct     |    ObjectId |         id của sản phẩm đánh giá xếp hạng       |
-    |    Start     |    number |         Xếp hạng sản phẩm chỉ nhận giá trị 1->5       |
+    |    Star     |    number |         Xếp hạng sản phẩm chỉ nhận giá trị 1->5       |
 
 - Dữ liệu trả về
 
