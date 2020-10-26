@@ -84,7 +84,7 @@ module.exports = {
                             let comment = {};
                             comment._id = resCommentReply._id;
                             resFindCommentOfPostSupper.Reply.push(
-                                comment
+                                resCommentReply
                             );
                             Comment.findByIdAndUpdate(resFindCommentOfPostSupper._id,
                                 { $set: resFindCommentOfPostSupper }, { new: true })
@@ -111,8 +111,10 @@ module.exports = {
         const commentReq = req.body;
         let UpDateAt = new Date();
         let IdUser = req.user._id;
-        if (!IdUser)
+        console.log(" IdUser ", IdUser);
+        if (!IdUser || IdUser === "")
             return error_400(res, "Vui lòng đăng nhập", "Login");
+
         if (!commentReq.Content.length < 0) return error_400(res, "Vui lòng nhập nội dung bình luận", "Content");
         if (commentReq.Content === "") return error_400(res, "Vui lòng nhập nội dung bình luận", "Content");
         try {
@@ -123,6 +125,8 @@ module.exports = {
                 Comment.findById(commentReq.IdComment, (err, resFindData) => {
                     if (err) return error_500(res, err)
                     if (!resFindData) return error_400(res, "Không tìm thấy bình luận của sản phẩm", "IdComment");
+                    if (!resFindData.IdUser === IdUser)
+                        return error_400(res, "Bạn không có đủ quyền để cập nhật bình luận này", "Authorization");
                     Comment.findByIdAndUpdate(resFindData._id, {
                         UpDateAt: UpDateAt,
                         Content: commentReq.Content
@@ -164,16 +168,18 @@ module.exports = {
                     if (err) return error_500(res, err)
                     if (!resFindData) return error_400(res, "Không tìm thấy bình luận của sản phẩm", "IdComment");
                     const itemIndex = resFindData.Reply.findIndex(cmt => cmt._id == commentReq.IdCommentSuper);
-                    if (itemIndex < -1) return error_400(res, "Không tìm thấy trả lời bình luận", "IdCommentSuper");
+                    if (itemIndex < 0) return error_400(res, "Không tìm thấy trả lời bình luận", "IdCommentSuper");
                     resFindData.Reply[itemIndex].UpDateAt = UpDateAt;
                     resFindData.Reply[itemIndex].Content = commentReq.Content;
-                    CommentReply.findById(commentReq.IdCommentSuper, (err, resFindReply) => {
+                    CommentReply.findById( resFindData.Reply[itemIndex]._id, (err, resFindReply) => {
                         if (err) return error_500(res, err)
                         CommentReply.findByIdAndUpdate(resFindReply._id,
                             resFindData.Reply[itemIndex]
                             , { new: true })
                             .exec((e, us) => {
                                 if (e) error_500(res, e)
+                                if (!resFindReply.IdUser === IdUser)
+                                    return error_400(res, "Bạn không có đủ quyền để cập nhật bình luận này", "Authorization");
                                 Comment.findByIdAndUpdate(resFindData._id, {
                                     Reply: resFindData.Reply
                                 }, { new: true })
@@ -210,6 +216,8 @@ module.exports = {
                 Comment.findById(IdComment, (err, resFindData) => {
                     if (err) return error_500(res, err)
                     if (!resFindData) return error_400(res, "Không tìm thấy bình luận của sản phẩm", "IdComment");
+                    if (!resFindData.IdUser === IdUser)
+                        return error_400(res, "Bạn không có đủ quyền để cập nhật bình luận này", "Authorization");
                     Comment.findByIdAndDelete(resFindData._id, (err, resFindComment) => {
                         if (err) return error_400(res, "Có lỗi trong quá trình xử lý", "Errors");
                         if (!resFindComment) return error_400(res, "Không tìm thấy bình luận của sản phẩm", "IdComment");
@@ -246,10 +254,13 @@ module.exports = {
                     if (err) return error_500(res, err)
                     if (!resFindComment) return error_400(res, "Không tìm thấy bình luận này", "resFindComment");
                     const itemIndex = resFindComment.Reply.findIndex(cmt => cmt._id == IdCommentSup);
-                    if (itemIndex < -1) return error_400(res, "Bình luận này không còn tồn tại", "IdCommentSup");
+                    if (itemIndex <0) return error_400(res, "Bình luận này không còn tồn tại", "IdCommentSup");
                     resFindComment.Reply.findIndex(cmt => cmt._id == IdCommentSup) !== -1 && resFindComment.Reply.splice(resFindComment.Reply.findIndex(cmt => cmt._id == IdCommentSup), 1)
-                    CommentReply.findByIdAndRemove(IdCommentSup, (err, resRemoveReply) => {
+                    CommentReply.findById(IdCommentSup, (err, resRemoveReply) => {
                         if (err) return error_500(res, err)
+                        if (!resRemoveReply) return error_400(res, "Không tìm thấy bình luận này", "IdCommentSup");
+                        if (!resRemoveReply.IdUser === IdUser)
+                            return error_400(res, "Bạn không có đủ quyền để cập nhật bình luận này", "Authorization");
                         Comment.findByIdAndUpdate(resFindComment._id, resFindComment, (err, resRemove) => {
                             if (err) return error_500(res, err)
                             CommentService.listComments(IdProduct, (err, resListData) => {
@@ -309,7 +320,6 @@ module.exports = {
     // Lấy danh sách comment của sản phẩm
     getListCommentForProduct: async (req, res) => {
         try {
-         
             const config = {};
             config.IdProduct = req.query.IdProduct
             config.page = req.query.page ? Number(req.query.page) : 1
@@ -319,87 +329,97 @@ module.exports = {
                 return error_400(res, "Vui lòng nhập id dạng ObjectId", "IdProduct");
             if (!config.IdProduct)
                 return error_400(res, "Vui lòng nhập Id", "IdProduct");
-             
             Products.findById(config.IdProduct, (err, resFindProduct) => {
                 if (err) return error_500(res, err);
-
                 if (!resFindProduct)
                     return error_400(res, "Không tìm thấy sản phẩm", "Errors");
-
                 const query = {
                     IdProduct: new mongoose.mongo.ObjectId(config.IdProduct)
                 }
-                async.parallel([
-                    (cb) =>
-                        Comment.aggregate([
-                            { $match: query },
-                            {
-                                $lookup: // user
+                async.parallel(
+                    [
+                        (cb) =>
+                            Comment.aggregate([
+                                { $match: query },
+
                                 {
-                                    from: "users",
-                                    localField: "IdUser",
-                                    foreignField: "_id",
-                                    as: "UserName",
+                                    $lookup: // user
+                                    {
+                                        from: "users",
+                                        localField: "IdUser",
+                                        foreignField: "_id",
+                                        as: "UserName",
+                                    }
                                 },
-                                $lookup: // user
+                                { "$unwind": "$Reply" },
                                 {
-                                    from: "commentreplys",
-                                    localField: "_id",
-                                    foreignField: "IdParent",
-                                    as: "Reply",
-                                }
+                                    $lookup: {
+                                        from: "commentreplys", /* collection name here, not model name */
+                                        localField: "_id",
+                                        foreignField: "IdParent",
+                                        as: "Reply"
+                                    },
+                                    $lookup: // user
+                                    {
+                                        from: "users",
+                                        localField: "Reply.IdUser",
+                                        foreignField: "_id",
+                                        as: "Reply.UserName",
+                                    }
+                                },
 
-                            }
-
-                        ])
-                            .skip(config.skip)
-                            .limit(config.limit)
-                            .sort({ NewDateAt: "desc" })
-                            .exec((e, resData) => e ? cb(e) : cb(null, resData))
-                ,
-                (cb) => Comment.countDocuments(query)
-                        .exec((e, count) => e ? cb(e) : cb(null, count))
-                ], (err, results) => {
-                    if (err) return error_500(res, err);
-                    async.waterfall([
-                        cb => {
-                            results[0] = results[0].map(el => {
-                                if (el.UserName && el.UserName[0]
-                                    && el.UserName[0].FullName)
-                                    el.UserName = el.UserName[0].FullName
-
-                                else el.UserName = "Khách hàng";
-                                return el
-                            }),
-                            
-                            cb(null, results)
-                        }
-                    //      (results  )=>{
-                    //       results[0] = results[0].Reply.map(el =>{
-                    //             if (el.UserName && el.UserName[0]
-                    //                 && el.UserName[0].FullName)
-                    //                 el.UserName = el.UserName[0].FullName
-
-                    //             else el.UserName = "Khách hàng";
-                    //             return el
-                    //         })
-                    //         console.log("ff",results);
-                    //   }
-                            
-                            
-                         
-                      
+                            ])
+                                .skip(config.skip)
+                                .limit(config.limit)
+                                .sort({ NewDateAt: "desc" })
+                                .exec((e, resData) => e ? cb(e) : cb(null, resData))
+                        ,
+                        (cb) => Comment.countDocuments(query)
+                            .exec((e, count) => e ? cb(e) : cb(null, count))
                     ]
-                    , (e, results) => {
-                        if (e) error_500(res, e)
-                        success(res, "Lấy danh sách bình luận thành công",
-                            {
-                                comment: results[0],
-                                count: results[1]
+                    , (err, results) => {
+                        if (err) return error_500(res, err);
+                        async.waterfall([
+                            cb => {
+                                results[0] = results[0].map(el => {
+                                    var s = {};
+                                    console.log("log ", el.Reply['IdUser']);
+                                    if (el.UserName && el.UserName[0]
+                                        && el.UserName[0].FullName)
+                                        el.UserName = el.UserName[0].FullName
+
+                                    else el.UserName = "Khách hàng";
+                                    return el
+                                }),
+                                    cb(null, results)
+                            }
+                        ]
+                            , (e, results) => {
+                                if (e) error_500(res, e)
+                                async.waterfall([
+                                    cb => {
+                                        results[0].Reply = results[0].map(el => {
+                                            // var rs = el.Reply.IdUser;
+                                            console.log("log1: ", el.Reply.IdUser);
+                                            if (el.Reply && el.Reply.UserName[0]
+                                                && el.Reply.UserName[0].FullName)
+                                                el.Reply.UserName = el.Reply.UserName[0].FullName
+                                            else el.Reply.UserName = "Khách hàng";
+                                            return el
+                                        }),
+                                            cb(null, results)
+                                    }
+                                ]
+                                    , (e, results) => {
+                                        if (e) error_500(res, e)
+                                        success(res, "Lấy danh sách bình luận thành công",
+                                            {
+                                                comment: results[0],
+                                                count: results[1]
+                                            })
+                                    })
                             })
                     })
-              
-                })
             })
 
         } catch (e) {
