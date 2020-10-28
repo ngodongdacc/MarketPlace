@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-require('dotenv').config();
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 const passport = require('passport');
 const expressSession = require('express-session');
 const MemoryStore = require('memorystore')(expressSession)
