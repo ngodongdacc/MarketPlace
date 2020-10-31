@@ -34,8 +34,8 @@
   - [2.6: Lấy danh sách Comment của sản phẩm ](#26-Lấy-danh-sách-Comment-của-sản-phẩm)
   - [2.7: Cập nhật comment Super](#27-Cập-nhật-comment-Super)
   - [2.8: Xóa Comment Super](#28-Xóa-Comment-Super)
-  - [2.9: Thêm comment mới cho chủ cửa hàng](#27-Cập-nhật-comment-Super)
-  - [2.10: Trả lời Comment cho chủ cửa hàng](#28-Xóa-Comment-Super)
+  - [2.9: Thêm comment mới cho chủ cửa hàng](#29-thêm-comment-mới-cho-chủ-cửa-hàng)
+  - [2.10: Trả lời Comment cho chủ cửa hàng](#210-trả-lời-comment-cho-chủ-cửa-hàng)
 
 ### 2.1 Thêm comment mới
 
