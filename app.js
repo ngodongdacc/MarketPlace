@@ -27,7 +27,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
 // app.get('/auth/provider', passport.authenticate('local', { successRedirect: '/',
- //                                                   failureRedirect: '/login' }));
+//                                                   failureRedirect: '/login' }));
 app.use(expressSession({
   secret: process.env.secretKey || "QTData-MarketPlace",
   resave: false,
@@ -42,7 +42,7 @@ app.use(passport.session());
 
 // app.use(cors(corsOption));
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
@@ -51,13 +51,13 @@ app.use(function(req, res, next) {
 });
 
 app.use('/api/', require('./Routes/router'));
-app.get('/', (req,res)=>{
+app.get('/', (req, res) => {
   res.render('index');
 });
-app.use('/', (req,res)=>res.status(404).send("not found api"));
+app.use('/', (req, res) => res.status(404).send("not found api"));
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
