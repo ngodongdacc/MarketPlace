@@ -9,7 +9,6 @@ const MemoryStore = require('memorystore')(expressSession)
 const cors = require('cors')
 
 // dotenv.config();
-
 require("./middleware/Passport"); // using passport
 require('./middleware/database'); // connect database
 
