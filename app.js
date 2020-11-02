@@ -48,16 +48,11 @@ app.use(function (req, res, next) {
   next();
 });
 
-<<<<<<< HEAD
-app.use('/api', require('./Routes/router'));
-app.use('/', (req,res)=>res.status(404).send("not found api"));
-=======
 app.use('/api/', require('./Routes/router'));
 app.get('/', (req, res) => {
   res.render('index');
 });
 app.use('/', (req, res) => res.status(404).send("not found api"));
->>>>>>> tech24_Kokoro
 
 // error handler
 app.use(function (err, req, res, next) {
