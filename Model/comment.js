@@ -16,4 +16,6 @@ var CommentSchema = new Schema({
     },
     Rating: { type: Number, default: null, enum: [1,2,3,4,5]} // xếp hạng
 });
-module.exports = mongoose.model("Comments", CommentSchema); 
+const Comments = mongoose.model("Comments",CommentSchema); 
+Comments.createIndexes();
+module.exports = Comments

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,6 +18,8 @@
                 <h1 class="text-center">
                     MongoChat 
                     <button id="clear" class="btn btn-danger">Clear</button>
+                    <button id="update" class="btn btn-danger">Update</button>
+                    <input type="text" id="IdUser" class="form-control" value="5f742959bda71603f88e8d9e">
                 </h1>
                 <div id="status"></div>
                 <div id="chat">
@@ -34,7 +37,8 @@
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+
 
     <script>
         (function(){
@@ -45,10 +49,11 @@
             // Get Elements
             var status = element('status');
             var messages = element('messages');
-            var textarea = element('textarea');
-            var username = element('username');
+            var Content = element('textarea');
+            var IdUser = element('username');
             var clearBtn = element('clear');
-
+            var updateBtn = element('update');
+            var IdUserGet = element('IdUser');
             // Set default status
             var statusDefault = status.textContent;
 
@@ -65,23 +70,38 @@
 
             // Connect to socket.io
             var socket = io.connect('https://localhost:3005');
-
             // Check for connection
             if(socket !== undefined){
                 console.log('Connected to socket...');
+                var id=IdUserGet.value;
+                socket.emit('id-user', {
+                            IdUser:IdUserGet.value
+                        });
 
                 // Handle Output
-                socket.on('output', function(data){
-                    //console.log(data);
+                socket.on(id, function(data){
+                    //console.log(data);IdUser
                     if(data.length){
+                        // messages.textContent = '';
                         for(var x = 0;x < data.length;x++){
                             // Build out message div
                             var message = document.createElement('div');
                             message.setAttribute('class', 'chat-message');
-                            message.textContent = data[x].URL+": "+data[x].Content;
+                            message.textContent = data[x]._id+": "+data[x].Content+" Status: " +data[x].Status;
                             messages.appendChild(message);
                             messages.insertBefore(message, messages.firstChild);
                         }
+                    }else{
+                        messages.textContent = '';
+                        var dataNull="B?n không có thông báo nào g?n dây";
+                            var message = document.createElement('div');
+                            message.setAttribute('class', 'chat-message');
+                            message.textContent = dataNull;
+                            console.log("ad ",dataNull);
+                            messages.appendChild(message);
+                            messages.insertBefore(message, messages.firstChild);
+                        
+                      
                     }
                 });
 
@@ -92,17 +112,16 @@
 
                     // If status is clear, clear text
                     if(data.clear){
-                        textarea.value = '';
+                        Content.value = '';
                     }
                 });
 
                 // Handle Input
-                textarea.addEventListener('keydown', function(event){
+                Content.addEventListener('keydown', function(event){
                     if(event.which === 13 && event.shiftKey == false){
-                        // Emit to server input
                         socket.emit('input', {
-                            name:username.value,
-                            message:textarea.value
+                            IdUser:IdUser.value,
+                            Content:Content.value
                         });
 
                         event.preventDefault();
@@ -111,12 +130,44 @@
 
                 // Handle Chat Clear
                 clearBtn.addEventListener('click', function(){
-                    socket.emit('clear');
+                    socket.emit('delete',{
+                        id:IdUser.value,
+                            IdUser :IdUserGet.value
+                        });
                 });
-
-                // Clear Message
-                socket.on('cleared', function(){
+                updateBtn.addEventListener('click', function(){
+                    console.log("update", IdUser.value);
+                    socket.emit('update',{
+                            id:IdUser.value,
+                            IdUser :IdUserGet.value
+                        });
+                });
+                socket.on('edited', function(data){
                     messages.textContent = '';
+                    if(data.length){
+                        for(var x = 0;x < data.length;x++){
+                            // Build out message div
+                            var message = document.createElement('div');
+                            message.setAttribute('class', 'chat-message');
+                            message.textContent = data[x]._id+": "+data[x].Content+" Status: " +data[x].Status;
+                            messages.appendChild(message);
+                            messages.insertBefore(message, messages.firstChild);
+                        }
+                    }
+                });
+                // Clear Message
+                socket.on('cleared', function(data){
+                    messages.textContent = '';
+                    if(data.length){
+                        for(var x = 0;x < data.length;x++){
+                            // Build out message div
+                            var message = document.createElement('div');
+                            message.setAttribute('class', 'chat-message');
+                            message.textContent = data[x]._id+": "+data[x].Content+" Status: " +data[x].Status;
+                            messages.appendChild(message);
+                            messages.insertBefore(message, messages.firstChild);
+                        }
+                    }
                 });
             }
 

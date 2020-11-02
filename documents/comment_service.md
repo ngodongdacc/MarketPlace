@@ -34,6 +34,8 @@
   - [2.6: Lấy danh sách Comment của sản phẩm ](#26-Lấy-danh-sách-Comment-của-sản-phẩm)
   - [2.7: Cập nhật comment Super](#27-Cập-nhật-comment-Super)
   - [2.8: Xóa Comment Super](#28-Xóa-Comment-Super)
+  - [2.9: Thêm comment mới cho chủ cửa hàng](#29-thêm-comment-mới-cho-chủ-cửa-hàng)
+  - [2.10: Trả lời Comment cho chủ cửa hàng](#210-trả-lời-comment-cho-chủ-cửa-hàng)
 
 ### 2.1 Thêm comment mới
 
@@ -142,7 +144,7 @@
 ### 2.5 Trả lời Comment
 
 - Router: **/api/comment/recomment**
-- Function: **searchShop()**
+- Function: **reComment_Parent_ForCommentPost()**
 - Method: **POST**
 - header:
 
@@ -246,3 +248,54 @@
   |    data    |    object    | [ Comment object](#data-structure-comment-object) |
   |   status   |   boolean    |         true: thành công, false: thất bại         |
   |  message   |    string    |                  Tin nhắn trả về                  |
+  ### 2.9 Thêm comment mới cho chủ cửa hàng
+- Router: **/api/comment/comment-shop**
+- Function: **postComment_Shop()**
+- Method: **POST**
+- header:
+
+  |  Tên Trường   | Kiểu dữ liệu |      Mô tả      |
+  | :-----------: | :----------: | :-------------: |
+  | Authorization |    string    | Token đăng nhập |
+
+- Body:
+
+  | Tên Trường | Kiểu dữ liệu |          Mô tả           |
+  | :--------: | :----------: | :----------------------: |
+  |  Content   |    String    | Tên của nội dung comment |
+  | IdProduct  |   ObjectId   |   Id sản phẩm comment    |
+
+- Dữ liệu trả về
+
+  | Tên Trường | Kiểu dữ liệu |                       Mô tả                       |
+  | :--------: | :----------: | :-----------------------------------------------: |
+  |    data    |    object    | [ Comment object](#data-structure-comment-object) |
+  |   status   |   boolean    |         true: thành công, false: thất bại         |
+  |  message   |    string    |                  Tin nhắn trả về                  |
+  ### 2.10 Trả lời Comment cho chủ cửa hàng
+
+- Router: **/api/comment/recomment-shop**
+- Function: **reComment_Parent_ForCommentPost_Shop()**
+- Method: **POST**
+- header:
+
+  |  Tên Trường   | Kiểu dữ liệu |      Mô tả      |
+  | :-----------: | :----------: | :-------------: |
+  | Authorization |    string    | Token đăng nhập |
+
+- Body:
+
+  | Tên Trường | Kiểu dữ liệu |            Mô tả            |
+  | :--------: | :----------: | :-------------------------: |
+  |  Content   |    String    | Tên của nội dung re-comment |
+  | IdComment  |   ObjectId   |   Id comment của sản phẩm   |
+  | IdProduct  |   ObjectId   |     Id sản phẩm comment     |
+
+- Dữ liệu trả về
+
+  | Tên Trường | Kiểu dữ liệu |                       Mô tả                       |
+  | :--------: | :----------: | :-----------------------------------------------: |
+  |    data    |    object    | [ Comment object](#data-structure-comment-object) |
+  |   status   |   boolean    |         true: thành công, false: thất bại         |
+  |  message   |    string    |                  Tin nhắn trả về                  |
+
