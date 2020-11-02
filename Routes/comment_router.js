@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const {checkSignIn,checkRoleShop,checkLogInShop,checkRole} = require("../middleware/auth")
+const {checkSignIn,checkRole} = require("../middleware/auth")
+const {checkRoleShop,checkLogInShop} = require("../middleware/auth_shop")
 const commentCtr = require("../Controllers/products/comment_controller");
 
 router.post('/comment',checkSignIn(),checkRole(10070),commentCtr.postComment);
