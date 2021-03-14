@@ -7,6 +7,7 @@ const passport = require('passport');
 const expressSession = require('express-session');
 const MemoryStore = require('memorystore')(expressSession)
 const cors = require('cors')
+const bodyParser = require("body-parser");
 
 // dotenv.config();
 require("./middleware/Passport"); // using passport
@@ -19,6 +20,9 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 app.set('trust proxy', 1) // trust first proxy
 app.use(logger('dev'));
+app.use(bodyParser.json()); 
+// for parsing application/xwww-
+app.use(bodyParser.urlencoded({ extended: true })); 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -53,7 +57,7 @@ app.get('/', (req, res) => {
   res.render('index');
 });
 app.use('/', (req, res) => res.status(404).send("not found api"));
-
+global.base__dirname = __dirname;
 // error handler
 app.use(function (err, req, res, next) {
   // set locals, only providing error in development

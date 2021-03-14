@@ -222,7 +222,7 @@ module.exports = {
             sort: params.sort ? JSON.parse(params.sort) : { "Date": -1 }
         }
         config.skip = (config.page - 1) * config.limit;
-        console.log(config.skip);
+        
         async.waterfall([
             (cb) => {
                 var query = {
@@ -330,8 +330,8 @@ module.exports = {
 
             }
         ], (err, results) => {
-            if (err) return error_500(res, err)
-
+            
+            if (err) return error_500(res, err);
             res.json({
                 message: "Lấy sản phẩm thành công",
                 data: {

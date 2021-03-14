@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
+const faceRouter = require('../api/face/face.router');
+
 router.use("/book",require('./book_router')) // book test
 
 router.use("/users",require('./user_router'));  // Người dùng
@@ -24,4 +26,6 @@ router.use("/trademark", require('./trademark_router'))  //
 router.use("/brandOrigin", require('./brand_origin_router')) //
 router.use("/origin", require('./origin_router')) //
 router.use("/unit", require('./unit_router')) //
+
+router.use("/face", faceRouter) // nhận dạng khuôn mặt
 module.exports = router;

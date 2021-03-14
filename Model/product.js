@@ -58,7 +58,7 @@ const mongoose = require('mongoose');
     StatusNew : {type: Boolean, default: false}, // sản phẩm mới (%)
   });
   
-  // ProductSchema.index({'Name': 'text', "DetailedDescription":"text"});
+  ProductSchema.index({'Name': 'text', "DetailedDescription":"text"});
   const Products = mongoose.model("Products",ProductSchema); 
   Products.createIndexes();
 module.exports = Products
